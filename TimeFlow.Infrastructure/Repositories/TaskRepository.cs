@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TimeFlow.Application.Interfaces;
+using TimeFlow.Core.Interfaces;
 using TimeFlow.Domain.Entities;
 using TimeFlow.Infrastructure.Data;
 

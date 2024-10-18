@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TimeFlow.Application.Interfaces;
+﻿using TimeFlow.Core.Interfaces;
 using TimeFlow.Domain.Entities;
 
-namespace TimeFlow.Application
+namespace TimeFlow.Core.Services
 {
     public class TaskService
     {

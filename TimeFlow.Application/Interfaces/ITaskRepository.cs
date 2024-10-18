@@ -1,6 +1,6 @@
 ﻿using TimeFlow.Domain.Entities;
 
-namespace TimeFlow.Application.Interfaces
+namespace TimeFlow.Core.Interfaces
 {
     public interface ITaskRepository
     {

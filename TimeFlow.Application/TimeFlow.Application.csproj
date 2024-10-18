@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TimeFlow.Domain\TimeFlow.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

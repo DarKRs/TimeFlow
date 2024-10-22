@@ -1,4 +1,5 @@
-﻿using TimeFlow.Presentation.Views;
+﻿using Plugin.LocalNotification.EventArgs;
+using TimeFlow.Presentation.Views;
 
 namespace TimeFlow.Presentation
 {
@@ -15,6 +16,22 @@ namespace TimeFlow.Presentation
             MainPage = _serviceProvider.GetRequiredService<MainPage>();
 
             MainPage = new AppShell();
+        }
+
+        //Обработка уведомлений
+        private void OnNotificationActionTapped(NotificationActionEventArgs e)
+        {
+            if (e.IsDismissed)
+            {
+                // Действие при закрытии уведомления
+                return;
+            }
+
+            if (e.IsTapped)
+            {
+                // Действие при нажатии на уведомление
+                return;
+            }
         }
     }
 }

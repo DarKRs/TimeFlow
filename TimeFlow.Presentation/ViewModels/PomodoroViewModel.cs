@@ -1,6 +1,7 @@
 ﻿using System.Timers;
 using System.Windows.Input;
 using TimeFlow.Domain.Entities;
+using Plugin.LocalNotification;
 using Microsoft.Maui.Dispatching;
 using Timer = System.Timers.Timer;
 
@@ -12,6 +13,13 @@ namespace TimeFlow.Presentation.ViewModels
         private Timer _timer;
         private int _remainingTime; // in seconds
         private bool _isRunning;
+
+        private int _workDuration;
+        private int _shortBreakDuration;
+        private int _longBreakDuration;
+
+        private PomodoroSessionType _currentSessionType;
+        private int _sessionCount = 0;
 
         public int RemainingTime
         {
@@ -49,16 +57,19 @@ namespace TimeFlow.Presentation.ViewModels
         public ICommand PauseCommand { get; }
         public ICommand ResetCommand { get; }
 
-        // Default durations (in minutes)
-        private int _workDuration = 25;
-        private int _shortBreakDuration = 5;
-        private int _longBreakDuration = 15;
-
-        private PomodoroSessionType _currentSessionType;
-        private int _sessionCount = 0; 
-
         public PomodoroViewModel()
         {
+            #if DEBUG
+                // Уменьшенные значения для отладки
+                _workDuration = 1; // 1 минута работы
+                _shortBreakDuration = 1; // 1 минута короткого перерыва
+                _longBreakDuration = 2; // 2 минуты длинного перерыва
+            #else
+                _workDuration = 25;
+                _shortBreakDuration = 5;
+                _longBreakDuration = 15;
+            #endif
+
             _dispatcher = Dispatcher.GetForCurrentThread();
             RemainingTime = _workDuration * 60;
             _currentSessionType = PomodoroSessionType.Work;
@@ -94,20 +105,22 @@ namespace TimeFlow.Presentation.ViewModels
                 _sessionCount++;
                 if (_sessionCount % 4 == 0)
                 {
-                    // Длинный отдых после 4х сессий
                     _currentSessionType = PomodoroSessionType.LongBreak;
                     RemainingTime = _longBreakDuration * 60;
+                    ShowNotification("Длинный перерыв", "Время для длительного отдыха!");
                 }
                 else
                 {
                     _currentSessionType = PomodoroSessionType.ShortBreak;
                     RemainingTime = _shortBreakDuration * 60;
+                    ShowNotification("Короткий перерыв", "Время для короткого перерыва!");
                 }
             }
             else
             {
                 _currentSessionType = PomodoroSessionType.Work;
                 RemainingTime = _workDuration * 60;
+                ShowNotification("Рабочая сессия", "Время вернуться к работе!");
             }
         }
 
@@ -141,5 +154,27 @@ namespace TimeFlow.Presentation.ViewModels
         public bool CanStart => !IsRunning;
         public bool CanPause => IsRunning;
         public bool CanReset => true;
+
+
+        private async void ShowNotification(string title, string message)
+        {
+            if (await LocalNotificationCenter.Current.AreNotificationsEnabled() == false)
+            {
+                await LocalNotificationCenter.Current.RequestNotificationPermission();
+            }
+
+            var notification = new NotificationRequest
+            {
+                NotificationId = 100,
+                Title = "Задача завершена",
+                Description = "Время перейти к следующему интервалу!",
+                ReturningData = "PomodoroFinished", // Это можно использовать для передачи данных при нажатии на уведомление
+                Schedule =
+                {
+                    NotifyTime = DateTime.Now.AddSeconds(5) // Показывать через 5 секунд
+                }
+            };
+            await LocalNotificationCenter.Current.Show(notification);
+        }
     }
 }

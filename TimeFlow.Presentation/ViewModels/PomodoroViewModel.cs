@@ -4,6 +4,10 @@ using TimeFlow.Domain.Entities;
 using Plugin.LocalNotification;
 using Microsoft.Maui.Dispatching;
 using Timer = System.Timers.Timer;
+#if WINDOWS
+using Windows.UI.Notifications;
+using Windows.Data.Xml.Dom;
+#endif
 
 namespace TimeFlow.Presentation.ViewModels
 {
@@ -158,23 +162,43 @@ namespace TimeFlow.Presentation.ViewModels
 
         private async void ShowNotification(string title, string message)
         {
-            if (await LocalNotificationCenter.Current.AreNotificationsEnabled() == false)
-            {
-                await LocalNotificationCenter.Current.RequestNotificationPermission();
-            }
-
-            var notification = new NotificationRequest
-            {
-                NotificationId = 100,
-                Title = "Задача завершена",
-                Description = "Время перейти к следующему интервалу!",
-                ReturningData = "PomodoroFinished", // Это можно использовать для передачи данных при нажатии на уведомление
-                Schedule =
+            #if ANDROID || IOS
+                // Уведомления для Android/iOS через Plugin.LocalNotification
+                if (await LocalNotificationCenter.Current.AreNotificationsEnabled() == false)
                 {
-                    NotifyTime = DateTime.Now.AddSeconds(5) // Показывать через 5 секунд
+                    await LocalNotificationCenter.Current.RequestNotificationPermission();
                 }
-            };
+
+                var notification = new NotificationRequest
+                {
+                    NotificationId = 100,
+                    Title = title,
+                    Description = message,
+                    ReturningData = "PomodoroFinished",
+                    Schedule =
+                    {
+                        NotifyTime = DateTime.Now.AddSeconds(5)
+                    }
+                };
             await LocalNotificationCenter.Current.Show(notification);
+            #elif WINDOWS
+                // Уведомления для Windows
+                ShowWindowsToastNotification(title, message);
+            #endif
+        }
+
+        private void ShowWindowsToastNotification(string title, string message)
+        {
+            #if WINDOWS
+               var toastXml = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText02);
+
+                var stringElements = toastXml.GetElementsByTagName("text");
+                stringElements[0].AppendChild(toastXml.CreateTextNode(title));
+                stringElements[1].AppendChild(toastXml.CreateTextNode(message));
+
+                var toast = new ToastNotification(toastXml);
+                ToastNotificationManager.CreateToastNotifier("PomodoroApp").Show(toast);
+            #endif
         }
     }
 }

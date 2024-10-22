@@ -1,19 +1,81 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:TimeFlow.Presentation.ViewModels"
              x:Class="TimeFlow.Presentation.Views.PomodoroPage"
              Title="Pomodoro Timer">
-  <ContentPage.BindingContext>
-    <viewModels:PomodoroViewModel />
-  </ContentPage.BindingContext>
+    <ContentPage.BindingContext>
+        <viewModels:PomodoroViewModel />
+    </ContentPage.BindingContext>
 
-  <StackLayout Padding="30" Spacing="20" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand">
-    <Label Text="{Binding TimeDisplay}" FontSize="72" HorizontalOptions="Center" />
-    <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Spacing="20">
-      <Button Text="Start" Command="{Binding StartCommand}" IsEnabled="{Binding CanStart}" />
-      <Button Text="Pause" Command="{Binding PauseCommand}" IsEnabled="{Binding CanPause}" />
-      <Button Text="Reset" Command="{Binding ResetCommand}" IsEnabled="{Binding CanReset}" />
-    </StackLayout>
-  </StackLayout>
+    <ContentPage.BackgroundColor>
+        <Color>#1c1c1e</Color>
+    </ContentPage.BackgroundColor>
+
+    <Grid Padding="40, 20, 40, 0" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+
+        <!-- Левый верхний блок с переключателем -->
+        <StackLayout Orientation="Horizontal" HorizontalOptions="Start" VerticalOptions="Start" Spacing="10" Grid.Row="1" Margin="0, 0, 0, 0">
+            <Label Text="Автоматически начинать" FontSize="18" TextColor="LightGray" VerticalOptions="Center" />
+            <Switch IsToggled="{Binding AutoStartNextSession}" VerticalOptions="Center" />
+        </StackLayout>
+
+        <!-- Основной контент по центру -->
+        <StackLayout Padding="0" Spacing="25" VerticalOptions="Center" HorizontalOptions="Center">
+            <!-- Отображение статуса -->
+            <Label Text="{Binding CurrentSessionTypeDisplay}"
+                   FontSize="30"
+                   TextColor="LightGray"
+                   HorizontalOptions="Center"
+                   FontAttributes="Bold" />
+
+            <!-- Таймер -->
+            <Label Text="{Binding TimeDisplay}"
+                   FontSize="100"
+                   TextColor="White"
+                   HorizontalOptions="Center"
+                   FontAttributes="Bold" />
+
+            <!-- Прогресс-бар -->
+            <ProgressBar Progress="{Binding Progress}"
+                         HeightRequest="30"
+                         WidthRequest="300"
+                         BackgroundColor="#333"
+                         ProgressColor="#ff6347"
+                         HorizontalOptions="Center" />
+
+            <!-- Кнопки -->
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Spacing="20">
+                <Button Text="Start"
+                        Command="{Binding StartCommand}"
+                        IsEnabled="{Binding CanStart}"
+                        TextColor="White"
+                        BackgroundColor="#28a745"
+                        FontAttributes="Bold"
+                        WidthRequest="100"
+                        CornerRadius="20"
+                        Padding="10,5" />
+
+                <Button Text="Pause"
+                        Command="{Binding PauseCommand}"
+                        IsEnabled="{Binding CanPause}"
+                        TextColor="White"
+                        BackgroundColor="#ffc107"
+                        FontAttributes="Bold"
+                        WidthRequest="100"
+                        CornerRadius="20"
+                        Padding="10,5" />
+
+                <Button Text="Reset"
+                        Command="{Binding ResetCommand}"
+                        IsEnabled="{Binding CanReset}"
+                        TextColor="White"
+                        BackgroundColor="#dc3545"
+                        FontAttributes="Bold"
+                        WidthRequest="100"
+                        CornerRadius="20"
+                        Padding="10,5" />
+            </StackLayout>
+        </StackLayout>
+
+    </Grid>
 </ContentPage>

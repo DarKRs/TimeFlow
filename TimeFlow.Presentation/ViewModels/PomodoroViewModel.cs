@@ -4,6 +4,7 @@ using TimeFlow.Domain.Entities;
 using Plugin.LocalNotification;
 using Microsoft.Maui.Dispatching;
 using Timer = System.Timers.Timer;
+using System;
 #if WINDOWS
 using Windows.UI.Notifications;
 using Windows.Data.Xml.Dom;
@@ -17,6 +18,7 @@ namespace TimeFlow.Presentation.ViewModels
         private Timer _timer;
         private int _remainingTime; // in seconds
         private bool _isRunning;
+        private int _totalTimeForCurrentSession;
 
         private int _workDuration;
         private int _shortBreakDuration;
@@ -35,9 +37,40 @@ namespace TimeFlow.Presentation.ViewModels
                     _remainingTime = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(TimeDisplay));
+                    OnPropertyChanged(nameof(Progress));
+                    OnPropertyChanged(nameof(CurrentSessionTypeDisplay));
                 }
             }
         }
+
+        public string CurrentSessionTypeDisplay
+        {
+            get
+            {
+                return _currentSessionType switch
+                {
+                    PomodoroSessionType.Work => "Рабочий интервал",
+                    PomodoroSessionType.ShortBreak => "Короткий перерыв",
+                    PomodoroSessionType.LongBreak => "Длинный перерыв",
+                    _ => "Неизвестный статус"
+                };
+            }
+        }
+
+        private bool _autoStartNextSession = true;
+
+        public bool AutoStartNextSession
+        {
+            get => _autoStartNextSession;
+            set
+            {
+                _autoStartNextSession = value;
+                OnPropertyChanged();
+            }
+        }
+
+        // Прогресс интервала
+        public double Progress => (double)(_totalTimeForCurrentSession - RemainingTime) / _totalTimeForCurrentSession;
 
         public string TimeDisplay => TimeSpan.FromSeconds(RemainingTime).ToString(@"mm\:ss");
 
@@ -126,12 +159,18 @@ namespace TimeFlow.Presentation.ViewModels
                 RemainingTime = _workDuration * 60;
                 ShowNotification("Рабочая сессия", "Время вернуться к работе!");
             }
+
+            if (AutoStartNextSession)
+            {
+                StartTimer();
+            }
         }
 
         public void StartTimer()
         {
             if (!IsRunning)
             {
+                _totalTimeForCurrentSession = RemainingTime;
                 _timer.Start();
                 IsRunning = true;
             }

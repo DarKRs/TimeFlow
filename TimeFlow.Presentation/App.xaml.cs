@@ -13,6 +13,8 @@ namespace TimeFlow.Presentation
 
             // Устанавливаем MainPage после инициализации ресурсов
             MainPage = _serviceProvider.GetRequiredService<MainPage>();
+
+            MainPage = new AppShell();
         }
     }
 }

@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TimeFlow.Presentation.ViewModels"
+             x:Class="TimeFlow.Presentation.Views.PomodoroPage"
+             Title="Pomodoro Timer">
+  <ContentPage.BindingContext>
+    <viewModels:PomodoroViewModel />
+  </ContentPage.BindingContext>
+
+  <StackLayout Padding="30" Spacing="20" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand">
+    <Label Text="{Binding TimeDisplay}" FontSize="72" HorizontalOptions="Center" />
+    <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Spacing="20">
+      <Button Text="Start" Command="{Binding StartCommand}" IsEnabled="{Binding CanStart}" />
+      <Button Text="Pause" Command="{Binding PauseCommand}" IsEnabled="{Binding CanPause}" />
+      <Button Text="Reset" Command="{Binding ResetCommand}" IsEnabled="{Binding CanReset}" />
+    </StackLayout>
+  </StackLayout>
+</ContentPage>

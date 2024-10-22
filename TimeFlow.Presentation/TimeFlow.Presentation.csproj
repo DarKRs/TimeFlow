@@ -77,4 +77,10 @@
 	  <ProjectReference Include="..\TimeFlow.Infrastructure\TimeFlow.Infrastructure.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <MauiXaml Update="Views\PomodoroPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
 </Project>

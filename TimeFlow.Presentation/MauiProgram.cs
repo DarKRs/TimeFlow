@@ -35,7 +35,11 @@ namespace TimeFlow.Presentation
 
             // Регистрация ViewModel и страниц
             builder.Services.AddTransient<MainViewModel>();
+            builder.Services.AddTransient<PomodoroViewModel>();
+
+
             builder.Services.AddTransient<MainPage>();
+            builder.Services.AddTransient<PomodoroPage>();
 
 #if DEBUG
             builder.Logging.AddDebug();

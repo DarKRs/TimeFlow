@@ -46,4 +46,11 @@
         Completed,
         Canceled
     }
+
+    public enum PomodoroSessionType
+    {
+        Work,
+        ShortBreak,
+        LongBreak
+    }
 }

@@ -5,6 +5,8 @@ using TimeFlow.Core.Interfaces;
 using TimeFlow.Core.Services;
 using TimeFlow.Infrastructure.Data;
 using TimeFlow.Infrastructure.Repositories;
+using TimeFlow.Presentation.ViewModels;
+using TimeFlow.Presentation.Views;
 
 namespace TimeFlow.Presentation
 {
@@ -31,11 +33,16 @@ namespace TimeFlow.Presentation
             builder.Services.AddScoped<ITaskRepository, TaskRepository>();
             builder.Services.AddScoped<TaskService>();
 
+            // Регистрация ViewModel и страниц
+            builder.Services.AddTransient<MainViewModel>();
+            builder.Services.AddTransient<MainPage>();
+
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
 
-            return builder.Build();
+            var app = builder.Build();
+            return app;
         }
     }
 }

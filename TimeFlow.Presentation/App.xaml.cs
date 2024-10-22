@@ -1,12 +1,18 @@
-﻿namespace TimeFlow.Presentation
+﻿using TimeFlow.Presentation.Views;
+
+namespace TimeFlow.Presentation
 {
     public partial class App : Application
     {
-        public App()
+        private readonly IServiceProvider _serviceProvider;
+
+        public App(IServiceProvider serviceProvider)
         {
             InitializeComponent();
+            _serviceProvider = serviceProvider;
 
-            MainPage = new AppShell();
+            // Устанавливаем MainPage после инициализации ресурсов
+            MainPage = _serviceProvider.GetRequiredService<MainPage>();
         }
     }
 }

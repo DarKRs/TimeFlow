@@ -21,7 +21,7 @@ namespace TimeFlow.Infrastructure.Repositories
 
         public async Task AddSessionAsync(PomodoroSession session)
         {
-            _context.PomodoroSessions.Add(task);
+            _context.PomodoroSessions.Add(session);
             await _context.SaveChangesAsync();
         }
 

@@ -23,6 +23,9 @@
         public int IntervalsBeforeLongBreak { get; set; }
 
         public PomodoroSessionStatus Status { get; set; }
+        public PomodoroSessionType SessionType { get; set; }
+        public int? TaskItemId { get; set; }
+        public virtual TaskItem Task { get; set; }
 
         // Конструктор по умолчанию
         public PomodoroSession()

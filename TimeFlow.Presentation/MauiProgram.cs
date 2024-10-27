@@ -34,6 +34,7 @@ namespace TimeFlow.Presentation
             });
 
             builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+            builder.Services.AddScoped<IPomodoroSessionRepository, PomodoroSessionRepository>();
             builder.Services.AddScoped<ITaskService,TaskService>();
 
             // Регистрация ViewModel и страниц

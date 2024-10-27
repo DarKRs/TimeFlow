@@ -3,9 +3,6 @@
              xmlns:viewModels="clr-namespace:TimeFlow.Presentation.ViewModels"
              x:Class="TimeFlow.Presentation.Views.PomodoroPage"
              Title="Pomodoro Timer">
-    <ContentPage.BindingContext>
-        <viewModels:PomodoroViewModel />
-    </ContentPage.BindingContext>
 
     <ContentPage.BackgroundColor>
         <Color>#1c1c1e</Color>
@@ -21,12 +18,7 @@
 
         <!-- Основной контент по центру -->
         <StackLayout Padding="0" Spacing="25" VerticalOptions="Center" HorizontalOptions="Center">
-            <!-- Отображение статуса -->
-            <Label Text="{Binding CurrentSessionTypeDisplay}"
-                   FontSize="30"
-                   TextColor="LightGray"
-                   HorizontalOptions="Center"
-                   FontAttributes="Bold" />
+            <Picker Title="Выберите задачу" ItemsSource="{Binding Tasks}" ItemDisplayBinding="{Binding Title}" SelectedItem="{Binding SelectedTask}" VerticalOptions="Start"/>
 
             <!-- Таймер -->
             <Label Text="{Binding TimeDisplay}"

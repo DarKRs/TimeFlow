@@ -5,6 +5,9 @@ using Plugin.LocalNotification;
 using Microsoft.Maui.Dispatching;
 using Timer = System.Timers.Timer;
 using System;
+using System.Collections.ObjectModel;
+using TimeFlow.Core.Interfaces;
+using TimeFlow.Infrastructure.Repositories;
 #if WINDOWS
 using Windows.UI.Notifications;
 using Windows.Data.Xml.Dom;
@@ -15,6 +18,9 @@ namespace TimeFlow.Presentation.ViewModels
     public class PomodoroViewModel : BaseViewModel
     {
         private readonly IDispatcher _dispatcher;
+        private readonly ITaskService _taskService;
+        private readonly IPomodoroSessionRepository _pomodoroSessionRepository;
+        //
         private Timer _timer;
         private int _remainingTime; // in seconds
         private bool _isRunning;
@@ -26,6 +32,22 @@ namespace TimeFlow.Presentation.ViewModels
 
         private PomodoroSessionType _currentSessionType;
         private int _sessionCount = 0;
+
+        public ObservableCollection<TaskItem> Tasks { get; set; }
+        private TaskItem _selectedTask;
+
+        public TaskItem SelectedTask
+        {
+            get => _selectedTask;
+            set
+            {
+                if (_selectedTask != value)
+                {
+                    _selectedTask = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public int RemainingTime
         {
@@ -94,10 +116,13 @@ namespace TimeFlow.Presentation.ViewModels
         public ICommand PauseCommand { get; }
         public ICommand ResetCommand { get; }
 
-        public PomodoroViewModel()
+        public PomodoroViewModel(ITaskService taskService, IPomodoroSessionRepository pomodoroSessionRepository)
         {
-            #if DEBUG
-                // Уменьшенные значения для отладки
+            _pomodoroSessionRepository = pomodoroSessionRepository;
+            _taskService = taskService;
+
+           #if DEBUG
+            // Уменьшенные значения для отладки
                 _workDuration = 1; // 1 минута работы
                 _shortBreakDuration = 1; // 1 минута короткого перерыва
                 _longBreakDuration = 2; // 2 минуты длинного перерыва
@@ -117,6 +142,19 @@ namespace TimeFlow.Presentation.ViewModels
             StartCommand = new Command(StartTimer, () => CanStart);
             PauseCommand = new Command(PauseTimer, () => CanPause);
             ResetCommand = new Command(ResetTimer, () => CanReset);
+
+            Tasks = new ObservableCollection<TaskItem>();
+            LoadTasks();
+        }
+
+        public async void LoadTasks()
+        {
+            var tasks = await _taskService.GetAllTasksAsync();
+            Tasks.Clear();
+            foreach (var task in tasks)
+            {
+                Tasks.Add(task);
+            }
         }
 
         private void OnTimerElapsed(object sender, ElapsedEventArgs e)
@@ -135,8 +173,18 @@ namespace TimeFlow.Presentation.ViewModels
             }
         }
 
-        private void OnSessionCompleted()
+        private async void OnSessionCompleted()
         {
+            var session = new PomodoroSession
+            {
+                StartTime = DateTime.Now.AddSeconds(-(_currentSessionType == PomodoroSessionType.Work ? _workDuration * 60 : GetCurrentBreakDuration() * 60)),
+                EndTime = DateTime.Now,
+                SessionType = _currentSessionType,
+                TaskItemId = SelectedTask?.Id
+            };
+
+            await _pomodoroSessionRepository.AddSessionAsync(session);
+
             if (_currentSessionType == PomodoroSessionType.Work)
             {
                 _sessionCount++;
@@ -164,6 +212,11 @@ namespace TimeFlow.Presentation.ViewModels
             {
                 StartTimer();
             }
+        }
+
+        private int GetCurrentBreakDuration()
+        {
+            return _currentSessionType == PomodoroSessionType.ShortBreak ? _shortBreakDuration : _longBreakDuration;
         }
 
         public void StartTimer()

@@ -18,6 +18,12 @@ namespace TimeFlow.Infrastructure.Repositories
         {
             return await _context.Tasks.ToListAsync();
         }
+        public async Task<IEnumerable<TaskItem>> GetTasksByCategoryAsync(TaskCategory category)
+        {
+            return await _context.Tasks
+                .Where(t => t.Category == category)
+                .ToListAsync();
+        }
 
         public async Task<TaskItem> GetTaskByIdAsync(int id)
         {

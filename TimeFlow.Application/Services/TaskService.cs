@@ -3,7 +3,7 @@ using TimeFlow.Domain.Entities;
 
 namespace TimeFlow.Core.Services
 {
-    public class TaskService
+    public class TaskService : ITaskService
     {
         private readonly ITaskRepository _taskRepository;
 
@@ -12,9 +12,14 @@ namespace TimeFlow.Core.Services
             _taskRepository = taskRepository;
         }
 
-        public async Task<IEnumerable<TaskItem>> GetTasksAsync()
+        public async Task<IEnumerable<TaskItem>> GetAllTasksAsync()
         {
             return await _taskRepository.GetAllTasksAsync();
+        }
+
+        public async Task<IEnumerable<TaskItem>> GetTasksByCategoryAsync(TaskCategory category)
+        {
+            return await _taskRepository.GetTasksByCategoryAsync(category);
         }
 
         public async Task<TaskItem> GetTaskByIdAsync(int id)

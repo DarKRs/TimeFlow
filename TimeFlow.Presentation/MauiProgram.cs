@@ -34,15 +34,20 @@ namespace TimeFlow.Presentation
             });
 
             builder.Services.AddScoped<ITaskRepository, TaskRepository>();
-            builder.Services.AddScoped<TaskService>();
+            builder.Services.AddScoped<ITaskService,TaskService>();
 
             // Регистрация ViewModel и страниц
             builder.Services.AddTransient<MainViewModel>();
             builder.Services.AddTransient<PomodoroViewModel>();
+            builder.Services.AddTransient<EisenhowerMatrixViewModel>();
+            builder.Services.AddTransient<AddTaskViewModel>();
+            
 
 
             builder.Services.AddTransient<MainPage>();
             builder.Services.AddTransient<PomodoroPage>();
+            builder.Services.AddTransient<EisenhowerMatrixPage>();
+            builder.Services.AddTransient<AddTaskPage>();
 
 #if DEBUG
             builder.Logging.AddDebug();

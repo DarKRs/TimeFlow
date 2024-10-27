@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TimeFlow.Core.Interfaces;
 using TimeFlow.Core.Services;
 using TimeFlow.Domain.Entities;
 
@@ -11,12 +12,12 @@ namespace TimeFlow.Presentation.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
-        private readonly TaskService _taskService;
+        private readonly ITaskService _taskService;
 
         public ObservableCollection<TaskItem> Tasks { get; set; }
 
 
-        public MainViewModel(TaskService taskService)
+        public MainViewModel(ITaskService taskService)
         {
             _taskService = taskService;
             Tasks = new ObservableCollection<TaskItem>();
@@ -25,7 +26,7 @@ namespace TimeFlow.Presentation.ViewModels
 
         private async void LoadTasks()
         {
-            var tasks = await _taskService.GetTasksAsync();
+            var tasks = await _taskService.GetAllTasksAsync();
             foreach (var task in tasks)
             {
                 Tasks.Add(task);

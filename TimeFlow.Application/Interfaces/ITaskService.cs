@@ -1,12 +1,16 @@
-﻿using TimeFlow.Domain.Entities;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using TimeFlow.Domain.Entities;
 
 namespace TimeFlow.Core.Interfaces
 {
-    public interface ITaskRepository
+    public interface ITaskService
     {
         Task<IEnumerable<TaskItem>> GetAllTasksAsync();
         Task<IEnumerable<TaskItem>> GetTasksByCategoryAsync(TaskCategory category);
-        Task<TaskItem> GetTaskByIdAsync(int id);
         Task AddTaskAsync(TaskItem task);
         Task UpdateTaskAsync(TaskItem task);
         Task DeleteTaskAsync(int id);

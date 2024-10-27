@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TimeFlow.Presentation.ViewModels"
+             x:Class="TimeFlow.Presentation.Views.EisenhowerMatrixPage"
+             Title="Матрица Эйзенхауэра">
+
+    <Grid RowDefinitions="Auto,*,Auto,*,Auto,*,Auto,*" ColumnDefinitions="*,*">
+        <!-- Заголовки -->
+        <Label Text="Срочные и Важные" Grid.Row="0" Grid.Column="0" FontAttributes="Bold" HorizontalOptions="Center" />
+        <Label Text="Не Срочные и Важные" Grid.Row="0" Grid.Column="1" FontAttributes="Bold" HorizontalOptions="Center" />
+        <Label Text="Срочные и Не Важные" Grid.Row="2" Grid.Column="0" FontAttributes="Bold" HorizontalOptions="Center" />
+        <Label Text="Не Срочные и Не Важные" Grid.Row="2" Grid.Column="1" FontAttributes="Bold" HorizontalOptions="Center" />
+
+        <!-- Списки задач -->
+        <ListView Grid.Row="1" Grid.Column="0" ItemsSource="{Binding UrgentImportantTasks}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextCell Text="{Binding Title}" Detail="{Binding Description}" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <ListView Grid.Row="1" Grid.Column="1" ItemsSource="{Binding NotUrgentImportantTasks}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextCell Text="{Binding Title}" Detail="{Binding Description}" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <ListView Grid.Row="3" Grid.Column="0" ItemsSource="{Binding UrgentNotImportantTasks}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextCell Text="{Binding Title}" Detail="{Binding Description}" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <ListView Grid.Row="3" Grid.Column="1" ItemsSource="{Binding NotUrgentNotImportantTasks}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextCell Text="{Binding Title}" Detail="{Binding Description}" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <!-- Кнопка добавления задачи -->
+        <Button Text="Добавить Задачу" Grid.Row="5" Grid.ColumnSpan="2" Command="{Binding AddTaskCommand}" />
+    </Grid>
+</ContentPage>

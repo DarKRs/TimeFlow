@@ -17,13 +17,53 @@ namespace TimeFlow.Infrastructure.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
 
-            modelBuilder.Entity("TimeFlow.Domain.Entities.TaskItem", b =>
+            modelBuilder.Entity("TimeFlow.Domain.Entities.PomodoroSession", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Category")
+                    b.Property<int>("CompletedIntervals")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("EndTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("IntervalsBeforeLongBreak")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("LongBreakDuration")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ShortBreakDuration")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("TaskItemId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TotalIntervals")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("WorkIntervalDuration")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TaskItemId");
+
+                    b.ToTable("PomodoroSession");
+                });
+
+            modelBuilder.Entity("TimeFlow.Domain.Entities.TaskItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Description")
@@ -32,6 +72,12 @@ namespace TimeFlow.Infrastructure.Migrations
 
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsImportant")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsUrgent")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("Priority")
                         .HasColumnType("INTEGER");
@@ -43,6 +89,62 @@ namespace TimeFlow.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Tasks");
+                });
+
+            modelBuilder.Entity("TimeFlow.Domain.Entities.TimeBlock", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("BlockType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("TaskItemId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TaskItemId");
+
+                    b.ToTable("TimeBlock");
+                });
+
+            modelBuilder.Entity("TimeFlow.Domain.Entities.PomodoroSession", b =>
+                {
+                    b.HasOne("TimeFlow.Domain.Entities.TaskItem", null)
+                        .WithMany("PomodoroSessions")
+                        .HasForeignKey("TaskItemId");
+                });
+
+            modelBuilder.Entity("TimeFlow.Domain.Entities.TimeBlock", b =>
+                {
+                    b.HasOne("TimeFlow.Domain.Entities.TaskItem", "TaskItem")
+                        .WithMany("TimeBlocks")
+                        .HasForeignKey("TaskItemId");
+
+                    b.Navigation("TaskItem");
+                });
+
+            modelBuilder.Entity("TimeFlow.Domain.Entities.TaskItem", b =>
+                {
+                    b.Navigation("PomodoroSessions");
+
+                    b.Navigation("TimeBlocks");
                 });
 #pragma warning restore 612, 618
         }

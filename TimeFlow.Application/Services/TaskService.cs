@@ -41,5 +41,10 @@ namespace TimeFlow.Core.Services
         {
             await _taskRepository.DeleteTaskAsync(id);
         }
+
+        public async Task<IEnumerable<TaskItem>> GetTasksForTodayAsync()
+        {
+            return await _taskRepository.GetTasksByDateAsync(DateTime.Today);
+        }
     }
 }

@@ -51,5 +51,12 @@ namespace TimeFlow.Infrastructure.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<IEnumerable<TaskItem>> GetTasksByDateAsync(DateTime date)
+        {
+            return await _context.Tasks
+                .Where(tb => tb.DueDate.Date == date)
+                .ToListAsync();
+        }
     }
 }

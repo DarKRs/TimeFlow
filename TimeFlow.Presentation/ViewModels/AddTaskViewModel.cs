@@ -32,6 +32,7 @@ namespace TimeFlow.Presentation.ViewModels
             {
                 Title = Title,
                 Description = Description,
+                ScheduledDate = DateTime.Today,
                 IsImportant = IsImportant,
                 IsUrgent = IsUrgent
             };

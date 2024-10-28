@@ -50,8 +50,7 @@ namespace TimeFlow.Presentation.ViewModels
 
         private async void LoadTasks()
         {
-            //Временно для тестов берем все задачи
-            var tasks = await _taskService.GetAllTasksAsync();
+            var tasks = await _taskService.GetTasksForTodayAsync();
             foreach (var task in tasks)
             {
                 _todayTasks.Add(task);

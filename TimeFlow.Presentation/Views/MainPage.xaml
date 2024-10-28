@@ -3,38 +3,52 @@
              x:Class="TimeFlow.Presentation.Views.MainPage"
              Title="TimeFlow">
     <ScrollView>
-        <VerticalStackLayout Padding="30,0" Spacing="20">
+        <Grid Padding="30,0" RowSpacing="20" ColumnSpacing="20">
+            <!-- Определяем две колонки: первая для информации, вторая для задач -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
 
-            <Label Text="Добро пожаловать!"
-                   Style="{StaticResource Headline}" HorizontalOptions="Center"/>
-            <Label Text="{Binding TodayDate, StringFormat='Сегодня: {0:dd MMMM yyyy}'}"
-                   Style="{StaticResource SubHeadline}" HorizontalOptions="Center"/>
+            <!-- Левая колонка: Приветствие и кнопки -->
+            <VerticalStackLayout Grid.Column="0" Spacing="20">
 
-            <!-- Задачи на сегодня -->
-            <Label Text="Задачи на сегодня"  />
-            <CollectionView ItemsSource="{Binding TodayTasks}">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <StackLayout>
-                            <Label Text="{Binding Title}" FontAttributes="Bold"/>
-                            <Label Text="{Binding Description}" FontSize="18"/>
-                            <Label Text="{Binding Category}" FontSize="14" TextColor="Gray"/>
-                        </StackLayout>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                <!-- Приветствие и Дата -->
+                <Label Text="Добро пожаловать, [Имя пользователя]!"
+                       Style="{StaticResource Headline}" HorizontalOptions="Center"/>
+                <Label Text="{Binding TodayDate, StringFormat='Сегодня: {0:dd MMMM yyyy}'}"
+                       Style="{StaticResource SubHeadline}" HorizontalOptions="Center"/>
 
-            
-            <Label Text="Шаги для начала работы"  />
+                <!-- Шаги для работы с приложением -->
+                <Label Text="Шаги для начала работы"  />
 
-            <Button Text="1. Запланировать задачи на сегодня" 
-                    Command="{Binding NavigateToEisenhowerMatrixCommand}"/>
+                <Button Text="1. Запланировать задачи на сегодня" 
+                        Command="{Binding NavigateToEisenhowerMatrixCommand}"/>
 
-            <Button Text="2. Планировать день" 
-                    Command="{Binding NavigateToTimeBlockingCommand}"/>
+                <Button Text="2. Планировать день" 
+                        Command="{Binding NavigateToTimeBlockingCommand}"/>
 
-            <Button Text="3. Начать работу" 
-                    Command="{Binding StartWorkCommand}"/>
-        </VerticalStackLayout>
+                <Button Text="3. Начать работу" 
+                        Command="{Binding StartWorkCommand}"/>
+            </VerticalStackLayout>
+
+            <!-- Правая колонка: Список задач на сегодня -->
+            <VerticalStackLayout Grid.Column="1" Spacing="10">
+                <Label Text="Задачи на сегодня"  HorizontalOptions="Center" />
+                <CollectionView ItemsSource="{Binding TodayTasks}" VerticalOptions="StartAndExpand">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame CornerRadius="6" Padding="10" Margin="5"
+                                   BackgroundColor="LightGray" HorizontalOptions="FillAndExpand">
+                                <StackLayout>
+                                    <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="14" />
+                                    <Label Text="{Binding Description}" FontSize="18" />
+                                </StackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </Grid>
     </ScrollView>
 </ContentPage>

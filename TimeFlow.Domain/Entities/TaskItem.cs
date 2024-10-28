@@ -5,7 +5,10 @@
         public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public DateTime DueDate { get; set; }
+        public DateTime ScheduledDate { get; set; }
+        public DateTime PlannedStart { get; set; }
+        public DateTime PlannedEnd { get; set; }
+        public TimeSpan EstimatedDuration { get; set; } = TimeSpan.FromHours(2); // значение по умолчанию — 2 часа (полный цикл Pomodoro)
         public bool IsImportant { get; set; }
         public bool IsUrgent { get; set; }
         public TaskPriority Priority { get; set; }

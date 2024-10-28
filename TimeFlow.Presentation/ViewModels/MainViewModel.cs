@@ -40,17 +40,16 @@ namespace TimeFlow.Presentation.ViewModels
         {
             _taskService = taskService;
             _todayTasks = new ObservableCollection<TaskItem>();
-            LoadTasks();
-
 
             NavigateToEisenhowerMatrixCommand = new Command(async () => await OnNavigateToEisenhowerMatrix());
             NavigateToTimeBlockingCommand = new Command(async () => await OnNavigateToTimeBlocking());
             StartWorkCommand = new Command(async () => await OnStartWork());
         }
 
-        private async void LoadTasks()
+        public async void LoadTasks()
         {
             var tasks = await _taskService.GetTasksForTodayAsync();
+            _todayTasks.Clear();
             foreach (var task in tasks)
             {
                 _todayTasks.Add(task);

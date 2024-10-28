@@ -17,7 +17,7 @@
 
         public TimeBlockType BlockType { get; set; }
 
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
     }
 
     public enum TimeBlockType

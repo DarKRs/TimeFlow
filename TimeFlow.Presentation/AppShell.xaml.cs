@@ -9,6 +9,8 @@ namespace TimeFlow.Presentation
             InitializeComponent();
 
             Routing.RegisterRoute(nameof(AddTaskPage), typeof(AddTaskPage));
+            Routing.RegisterRoute(nameof(AddTimeBlockPage), typeof(AddTimeBlockPage));
+            Routing.RegisterRoute(nameof(EditTimeBlockPage), typeof(EditTimeBlockPage));
         }
     }
 }

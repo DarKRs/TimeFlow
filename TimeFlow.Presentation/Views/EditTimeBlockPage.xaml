@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TimeFlow.Presentation.ViewModels"
+             x:Class="TimeFlow.Presentation.Views.EditTimeBlockPage"
+             Title="Редактировать Временной Блок">
+        <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Назад" Command="{Binding BackCommand}" />
+        </ContentPage.ToolbarItems>
+    <StackLayout Padding="20" Spacing="15">
+        <Entry Placeholder="Название" Text="{Binding Title}" />
+        <Editor Placeholder="Описание" HeightRequest="100" Text="{Binding Description}" />
+
+        <TimePicker Time="{Binding StartTime}" />
+        <TimePicker Time="{Binding EndTime}" />
+
+        <Picker Title="Тип блока" ItemsSource="{Binding BlockTypes}" SelectedItem="{Binding SelectedBlockType}" />
+
+        <Picker Title="Связанная задача" ItemsSource="{Binding Tasks}" ItemDisplayBinding="{Binding Title}" SelectedItem="{Binding SelectedTask}" />
+
+        <Button Text="Сохранить" Command="{Binding SaveCommand}" />
+    
+
+    </StackLayout>
+</ContentPage>

@@ -32,6 +32,11 @@ namespace TimeFlow.Core.Services
             return await _timeBlockRepository.GetTimeBlocksByDateAsync(DateTime.Today);
         }
 
+        public async Task<IEnumerable<TimeBlock>> GetTimeBlocksByDateAsync(DateTime date)
+        {
+            return await _timeBlockRepository.GetTimeBlocksByDateAsync(date);
+        }
+
         public async Task UpdateTimeBlockAsync(TimeBlock block)
         {
             await _timeBlockRepository.UpdateTimeBlockAsync(block);

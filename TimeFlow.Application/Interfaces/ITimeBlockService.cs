@@ -10,6 +10,7 @@ namespace TimeFlow.Core.Interfaces
     public interface ITimeBlockService
     {
         Task<IEnumerable<TimeBlock>> GetTimeBlocksForTodayAsync();
+        Task<IEnumerable<TimeBlock>> GetTimeBlocksByDateAsync(DateTime date);
         Task AddTimeBlockAsync(TimeBlock block);
         Task UpdateTimeBlockAsync(TimeBlock block);
         Task DeleteTimeBlockAsync(int id);

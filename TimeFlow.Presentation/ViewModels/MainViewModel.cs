@@ -4,9 +4,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using TimeFlow.Core.Interfaces;
 using TimeFlow.Core.Services;
 using TimeFlow.Domain.Entities;
+using TimeFlow.Presentation.Views;
 
 namespace TimeFlow.Presentation.ViewModels
 {
@@ -14,23 +16,61 @@ namespace TimeFlow.Presentation.ViewModels
     {
         private readonly ITaskService _taskService;
 
-        public ObservableCollection<TaskItem> Tasks { get; set; }
+        public string TodayDate => DateTime.Now.ToString("dd MMMM yyyy");
 
+        private ObservableCollection<TaskItem> _todayTasks;
+        public ObservableCollection<TaskItem> TodayTasks
+        {
+            get => _todayTasks;
+            set
+            {
+                if (_todayTasks != value)
+                {
+                    _todayTasks = value;
+                    OnPropertyChanged(nameof(TodayTasks));
+                }
+            }
+        }
+
+        public ICommand NavigateToEisenhowerMatrixCommand { get; }
+        public ICommand NavigateToTimeBlockingCommand { get; }
+        public ICommand StartWorkCommand { get; }
 
         public MainViewModel(ITaskService taskService)
         {
             _taskService = taskService;
-            Tasks = new ObservableCollection<TaskItem>();
+            _todayTasks = new ObservableCollection<TaskItem>();
             LoadTasks();
+
+
+            NavigateToEisenhowerMatrixCommand = new Command(async () => await OnNavigateToEisenhowerMatrix());
+            NavigateToTimeBlockingCommand = new Command(async () => await OnNavigateToTimeBlocking());
+            StartWorkCommand = new Command(async () => await OnStartWork());
         }
 
         private async void LoadTasks()
         {
+            //Временно для тестов берем все задачи
             var tasks = await _taskService.GetAllTasksAsync();
             foreach (var task in tasks)
             {
-                Tasks.Add(task);
+                _todayTasks.Add(task);
             }
+        }
+
+        private async Task OnNavigateToEisenhowerMatrix()
+        {
+            await Shell.Current.GoToAsync("//EisenhowerMatrixPage");
+        }
+
+        private async Task OnNavigateToTimeBlocking()
+        {
+            await Shell.Current.GoToAsync("//TimeBlockingPage");
+        }
+
+        private async Task OnStartWork()
+        {
+            await Shell.Current.GoToAsync("//PomodoroPage");
         }
     }
 }

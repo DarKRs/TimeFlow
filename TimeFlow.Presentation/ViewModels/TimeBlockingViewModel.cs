@@ -22,6 +22,7 @@ namespace TimeFlow.Presentation.ViewModels
         public ICommand AddTimeBlockCommand { get; }
         public ICommand DeleteTimeBlockCommand { get; }
         public ICommand EditTimeBlockCommand { get; }
+        public ICommand GenerateTimeBlocksCommand { get; }
 
         public TimeBlockingViewModel(ITaskService taskService, ITimeBlockService timeBlockService)
         {
@@ -34,6 +35,7 @@ namespace TimeFlow.Presentation.ViewModels
             AddTimeBlockCommand = new Command(async () => await AddTimeBlock());
             DeleteTimeBlockCommand = new Command<TimeBlock>(async (tb) => await DeleteTimeBlock(tb));
             EditTimeBlockCommand = new Command<TimeBlock>(async (tb) => await EditTimeBlock(tb));
+            GenerateTimeBlocksCommand = new Command(async () => await GenerateTimeBlocks());
 
 
             LoadData();
@@ -85,6 +87,18 @@ namespace TimeFlow.Presentation.ViewModels
                 { "TimeBlock", timeBlock }
             };
             await Shell.Current.GoToAsync(nameof(EditTimeBlockPage), navigationParameter);
+        }
+
+        private async Task GenerateTimeBlocks()
+        {
+            var tasks = await _taskService.GetTasksForTodayAsync();
+            var generatedBlocks = await _timeBlockService.GenerateTimeBlocksForTasksAsync(tasks);
+
+            TimeBlocks.Clear();
+            foreach (var block in generatedBlocks)
+            {
+                TimeBlocks.Add(block);
+            }
         }
     }
 }

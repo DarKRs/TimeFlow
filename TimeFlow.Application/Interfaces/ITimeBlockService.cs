@@ -11,6 +11,7 @@ namespace TimeFlow.Core.Interfaces
     {
         Task<IEnumerable<TimeBlock>> GetTimeBlocksForTodayAsync();
         Task<IEnumerable<TimeBlock>> GetTimeBlocksByDateAsync(DateTime date);
+        Task<IEnumerable<TimeBlock>> GenerateTimeBlocksForTasksAsync(IEnumerable<TaskItem> tasks);
         Task AddTimeBlockAsync(TimeBlock block);
         Task UpdateTimeBlockAsync(TimeBlock block);
         Task DeleteTimeBlockAsync(int id);

@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TimeFlow.Presentation.ViewModels"
+             x:Class="TimeFlow.Presentation.Views.TimeBlockingPage"
+             Title="Планирование дня">
+
+    <StackLayout Padding="20">
+        <Button Text="Добавить Временной Блок" Command="{Binding AddTimeBlockCommand}" />
+
+        <CollectionView ItemsSource="{Binding TimeBlocks}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <StackLayout Orientation="Horizontal" Padding="10">
+                        <Label Text="{Binding Title}" VerticalOptions="Center" />
+                        <Label Text="{Binding StartTime, StringFormat='{}{0:t}'}" VerticalOptions="Center" />
+                        <Label Text="{Binding EndTime, StringFormat='{}{0:t}'}" VerticalOptions="Center" />
+
+                        <!-- Кнопка Редактирования -->
+                        <Button Text="Ред." 
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditTimeBlockCommand}" 
+                        CommandParameter="{Binding .}" />
+
+                        <!-- Кнопка Удаления -->
+                        <Button Text="Удалить" 
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteTimeBlockCommand}" 
+                        CommandParameter="{Binding .}" />
+                    </StackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
+</ContentPage>

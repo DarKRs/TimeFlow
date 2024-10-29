@@ -37,7 +37,7 @@ namespace TimeFlow.Presentation.ViewModels
 
         public async void LoadTasks()
         {
-            var tasks = await _taskService.GetAllTasksAsync();
+            var tasks = await _taskService.GetTasksForTodayAsync();
 
             UrgentImportantTasks.Clear();
             NotUrgentImportantTasks.Clear();

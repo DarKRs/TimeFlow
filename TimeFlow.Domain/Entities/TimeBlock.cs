@@ -18,6 +18,8 @@
         public TimeBlockType BlockType { get; set; }
 
         public string? Notes { get; set; }
+
+        public string TimeRange => $"{StartTime:HH:mm} - {EndTime:HH:mm}";
     }
 
     public enum TimeBlockType

@@ -13,6 +13,26 @@ namespace TimeFlow.Presentation.Views
         {
             InitializeComponent();
             BindingContext = viewModel;
+
+            MyCalendar.DateSelected += OnDateSelected;
+        }
+
+        private async void OnDateSelected(object sender, DateTime selectedDate)
+        {
+            string action = await DisplayActionSheet($"Вы выбрали {selectedDate:dd MMMM yyyy}", "Отмена", null, "Просмотреть задачи", "Создать задачу");
+
+            if (action == "Просмотреть задачи")
+            {
+                // Отобразить задачи на выбранную дату
+                if (BindingContext is EisenhowerMatrixViewModel viewModel)
+                {
+                   // viewModel.LoadTasksForDate(selectedDate);
+                }
+            }
+            else if (action == "Создать задачу")
+            {
+                await Shell.Current.GoToAsync($"{nameof(AddTaskPage)}?ScheduledDate={selectedDate:yyyy-MM-dd}");
+            }
         }
 
         protected override void OnAppearing()

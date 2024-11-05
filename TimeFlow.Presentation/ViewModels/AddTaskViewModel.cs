@@ -18,6 +18,20 @@ namespace TimeFlow.Presentation.ViewModels
         public bool IsImportant { get; set; }
         public bool IsUrgent { get; set; }
 
+        private DateTime _scheduledDate = DateTime.Today;
+        public DateTime ScheduledDate
+        {
+            get => _scheduledDate;
+            set
+            {
+                if (_scheduledDate != value)
+                {
+                    _scheduledDate = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public ICommand SaveCommand { get; }
 
         public AddTaskViewModel(ITaskService taskService)
@@ -32,7 +46,7 @@ namespace TimeFlow.Presentation.ViewModels
             {
                 Title = Title,
                 Description = Description,
-                ScheduledDate = DateTime.Today,
+                ScheduledDate = _scheduledDate,
                 IsImportant = IsImportant,
                 IsUrgent = IsUrgent
             };
@@ -40,7 +54,7 @@ namespace TimeFlow.Presentation.ViewModels
             await _taskService.AddTaskAsync(task);
 
             // Возврат на страницу Матрицы
-            await Shell.Current.GoToAsync("..");
+            await Shell.Current.GoToAsync("//EisenhowerMatrixPage");
         }
     }
 }

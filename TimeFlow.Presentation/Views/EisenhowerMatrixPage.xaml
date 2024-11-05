@@ -10,7 +10,6 @@
         <StackLayout Grid.Column="0" Padding="10">
             <Label Text="Календарь" FontAttributes="Bold" FontSize="20" HorizontalOptions="Center" Margin="0,0,0,10"/>
 
-            <!-- Календарь из Plugin.Maui.Calendar -->
             <Frame BackgroundColor="#333333" CornerRadius="10" Padding="5">
                 <controls:CustomCalendar x:Name="MyCalendar" />
             </Frame>
@@ -26,6 +25,9 @@
 
                 <!-- Понедельник -->
                 <StackLayout Grid.Column="0" BackgroundColor="#2B2B2B" Padding="5" Margin="2">
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding DayTappedCommand}" CommandParameter="Monday" />
+                    </StackLayout.GestureRecognizers>
                     <Label Text="Понедельник" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
                     <CollectionView ItemsSource="{Binding MondayTasks}">
                         <CollectionView.ItemTemplate>
@@ -41,6 +43,9 @@
 
                 <!-- Вторник -->
                 <StackLayout Grid.Column="1" BackgroundColor="#2B2B2B" Padding="5" Margin="2">
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding DayTappedCommand}" CommandParameter="Tuesday" />
+                    </StackLayout.GestureRecognizers>
                     <Label Text="Вторник" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
                     <CollectionView ItemsSource="{Binding TuesdayTasks}">
                         <CollectionView.ItemTemplate>
@@ -56,6 +61,9 @@
 
                 <!-- Среда -->
                 <StackLayout Grid.Column="2" BackgroundColor="#2B2B2B" Padding="5" Margin="2">
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding DayTappedCommand}" CommandParameter="Wednesday" />
+                    </StackLayout.GestureRecognizers>
                     <Label Text="Среда" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
                     <CollectionView ItemsSource="{Binding WednesdayTasks}">
                         <CollectionView.ItemTemplate>
@@ -71,6 +79,9 @@
 
                 <!-- Четверг -->
                 <StackLayout Grid.Column="3" BackgroundColor="#2B2B2B" Padding="5" Margin="2">
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding DayTappedCommand}" CommandParameter="Thursday" />
+                    </StackLayout.GestureRecognizers>
                     <Label Text="Четверг" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
                     <CollectionView ItemsSource="{Binding ThursdayTasks}">
                         <CollectionView.ItemTemplate>
@@ -86,6 +97,9 @@
 
                 <!-- Пятница -->
                 <StackLayout Grid.Column="4" BackgroundColor="#2B2B2B" Padding="5" Margin="2">
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding DayTappedCommand}" CommandParameter="Friday" />
+                    </StackLayout.GestureRecognizers>
                     <Label Text="Пятница" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
                     <CollectionView ItemsSource="{Binding FridayTasks}">
                         <CollectionView.ItemTemplate>
@@ -101,6 +115,9 @@
 
                 <!-- Суббота -->
                 <StackLayout Grid.Column="5" BackgroundColor="#2B2B2B" Padding="5" Margin="2">
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding DayTappedCommand}" CommandParameter="Saturday" />
+                    </StackLayout.GestureRecognizers>
                     <Label Text="Суббота" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
                     <CollectionView ItemsSource="{Binding SaturdayTasks}">
                         <CollectionView.ItemTemplate>
@@ -116,6 +133,9 @@
 
                 <!-- Воскресенье -->
                 <StackLayout Grid.Column="6" BackgroundColor="#2B2B2B" Padding="5" Margin="2">
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding DayTappedCommand}" CommandParameter="Sunday" />
+                    </StackLayout.GestureRecognizers>
                     <Label Text="Воскресенье" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
                     <CollectionView ItemsSource="{Binding SundayTasks}">
                         <CollectionView.ItemTemplate>

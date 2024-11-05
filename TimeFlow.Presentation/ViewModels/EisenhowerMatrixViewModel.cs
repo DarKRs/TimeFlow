@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using TimeFlow.Core.Interfaces;
 using TimeFlow.Domain.Entities;
+using TimeFlow.Presentation.Utils;
 using TimeFlow.Presentation.Views;
 
 namespace TimeFlow.Presentation.ViewModels
@@ -15,50 +16,65 @@ namespace TimeFlow.Presentation.ViewModels
     {
         private readonly ITaskService _taskService;
 
-        public ObservableCollection<TaskItem> UrgentImportantTasks { get; set; }
-        public ObservableCollection<TaskItem> NotUrgentImportantTasks { get; set; }
-        public ObservableCollection<TaskItem> UrgentNotImportantTasks { get; set; }
-        public ObservableCollection<TaskItem> NotUrgentNotImportantTasks { get; set; }
+        public ObservableCollection<TaskItem> MondayTasks { get; set; } = new ObservableCollection<TaskItem>();
+        public ObservableCollection<TaskItem> TuesdayTasks { get; set; } = new ObservableCollection<TaskItem>();
+        public ObservableCollection<TaskItem> WednesdayTasks { get; set; } = new ObservableCollection<TaskItem>();
+        public ObservableCollection<TaskItem> ThursdayTasks { get; set; } = new ObservableCollection<TaskItem>();
+        public ObservableCollection<TaskItem> FridayTasks { get; set; } = new ObservableCollection<TaskItem>();
+        public ObservableCollection<TaskItem> SaturdayTasks { get; set; } = new ObservableCollection<TaskItem>();
+        public ObservableCollection<TaskItem> SundayTasks { get; set; } = new ObservableCollection<TaskItem>();
 
         public ICommand AddTaskCommand { get; }
+        public ICommand DayTappedCommand { get; }
 
         public EisenhowerMatrixViewModel(ITaskService taskService)
         {
             _taskService = taskService;
 
-            UrgentImportantTasks = new ObservableCollection<TaskItem>();
-            NotUrgentImportantTasks = new ObservableCollection<TaskItem>();
-            UrgentNotImportantTasks = new ObservableCollection<TaskItem>();
-            NotUrgentNotImportantTasks = new ObservableCollection<TaskItem>();
-
             LoadTasks();
             AddTaskCommand = new Command(async () => await AddTask());
+            DayTappedCommand = new Command<string>(async (day) => await OnDayTapped(day));
         }
 
         public async void LoadTasks()
         {
-            var tasks = await _taskService.GetTasksForTodayAsync();
+            var startOfWeek = DateTime.Today.StartOfWeek(DayOfWeek.Monday);
+            var endOfWeek = startOfWeek.AddDays(7);
 
-            UrgentImportantTasks.Clear();
-            NotUrgentImportantTasks.Clear();
-            UrgentNotImportantTasks.Clear();
-            NotUrgentNotImportantTasks.Clear();
+            var tasks = await _taskService.GetTasksByDateRangeAsync(startOfWeek, endOfWeek);
+
+            MondayTasks.Clear();
+            TuesdayTasks.Clear();
+            WednesdayTasks.Clear();
+            ThursdayTasks.Clear();
+            FridayTasks.Clear();
+            SaturdayTasks.Clear();
+            SundayTasks.Clear();
 
             foreach (var task in tasks)
             {
-                switch (task.Category)
+                switch (task.ScheduledDate.DayOfWeek)
                 {
-                    case TaskCategory.UrgentImportant:
-                        UrgentImportantTasks.Add(task);
+                    case DayOfWeek.Monday:
+                        MondayTasks.Add(task);
                         break;
-                    case TaskCategory.NotUrgentImportant:
-                        NotUrgentImportantTasks.Add(task);
+                    case DayOfWeek.Tuesday:
+                        TuesdayTasks.Add(task);
                         break;
-                    case TaskCategory.UrgentNotImportant:
-                        UrgentNotImportantTasks.Add(task);
+                    case DayOfWeek.Wednesday:
+                        WednesdayTasks.Add(task);
                         break;
-                    case TaskCategory.NotUrgentNotImportant:
-                        NotUrgentNotImportantTasks.Add(task);
+                    case DayOfWeek.Thursday:
+                        ThursdayTasks.Add(task);
+                        break;
+                    case DayOfWeek.Friday:
+                        FridayTasks.Add(task);
+                        break;
+                    case DayOfWeek.Saturday:
+                        SaturdayTasks.Add(task);
+                        break;
+                    case DayOfWeek.Sunday:
+                        SundayTasks.Add(task);
                         break;
                 }
             }
@@ -70,6 +86,16 @@ namespace TimeFlow.Presentation.ViewModels
             await Shell.Current.GoToAsync(nameof(AddTaskPage));
         }
 
-        
+        private async Task OnDayTapped(string day)
+        {
+            if (Enum.TryParse<DayOfWeek>(day, out var dayOfWeek))
+            {
+                // Определяем дату выбранного дня недели в текущей неделе
+                var selectedDate = DateTime.Today.StartOfWeek(DayOfWeek.Monday).AddDays((int)dayOfWeek - 1);
+
+                await Shell.Current.GoToAsync($"{nameof(AddTaskPage)}?ScheduledDate={selectedDate:yyyy-MM-dd}");
+            }
+        }
+
     }
 }

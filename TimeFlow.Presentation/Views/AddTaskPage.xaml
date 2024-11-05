@@ -9,6 +9,8 @@
         <Entry Placeholder="Название" Text="{Binding Title}" />
         <Editor Placeholder="Описание" HeightRequest="100" Text="{Binding Description}" />
 
+        <DatePicker Date="{Binding ScheduledDate}" />
+        
         <Switch IsToggled="{Binding IsImportant}" />
         <Label Text="Важная" />
 

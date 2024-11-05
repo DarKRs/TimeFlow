@@ -24,8 +24,23 @@ namespace TimeFlow.Presentation.ViewModels
         public ICommand EditTimeBlockCommand { get; }
         public ICommand GenerateTimeBlocksCommand { get; }
 
+        public List<string> DayNamesInRussian { get; } = new List<string>
+        {
+            "Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"
+        };
+
+        public List<string> MonthNamesInRussian { get; } = new List<string>
+        {
+            "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
+            "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
+        };
+
+        public DateTime SelectedDate { get; set; }
+
         public TimeBlockingViewModel(ITaskService taskService, ITimeBlockService timeBlockService)
         {
+            SelectedDate = DateTime.Now;
+
             _taskService = taskService;
             _timeBlockService = timeBlockService;
 

@@ -46,5 +46,10 @@ namespace TimeFlow.Core.Services
         {
             return await _taskRepository.GetTasksByDateAsync(DateTime.Today);
         }
+
+        public async Task<IEnumerable<TaskItem>> GetTasksByDateRangeAsync(DateTime startDate, DateTime endDate)
+        {
+            return await _taskRepository.GetTasksByDateRangeAsync(startDate, endDate);
+        }
     }
 }

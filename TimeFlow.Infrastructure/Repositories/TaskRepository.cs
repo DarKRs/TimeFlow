@@ -58,5 +58,12 @@ namespace TimeFlow.Infrastructure.Repositories
                 .Where(tb => tb.ScheduledDate.Date == date)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<TaskItem>> GetTasksByDateRangeAsync(DateTime startDate, DateTime endDate)
+        {
+            return await _context.Tasks
+                .Where(t => t.ScheduledDate >= startDate && t.ScheduledDate < endDate)
+                .ToListAsync();
+        }
     }
 }

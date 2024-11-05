@@ -12,6 +12,7 @@ namespace TimeFlow.Core.Interfaces
         Task<IEnumerable<TaskItem>> GetAllTasksAsync();
         Task<IEnumerable<TaskItem>> GetTasksByCategoryAsync(TaskCategory category);
         Task<IEnumerable<TaskItem>> GetTasksForTodayAsync();
+        Task<IEnumerable<TaskItem>> GetTasksByDateRangeAsync(DateTime startDate, DateTime endDate);
         Task AddTaskAsync(TaskItem task);
         Task UpdateTaskAsync(TaskItem task);
         Task DeleteTaskAsync(int id);

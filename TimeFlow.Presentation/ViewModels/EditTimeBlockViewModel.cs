@@ -19,66 +19,42 @@ namespace TimeFlow.Presentation.ViewModels
         public string Title
         {
             get => _title;
-            set
-            {
-                _title = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _title, value);
         }
 
         private string _description;
         public string Description
         {
             get => _description;
-            set
-            {
-                _description = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _description, value);
         }
 
         private DateTime _startTime;
         public DateTime StartTime
         {
             get => _startTime;
-            set
-            {
-                _startTime = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _startTime, value);
         }
 
         private DateTime _endTime;
         public DateTime EndTime
         {
             get => _endTime;
-            set
-            {
-                _endTime = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _endTime, value);
         }
         public ObservableCollection<TimeBlockType> BlockTypes { get; set; }
         private TimeBlockType _selectedBlockType;
         public TimeBlockType SelectedBlockType
         {
             get => _selectedBlockType;
-            set
-            {
-                _selectedBlockType = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _selectedBlockType, value);
         }
         public ObservableCollection<TaskItem> Tasks { get; set; }
         private TaskItem _selectedTask;
         public TaskItem SelectedTask
         {
             get => _selectedTask;
-            set
-            {
-                _selectedTask = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _selectedTask, value);
         }
 
         public ICommand SaveCommand { get; }

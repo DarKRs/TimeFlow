@@ -22,14 +22,7 @@ namespace TimeFlow.Presentation.ViewModels
         public DateTime ScheduledDate
         {
             get => _scheduledDate;
-            set
-            {
-                if (_scheduledDate != value)
-                {
-                    _scheduledDate = value;
-                    OnPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _scheduledDate, value);
         }
 
         public ICommand SaveCommand { get; }

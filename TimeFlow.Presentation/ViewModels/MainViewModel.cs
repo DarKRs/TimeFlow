@@ -22,14 +22,7 @@ namespace TimeFlow.Presentation.ViewModels
         public ObservableCollection<TaskItem> TodayTasks
         {
             get => _todayTasks;
-            set
-            {
-                if (_todayTasks != value)
-                {
-                    _todayTasks = value;
-                    OnPropertyChanged(nameof(TodayTasks));
-                }
-            }
+            set => SetProperty(ref _todayTasks, value);
         }
 
         public ICommand NavigateToEisenhowerMatrixCommand { get; }

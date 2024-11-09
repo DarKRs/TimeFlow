@@ -39,14 +39,7 @@ namespace TimeFlow.Presentation.ViewModels
         public TaskItem SelectedTask
         {
             get => _selectedTask;
-            set
-            {
-                if (_selectedTask != value)
-                {
-                    _selectedTask = value;
-                    OnPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _selectedTask, value);
         }
 
         public int RemainingTime
@@ -84,11 +77,7 @@ namespace TimeFlow.Presentation.ViewModels
         public bool AutoStartNextSession
         {
             get => _autoStartNextSession;
-            set
-            {
-                _autoStartNextSession = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _autoStartNextSession, value);
         }
 
         // Прогресс интервала

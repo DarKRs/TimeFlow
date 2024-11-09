@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /TimeFlow.Infrastructure/TimeFlow.db
 /TimeFlow.Infrastructure/Migrations
+*.py

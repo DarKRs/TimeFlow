@@ -7,20 +7,48 @@
     <Grid ColumnDefinitions="2*,3*">
 
         <!-- Левая часть: Календарь -->
-        <StackLayout Grid.Column="0" Padding="10">
+        <Grid Padding="10" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
             <Label Text="Календарь" FontAttributes="Bold" FontSize="20" HorizontalOptions="Center" Margin="0,0,0,10"/>
 
-            <Frame BackgroundColor="#333333" CornerRadius="10" Padding="5">
-                <controls:CustomCalendar x:Name="MyCalendar" />
-            </Frame>
+            <controls:CustomCalendar x:Name="MyCalendar" />
 
-        </StackLayout>
+
+
+            <StackLayout x:Name="TaskEditor" IsVisible="{Binding IsTaskEditorVisible}" Grid.Row="1" VerticalOptions="End" Margin="0, 10, 0, 0">
+                <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" Margin="0, 5, 0, 10">
+                    <Label Text="Создать задачу" FontAttributes="Bold" FontSize="20" VerticalOptions="Center" />
+                    <Label Text="{Binding SelectedDate, StringFormat='Дата: {0:dd MMMM yyyy}'}" FontAttributes="Italic" HorizontalOptions="EndAndExpand" VerticalOptions="Center" />
+                </StackLayout>
+                <Entry Placeholder="Название задачи" Text="{Binding TaskTitle}" Margin="0, 5" />
+                <Editor Placeholder="Описание задачи" Text="{Binding TaskDescription}" HeightRequest="80" Margin="0, 5" />
+                <StackLayout Orientation="Horizontal" Spacing="20" Margin="0, 5">
+                    <StackLayout Orientation="Horizontal" VerticalOptions="Center">
+                        <CheckBox IsChecked="{Binding IsImportant}" HorizontalOptions="Center" />
+                        <Label Text="Важная" VerticalOptions="Center" Margin="2,0,0,0" />
+                    </StackLayout>
+                    <StackLayout Orientation="Horizontal" VerticalOptions="Center">
+                        <CheckBox IsChecked="{Binding IsUrgent}" HorizontalOptions="Center" />
+                        <Label Text="Срочная" VerticalOptions="Center" Margin="2,0,0,0" />
+                    </StackLayout>
+                </StackLayout>
+                <StackLayout Orientation="Horizontal" Spacing="10" Margin="0, 10" HorizontalOptions="Start">
+                    <Button Text="Сохранить" Command="{Binding SaveTaskCommand}" WidthRequest="100" />
+                    <Button Text="Отмена" Command="{Binding CancelEditCommand}" WidthRequest="100" />
+                </StackLayout>
+            </StackLayout>
+
+
+        </Grid>
 
         <!-- Правая часть: Канбан-доска задач на неделю -->
         <StackLayout Grid.Column="1" Padding="10">
             <Label Text="Задачи на Неделю" FontAttributes="Bold" FontSize="20" HorizontalOptions="Center" Margin="0,0,0,10"/>
 
-            <!-- Канбан-доска для дней недели -->
+
             <Grid ColumnDefinitions="*,*,*,*,*,*,*">
 
                 <!-- Понедельник -->

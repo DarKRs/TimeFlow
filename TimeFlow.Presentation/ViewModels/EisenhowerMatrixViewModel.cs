@@ -15,6 +15,48 @@ namespace TimeFlow.Presentation.ViewModels
     public class EisenhowerMatrixViewModel : BaseViewModel
     {
         private readonly ITaskService _taskService;
+        private bool _isTaskEditorVisible;
+        private string _taskTitle;
+        private string _taskDescription;
+        private bool _isImportant;
+        private bool _isUrgent;
+        private DateTime _selectedDate;
+
+        public bool IsTaskEditorVisible
+        {
+            get => _isTaskEditorVisible;
+            set => SetProperty(ref _isTaskEditorVisible, value);
+        }
+
+        public string TaskTitle
+        {
+            get => _taskTitle;
+            set => SetProperty(ref _taskTitle, value);
+        }
+
+        public string TaskDescription
+        {
+            get => _taskDescription;
+            set => SetProperty(ref _taskDescription, value);
+        }
+
+        public bool IsImportant
+        {
+            get => _isImportant;
+            set => SetProperty(ref _isImportant, value);
+        }
+
+        public bool IsUrgent
+        {
+            get => _isUrgent;
+            set => SetProperty(ref _isUrgent, value);
+        }
+
+        public DateTime SelectedDate
+        {
+            get => _selectedDate;
+            set => SetProperty(ref _selectedDate, value);
+        }
 
         public ObservableCollection<TaskItem> MondayTasks { get; set; } = new ObservableCollection<TaskItem>();
         public ObservableCollection<TaskItem> TuesdayTasks { get; set; } = new ObservableCollection<TaskItem>();
@@ -26,6 +68,8 @@ namespace TimeFlow.Presentation.ViewModels
 
         public ICommand AddTaskCommand { get; }
         public ICommand DayTappedCommand { get; }
+        public ICommand SaveTaskCommand { get; }
+        public ICommand CancelEditCommand { get; }
 
         public EisenhowerMatrixViewModel(ITaskService taskService)
         {
@@ -95,6 +139,45 @@ namespace TimeFlow.Presentation.ViewModels
 
                 await Shell.Current.GoToAsync($"{nameof(AddTaskPage)}?ScheduledDate={selectedDate:yyyy-MM-dd}");
             }
+        }
+
+        private async Task SaveTask()
+        {
+            var newTask = new TaskItem
+            {
+                Title = TaskTitle,
+                Description = TaskDescription,
+                ScheduledDate = SelectedDate,
+                IsImportant = IsImportant,
+                IsUrgent = IsUrgent
+            };
+            await _taskService.AddTaskAsync(newTask);
+            IsTaskEditorVisible = false; // Скрыть редактор после сохранения
+        }
+
+        private void CancelEdit()
+        {
+            IsTaskEditorVisible = false; // Скрыть редактор
+            ClearTaskEditor(); // Очистить поля редактора
+        }
+
+        public void ShowTaskEditor(DateTime date)
+        {
+            SelectedDate = date;
+            IsTaskEditorVisible = true;
+        }
+
+        public void HideTaskEditor()
+        {
+            IsTaskEditorVisible = false;
+        }
+
+        private void ClearTaskEditor()
+        {
+            TaskTitle = string.Empty;
+            TaskDescription = string.Empty;
+            IsImportant = false;
+            IsUrgent = false;
         }
 
     }

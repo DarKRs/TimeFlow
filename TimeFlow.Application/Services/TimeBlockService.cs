@@ -45,50 +45,55 @@ namespace TimeFlow.Core.Services
         public async Task<IEnumerable<TimeBlock>> GenerateTimeBlocksForTasksAsync(IEnumerable<TaskItem> tasks)
         {
             var timeBlocks = new List<TimeBlock>();
-            DateTime currentTime = DateTime.Today.AddHours(9); // Начало дня, например, с 9:00 утра
+            DateTime currentTime = DateTime.Today.AddHours(9); // Начало дня
 
             // Сортировка задач в порядке убывания важности
-            var sortedTasks = tasks.OrderBy(t => t.Category).ThenByDescending(t => t.Priority);
-
-            foreach (var task in sortedTasks)
+            foreach (var task in tasks.OrderBy(t => t.Priority))
             {
-                // Создание временного блока для задачи
-                var timeBlock = new TimeBlock
-                {
-                    StartTime = currentTime,
-                    EndTime = currentTime.Add(task.EstimatedDuration),
-                    Title = task.Title,
-                    Description = task.Description,
-                    TaskItemId = task.Id,
-                    BlockType = TimeBlockType.Work
-                };
-
-                timeBlocks.Add(timeBlock);
-                currentTime = timeBlock.EndTime;
+                var block = CreateTimeBlock(task, currentTime);
+                timeBlocks.Add(block);
+                currentTime = block.EndTime;
 
                 // Добавление перерывов после каждых 2 часов работы
-                if (timeBlock.EndTime.Subtract(timeBlock.StartTime).TotalHours >= 2)
+                if (block.EndTime.Subtract(block.StartTime).TotalHours >= 2)
                 {
-                    var breakBlock = new TimeBlock
-                    {
-                        StartTime = currentTime,
-                        EndTime = currentTime.AddMinutes(30), 
-                        Title = "Перерыв",
-                        BlockType = TimeBlockType.Break
-                    };
+                    var breakBlock = CreateBreakBlock(currentTime);
                     timeBlocks.Add(breakBlock);
                     currentTime = breakBlock.EndTime;
                 }
             }
 
-            // Сохранение временных блоков
             foreach (var block in timeBlocks)
             {
                 await AddTimeBlockAsync(block);
             }
-
             return timeBlocks;
         }
+
+        private TimeBlock CreateTimeBlock(TaskItem task, DateTime startTime)
+        {
+            return new TimeBlock
+            {
+                StartTime = startTime,
+                EndTime = startTime.Add(task.EstimatedDuration),
+                Title = task.Title,
+                Description = task.Description,
+                TaskItemId = task.Id,
+                BlockType = TimeBlockType.Work
+            };
+        }
+
+        private TimeBlock CreateBreakBlock(DateTime startTime)
+        {
+            return new TimeBlock
+            {
+                StartTime = startTime,
+                EndTime = startTime.AddMinutes(15),
+                Title = "Перерыв",
+                BlockType = TimeBlockType.Break
+            };
+        }
+
 
     }
 }

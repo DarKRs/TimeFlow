@@ -45,14 +45,7 @@ namespace TimeFlow.Presentation.ViewModels
             LoadTasks();
         }
 
-        public async void LoadTasks()
-        {
-            var tasks = await _taskService.GetAllTasksAsync();
-            foreach (var task in tasks)
-            {
-                Tasks.Add(task);
-            }
-        }
+        public async Task LoadTasks() => await LoadTasksAsync(Tasks,_taskService);
 
         private async Task SaveTimeBlock()
         {

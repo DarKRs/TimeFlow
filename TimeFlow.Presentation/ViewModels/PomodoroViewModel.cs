@@ -136,15 +136,7 @@ namespace TimeFlow.Presentation.ViewModels
             LoadTasks();
         }
 
-        public async void LoadTasks()
-        {
-            var tasks = await _taskService.GetAllTasksAsync();
-            Tasks.Clear();
-            foreach (var task in tasks)
-            {
-                Tasks.Add(task);
-            }
-        }
+        public async Task LoadTasks() => await LoadTasksAsync(Tasks, _taskService);
 
         private void OnTimerElapsed(object sender, ElapsedEventArgs e)
         {

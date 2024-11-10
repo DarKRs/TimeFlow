@@ -14,7 +14,7 @@ namespace TimeFlow.Core.Services
 
         public async Task<IEnumerable<TaskItem>> GetAllTasksAsync()
         {
-            return await _taskRepository.GetTasksAsync();
+            return await _taskRepository.GetTasksAsync().ConfigureAwait(false);
         }
 
         public async Task<IEnumerable<TaskItem>> GetTasksByCategoryAsync(TaskCategory category)

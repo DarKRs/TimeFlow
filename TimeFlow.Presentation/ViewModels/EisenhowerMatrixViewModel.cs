@@ -20,7 +20,8 @@ namespace TimeFlow.Presentation.ViewModels
         private string _taskDescription;
         private bool _isImportant;
         private bool _isUrgent;
-        private DateTime _selectedDate;
+        private DateTime _selectedStartDate;
+        private DateTime _selectedEndDate;
 
         public bool IsTaskEditorVisible
         {
@@ -52,11 +53,29 @@ namespace TimeFlow.Presentation.ViewModels
             set => SetProperty(ref _isUrgent, value);
         }
 
-        public DateTime SelectedDate
+        public DateTime SelectedStartDate
         {
-            get => _selectedDate;
-            set => SetProperty(ref _selectedDate, value);
+            get => _selectedStartDate;
+            set
+            {
+                SetProperty(ref _selectedStartDate, value);
+                OnPropertyChanged(nameof(DisplayedDateText));
+            }
         }
+
+        public DateTime SelectedEndDate
+        {
+            get => _selectedEndDate;
+            set
+            {
+                SetProperty(ref _selectedEndDate, value);
+                OnPropertyChanged(nameof(DisplayedDateText));
+            }
+        }
+
+        public string DisplayedDateText => SelectedStartDate == SelectedEndDate
+                        ? $"Дата: {SelectedStartDate:dd MMMM yyyy}"
+                        : $"Диапазон: {SelectedStartDate:dd MMMM yyyy} - {SelectedEndDate:dd MMMM yyyy}";
 
         public ObservableCollection<TaskItem> MondayTasks { get; set; } = new ObservableCollection<TaskItem>();
         public ObservableCollection<TaskItem> TuesdayTasks { get; set; } = new ObservableCollection<TaskItem>();
@@ -78,6 +97,8 @@ namespace TimeFlow.Presentation.ViewModels
             LoadTasks();
             AddTaskCommand = new Command(async () => await AddTask());
             DayTappedCommand = new Command<string>(async (day) => await OnDayTapped(day));
+            SaveTaskCommand = new Command(async () => await SaveTask());
+            CancelEditCommand = new Command(async () => await CancelEdit());
         }
 
         public async void LoadTasks()
@@ -143,36 +164,49 @@ namespace TimeFlow.Presentation.ViewModels
 
         private async Task SaveTask()
         {
-            var newTask = new TaskItem
+            var startDate = SelectedStartDate;
+            var endDate = SelectedEndDate;
+
+            if (startDate == endDate)
             {
-                Title = TaskTitle,
-                Description = TaskDescription,
-                ScheduledDate = SelectedDate,
-                IsImportant = IsImportant,
-                IsUrgent = IsUrgent
-            };
-            await _taskService.AddTaskAsync(newTask);
-            IsTaskEditorVisible = false; // Скрыть редактор после сохранения
-        }
+                var newTask = new TaskItem
+                {
+                    Title = TaskTitle,
+                    Description = TaskDescription,
+                    ScheduledDate = startDate,
+                    IsImportant = IsImportant,
+                    IsUrgent = IsUrgent
+                };
+                await _taskService.AddTaskAsync(newTask);
+            }
+            else // Если выбран диапазон
+            {
+                var currentDate = startDate;
+                while (currentDate <= endDate)
+                {
+                    var newTask = new TaskItem
+                    {
+                        Title = TaskTitle,
+                        Description = TaskDescription,
+                        ScheduledDate = currentDate,
+                        IsImportant = IsImportant,
+                        IsUrgent = IsUrgent
+                    };
+                    await _taskService.AddTaskAsync(newTask);
+                    currentDate = currentDate.AddDays(1); 
+                }
+            }
 
-        private void CancelEdit()
-        {
-            IsTaskEditorVisible = false; // Скрыть редактор
-            ClearTaskEditor(); // Очистить поля редактора
-        }
-
-        public void ShowTaskEditor(DateTime date)
-        {
-            SelectedDate = date;
-            IsTaskEditorVisible = true;
-        }
-
-        public void HideTaskEditor()
-        {
             IsTaskEditorVisible = false;
+            LoadTasks();
+        }
+        private async Task CancelEdit()
+        {
+            IsTaskEditorVisible = false; 
+            ClearTaskEditor(); 
         }
 
-        private void ClearTaskEditor()
+        public void ClearTaskEditor()
         {
             TaskTitle = string.Empty;
             TaskDescription = string.Empty;

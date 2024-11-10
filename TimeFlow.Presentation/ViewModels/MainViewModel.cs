@@ -41,7 +41,7 @@ namespace TimeFlow.Presentation.ViewModels
 
         public async void LoadTasks()
         {
-            var tasks = await _taskService.GetTasksForTodayAsync();
+            var tasks = await _taskService.GetTasksByDateAsync(DateTime.Today);
             _todayTasks.Clear();
             foreach (var task in tasks)
             {

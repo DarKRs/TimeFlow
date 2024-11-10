@@ -106,7 +106,7 @@ namespace TimeFlow.Presentation.ViewModels
 
         private async Task GenerateTimeBlocks()
         {
-            var tasks = await _taskService.GetTasksForTodayAsync();
+            var tasks = await _taskService.GetTasksByDateAsync(DateTime.Today);
             var generatedBlocks = await _timeBlockService.GenerateTimeBlocksForTasksAsync(tasks);
 
             TimeBlocks.Clear();

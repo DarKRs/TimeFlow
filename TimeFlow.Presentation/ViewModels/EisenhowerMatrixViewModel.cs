@@ -103,42 +103,27 @@ namespace TimeFlow.Presentation.ViewModels
         {
             var startOfWeek = DateTime.Today.StartOfWeek(DayOfWeek.Monday);
             var endOfWeek = startOfWeek.AddDays(7);
-
             var tasks = await _taskService.GetTasksByDateRangeAsync(startOfWeek, endOfWeek);
 
-            MondayTasks.Clear();
-            TuesdayTasks.Clear();
-            WednesdayTasks.Clear();
-            ThursdayTasks.Clear();
-            FridayTasks.Clear();
-            SaturdayTasks.Clear();
-            SundayTasks.Clear();
+            UpdateTaskCollection(MondayTasks, tasks.Where(task => task.ScheduledDate.DayOfWeek == DayOfWeek.Monday));
+            UpdateTaskCollection(TuesdayTasks, tasks.Where(task => task.ScheduledDate.DayOfWeek == DayOfWeek.Tuesday));
+            UpdateTaskCollection(WednesdayTasks, tasks.Where(task => task.ScheduledDate.DayOfWeek == DayOfWeek.Wednesday));
+            UpdateTaskCollection(ThursdayTasks, tasks.Where(task => task.ScheduledDate.DayOfWeek == DayOfWeek.Thursday));
+            UpdateTaskCollection(FridayTasks, tasks.Where(task => task.ScheduledDate.DayOfWeek == DayOfWeek.Friday));
+            UpdateTaskCollection(SaturdayTasks, tasks.Where(task => task.ScheduledDate.DayOfWeek == DayOfWeek.Saturday));
+            UpdateTaskCollection(SundayTasks, tasks.Where(task => task.ScheduledDate.DayOfWeek == DayOfWeek.Sunday));
+        }
 
-            foreach (var task in tasks)
+        private void UpdateTaskCollection(ObservableCollection<TaskItem> taskCollection, IEnumerable<TaskItem> newTasks)
+        {
+            var newTaskList = newTasks.ToList();
+
+            if (!taskCollection.SequenceEqual(newTaskList))
             {
-                switch (task.ScheduledDate.DayOfWeek)
+                taskCollection.Clear();
+                foreach (var task in newTaskList)
                 {
-                    case DayOfWeek.Monday:
-                        MondayTasks.Add(task);
-                        break;
-                    case DayOfWeek.Tuesday:
-                        TuesdayTasks.Add(task);
-                        break;
-                    case DayOfWeek.Wednesday:
-                        WednesdayTasks.Add(task);
-                        break;
-                    case DayOfWeek.Thursday:
-                        ThursdayTasks.Add(task);
-                        break;
-                    case DayOfWeek.Friday:
-                        FridayTasks.Add(task);
-                        break;
-                    case DayOfWeek.Saturday:
-                        SaturdayTasks.Add(task);
-                        break;
-                    case DayOfWeek.Sunday:
-                        SundayTasks.Add(task);
-                        break;
+                    taskCollection.Add(task);
                 }
             }
         }
@@ -197,7 +182,6 @@ namespace TimeFlow.Presentation.ViewModels
             IsTaskEditorVisible = false; 
             ClearTaskEditor(); 
         }
-
         public void ClearTaskEditor()
         {
             TaskTitle = string.Empty;
@@ -205,6 +189,7 @@ namespace TimeFlow.Presentation.ViewModels
             IsImportant = false;
             IsUrgent = false;
         }
+
 
     }
 }

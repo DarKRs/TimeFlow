@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using TimeFlow.Core.Interfaces;
 using TimeFlow.Domain.Entities;
 using TimeFlow.Infrastructure.Data;
@@ -14,15 +15,14 @@ namespace TimeFlow.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<TaskItem>> GetAllTasksAsync()
+        public async Task<IEnumerable<TaskItem>> GetTasksAsync(Expression<Func<TaskItem, bool>> filter = null)
         {
-            return await _context.Tasks.ToListAsync();
-        }
-        public async Task<IEnumerable<TaskItem>> GetTasksByCategoryAsync(TaskCategory category)
-        {
-            return await _context.Tasks
-                .Where(t => t.Category == category)
-                .ToListAsync();
+            IQueryable<TaskItem> query = _context.Tasks;
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+            return await query.ToListAsync();
         }
 
         public async Task<TaskItem> GetTaskByIdAsync(int id)
@@ -50,20 +50,6 @@ namespace TimeFlow.Infrastructure.Repositories
                 _context.Tasks.Remove(task);
                 await _context.SaveChangesAsync();
             }
-        }
-
-        public async Task<IEnumerable<TaskItem>> GetTasksByDateAsync(DateTime date)
-        {
-            return await _context.Tasks
-                .Where(tb => tb.ScheduledDate.Date == date)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<TaskItem>> GetTasksByDateRangeAsync(DateTime startDate, DateTime endDate)
-        {
-            return await _context.Tasks
-                .Where(t => t.ScheduledDate >= startDate && t.ScheduledDate < endDate)
-                .ToListAsync();
         }
     }
 }

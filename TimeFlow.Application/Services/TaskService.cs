@@ -14,12 +14,12 @@ namespace TimeFlow.Core.Services
 
         public async Task<IEnumerable<TaskItem>> GetAllTasksAsync()
         {
-            return await _taskRepository.GetAllTasksAsync();
+            return await _taskRepository.GetTasksAsync();
         }
 
         public async Task<IEnumerable<TaskItem>> GetTasksByCategoryAsync(TaskCategory category)
         {
-            return await _taskRepository.GetTasksByCategoryAsync(category);
+            return await _taskRepository.GetTasksAsync(task => task.Category == category);
         }
 
         public async Task<TaskItem> GetTaskByIdAsync(int id)
@@ -42,14 +42,14 @@ namespace TimeFlow.Core.Services
             await _taskRepository.DeleteTaskAsync(id);
         }
 
-        public async Task<IEnumerable<TaskItem>> GetTasksForTodayAsync()
+        public async Task<IEnumerable<TaskItem>> GetTasksByDateAsync(DateTime date)
         {
-            return await _taskRepository.GetTasksByDateAsync(DateTime.Today);
+            return await _taskRepository.GetTasksAsync(task => task.ScheduledDate.Date == date.Date);
         }
 
         public async Task<IEnumerable<TaskItem>> GetTasksByDateRangeAsync(DateTime startDate, DateTime endDate)
         {
-            return await _taskRepository.GetTasksByDateRangeAsync(startDate, endDate);
+            return await _taskRepository.GetTasksAsync(task => task.ScheduledDate >= startDate && task.ScheduledDate <= endDate);
         }
     }
 }

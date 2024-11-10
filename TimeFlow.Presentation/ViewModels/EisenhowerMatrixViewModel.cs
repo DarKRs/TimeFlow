@@ -150,7 +150,7 @@ namespace TimeFlow.Presentation.ViewModels
                 // Определяем дату выбранного дня недели в текущей неделе
                 var selectedDate = DateTime.Today.StartOfWeek(DayOfWeek.Monday).AddDays((int)dayOfWeek - 1);
 
-                await Shell.Current.GoToAsync($"{nameof(AddTaskPage)}?ScheduledDate={selectedDate:yyyy-MM-dd}");
+               // await Shell.Current.GoToAsync($"{nameof(AddTaskPage)}?ScheduledDate={selectedDate:yyyy-MM-dd}");
             }
         }
 

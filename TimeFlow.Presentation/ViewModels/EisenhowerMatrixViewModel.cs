@@ -85,7 +85,6 @@ namespace TimeFlow.Presentation.ViewModels
         public ObservableCollection<TaskItem> SaturdayTasks { get; set; } = new ObservableCollection<TaskItem>();
         public ObservableCollection<TaskItem> SundayTasks { get; set; } = new ObservableCollection<TaskItem>();
 
-        public ICommand AddTaskCommand { get; }
         public ICommand DayTappedCommand { get; }
         public ICommand SaveTaskCommand { get; }
         public ICommand CancelEditCommand { get; }
@@ -95,7 +94,6 @@ namespace TimeFlow.Presentation.ViewModels
             _taskService = taskService;
 
             LoadTasks();
-            AddTaskCommand = new Command(async () => await AddTask());
             DayTappedCommand = new Command<string>(async (day) => await OnDayTapped(day));
             SaveTaskCommand = new Command(async () => await SaveTask());
             CancelEditCommand = new Command(async () => await CancelEdit());
@@ -143,12 +141,6 @@ namespace TimeFlow.Presentation.ViewModels
                         break;
                 }
             }
-        }
-
-        private async Task AddTask()
-        {
-            // Открыть страницу добавления задачи
-            await Shell.Current.GoToAsync(nameof(AddTaskPage));
         }
 
         private async Task OnDayTapped(string day)

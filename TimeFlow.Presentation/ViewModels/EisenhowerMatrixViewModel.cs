@@ -22,6 +22,8 @@ namespace TimeFlow.Presentation.ViewModels
         private bool _isUrgent;
         private DateTime _selectedStartDate;
         private DateTime _selectedEndDate;
+        private TimeSpan _plannedStartTime = new TimeSpan(9, 0, 0); // Начало по умолчанию - 9:00
+        private TimeSpan _estimatedDuration = new TimeSpan(2, 0, 0); // Длительность по умолчанию - 2 часа
 
         public bool IsTaskEditorVisible
         {
@@ -71,6 +73,18 @@ namespace TimeFlow.Presentation.ViewModels
                 SetProperty(ref _selectedEndDate, value);
                 OnPropertyChanged(nameof(DisplayedDateText));
             }
+        }
+
+        public TimeSpan PlannedStartTime
+        {
+            get => _plannedStartTime;
+            set => SetProperty(ref _plannedStartTime, value);
+        }
+
+        public TimeSpan EstimatedDuration
+        {
+            get => _estimatedDuration;
+            set => SetProperty(ref _estimatedDuration, value);
         }
 
         public string DisplayedDateText => SelectedStartDate == SelectedEndDate
@@ -151,6 +165,9 @@ namespace TimeFlow.Presentation.ViewModels
                     Title = TaskTitle,
                     Description = TaskDescription,
                     ScheduledDate = startDate,
+                    PlannedStart = startDate.Add(PlannedStartTime),
+                    PlannedEnd = startDate.Add(PlannedStartTime).Add(EstimatedDuration),
+                    EstimatedDuration = EstimatedDuration,
                     IsImportant = IsImportant,
                     IsUrgent = IsUrgent
                 };
@@ -166,6 +183,9 @@ namespace TimeFlow.Presentation.ViewModels
                         Title = TaskTitle,
                         Description = TaskDescription,
                         ScheduledDate = currentDate,
+                        PlannedStart = startDate.Add(PlannedStartTime),
+                        PlannedEnd = startDate.Add(PlannedStartTime).Add(EstimatedDuration),
+                        EstimatedDuration = EstimatedDuration,
                         IsImportant = IsImportant,
                         IsUrgent = IsUrgent
                     };

@@ -17,31 +17,54 @@
 
             <import:CustomCalendar x:Name="MyCalendar" />
 
+            
 
-
-            <StackLayout x:Name="TaskEditor" IsVisible="{Binding IsTaskEditorVisible}" Grid.Row="1" VerticalOptions="End" Margin="0, 10, 0, 0">
+            <StackLayout x:Name="TaskEditor" IsVisible="{Binding IsTaskEditorVisible}" Grid.Row="1" VerticalOptions="End" Margin="0, 5, 0, 0">
                 <!-- Заголовок задачи -->
                 <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" Margin="0, 5, 0, 10">
                     <Label Text="Создать задачу" FontAttributes="Bold" FontSize="20" VerticalOptions="Center" />
                     <Label Text="{Binding DisplayedDateText}" FontAttributes="Italic" HorizontalOptions="EndAndExpand" VerticalOptions="Center" />
                 </StackLayout>
 
-                <!-- Название и описание задачи -->
                 <Entry Placeholder="Название задачи" Text="{Binding TaskTitle}" Margin="0, 5" />
                 <Editor Placeholder="Описание задачи" Text="{Binding TaskDescription}" HeightRequest="80" Margin="0, 5" />
 
-                <!-- Важность и срочность -->
-                <StackLayout Orientation="Horizontal" Spacing="15" Margin="0, 5">
-                    <StackLayout Orientation="Horizontal" VerticalOptions="Center">
-                        <CheckBox IsChecked="{Binding IsImportant}" HorizontalOptions="Center" />
-                        <Label Text="Важная" VerticalOptions="Center" Margin="2,0,0,0" />
-                    </StackLayout>
-                    <StackLayout Orientation="Horizontal" VerticalOptions="Center">
-                        <CheckBox IsChecked="{Binding IsUrgent}" HorizontalOptions="Center" />
-                        <Label Text="Срочная" VerticalOptions="Center" Margin="2,0,0,0" />
+                <StackLayout Orientation="Horizontal" Spacing="15" Margin="0, 5" HorizontalOptions="Fill">
+                    <HorizontalStackLayout Spacing="15">
+                        <!-- Важная задача -->
+                        <HorizontalStackLayout Spacing="5">
+                            <CheckBox IsChecked="{Binding IsImportant}" 
+                                      Scale="0.8" 
+                                      WidthRequest="20" 
+                                      HeightRequest="20" 
+                                      VerticalOptions="Center"/>
+                            <Label Text="Важная" VerticalOptions="Center" FontSize="14"/>
+                        </HorizontalStackLayout>
 
-                        <controls:TimeEntry Placeholder="чч:мм"/>
-                    </StackLayout>
+                        <!-- Срочная задача -->
+                        <HorizontalStackLayout Spacing="5">
+                            <CheckBox IsChecked="{Binding IsUrgent}" 
+                                      Scale="0.8" 
+                                      WidthRequest="20" 
+                                      HeightRequest="20" 
+                                      VerticalOptions="Center"/>
+                            <Label Text="Срочная" VerticalOptions="Center" FontSize="14"/>
+                        </HorizontalStackLayout>
+                    </HorizontalStackLayout>
+
+                    <!-- Правый блок с вводом времени -->
+                    <HorizontalStackLayout Spacing="10" HorizontalOptions="EndAndExpand">
+                        <HorizontalStackLayout Spacing="5">
+                            <Label Text="Часы" VerticalOptions="Center" />
+                            <Stepper Minimum="0" Maximum="23" Increment="1" x:Name="HourStepper" />
+                            <Label Text="{Binding Source={x:Reference HourStepper}, Path=Value}" />
+                        </HorizontalStackLayout>
+
+                        <HorizontalStackLayout Spacing="5">
+                            <Label Text="Время на задачу" VerticalOptions="Center" FontSize="14" />
+                            <TimePicker Time="{Binding EstimatedDuration, Mode=TwoWay}" Format="HH:mm" MinimumWidthRequest="70" WidthRequest="200" HorizontalOptions="FillAndExpand" />
+                        </HorizontalStackLayout>
+                    </HorizontalStackLayout>
                 </StackLayout>
 
 
@@ -52,143 +75,44 @@
                 </StackLayout>
             </StackLayout>
 
-
         </Grid>
 
         <!-- Правая часть: Канбан-доска задач на неделю -->
-        <StackLayout Grid.Column="1" Padding="10">
-            <Label Text="Задачи на Неделю" FontAttributes="Bold" FontSize="20" HorizontalOptions="Center" Margin="0,0,0,10"/>
+        <ScrollView Orientation="Vertical" Grid.Column="1">
+            <StackLayout Padding="15" Spacing="10">
+                <Label Text="Задачи на Неделю" FontAttributes="Bold" FontSize="22" HorizontalOptions="Center" TextColor="#1A5276" Margin="0,5,0,10"/>
 
-
-            <Grid ColumnDefinitions="*,*,*,*,*,*,*">
-
-                <!-- Понедельник -->
-                <StackLayout Grid.Column="0" BackgroundColor="#2B2B2B" Padding="5" Margin="2">
-                    <StackLayout.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding DayTappedCommand}" CommandParameter="Monday" />
-                    </StackLayout.GestureRecognizers>
-                    <Label Text="Понедельник" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
-                    <CollectionView ItemsSource="{Binding MondayTasks}">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Frame BackgroundColor="#D3D3D3" CornerRadius="5" Padding="5" Margin="5">
-                                    <Label Text="{Binding Title}" FontAttributes="Bold"/>
-                                    <Label Text="{Binding PlannedStart, StringFormat='{0:t} - {Binding PlannedEnd, StringFormat='{0:t}'}'}" FontSize="10" TextColor="Gray"/>
-                                </Frame>
-                            </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                    </CollectionView>
+                <!-- Пример строки для Понедельника -->
+                <StackLayout Padding="5">
+                    <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="Start" Margin="0,0,0,5">
+                        <Label Text="Понедельник" FontAttributes="Bold" FontSize="18" TextColor="#2E86C1" VerticalOptions="Center"/>
+                        <Label Text="{Binding MondayDate, StringFormat=' {0:dd MMM yyyy}'}" FontSize="14" TextColor="#555" Margin="10,0,0,0" VerticalOptions="Center"/>
+                    </StackLayout>
+                    <ScrollView Orientation="Horizontal">
+                        <StackLayout Orientation="Horizontal" Spacing="8">
+                            <CollectionView ItemsSource="{Binding MondayTasks}" ItemsLayout="HorizontalList" HeightRequest="130">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Frame BackgroundColor="White" CornerRadius="8" Padding="8" Margin="6"
+                                       BorderColor="#D0D0D0" HasShadow="False" HeightRequest="120" WidthRequest="190">
+                                            <StackLayout>
+                                                <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="14" TextColor="#111"/>
+                                                <Label Text="{Binding PlannedStart, StringFormat='{0:t}'} - {Binding PlannedEnd, StringFormat='{0:t}'}" 
+                                               FontSize="12" TextColor="#777"/>
+                                                <Label Text="{Binding Description}" FontSize="12" TextColor="#333" Margin="0,5,0,0" 
+                                               LineBreakMode="WordWrap" MaxLines="3"/>
+                                            </StackLayout>
+                                        </Frame>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </StackLayout>
+                    </ScrollView>
                 </StackLayout>
 
-                <!-- Вторник -->
-                <StackLayout Grid.Column="1" BackgroundColor="#2B2B2B" Padding="5" Margin="2">
-                    <StackLayout.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding DayTappedCommand}" CommandParameter="Tuesday" />
-                    </StackLayout.GestureRecognizers>
-                    <Label Text="Вторник" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
-                    <CollectionView ItemsSource="{Binding TuesdayTasks}">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Frame BackgroundColor="#D3D3D3" CornerRadius="5" Padding="5" Margin="5">
-                                    <Label Text="{Binding Title}" FontAttributes="Bold"/>
-                                    <Label Text="{Binding PlannedStart, StringFormat='{0:t} - {Binding PlannedEnd, StringFormat='{0:t}'}'}" FontSize="10" TextColor="Gray"/>
-                                </Frame>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </StackLayout>
+                <!-- Повторите для других дней недели -->
+            </StackLayout>
+        </ScrollView>
 
-                <!-- Среда -->
-                <StackLayout Grid.Column="2" BackgroundColor="#2B2B2B" Padding="5" Margin="2">
-                    <StackLayout.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding DayTappedCommand}" CommandParameter="Wednesday" />
-                    </StackLayout.GestureRecognizers>
-                    <Label Text="Среда" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
-                    <CollectionView ItemsSource="{Binding WednesdayTasks}">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Frame BackgroundColor="#D3D3D3" CornerRadius="5" Padding="5" Margin="5">
-                                    <Label Text="{Binding Title}" FontAttributes="Bold"/>
-                                    <Label Text="{Binding PlannedStart, StringFormat='{0:t} - {Binding PlannedEnd, StringFormat='{0:t}'}'}" FontSize="10" TextColor="Gray"/>
-                                </Frame>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </StackLayout>
-
-                <!-- Четверг -->
-                <StackLayout Grid.Column="3" BackgroundColor="#2B2B2B" Padding="5" Margin="2">
-                    <StackLayout.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding DayTappedCommand}" CommandParameter="Thursday" />
-                    </StackLayout.GestureRecognizers>
-                    <Label Text="Четверг" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
-                    <CollectionView ItemsSource="{Binding ThursdayTasks}">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Frame BackgroundColor="#D3D3D3" CornerRadius="5" Padding="5" Margin="5">
-                                    <Label Text="{Binding Title}" FontAttributes="Bold"/>
-                                    <Label Text="{Binding PlannedStart, StringFormat='{0:t} - {Binding PlannedEnd, StringFormat='{0:t}'}'}" FontSize="10" TextColor="Gray"/>
-                                </Frame>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </StackLayout>
-
-                <!-- Пятница -->
-                <StackLayout Grid.Column="4" BackgroundColor="#2B2B2B" Padding="5" Margin="2">
-                    <StackLayout.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding DayTappedCommand}" CommandParameter="Friday" />
-                    </StackLayout.GestureRecognizers>
-                    <Label Text="Пятница" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
-                    <CollectionView ItemsSource="{Binding FridayTasks}">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Frame BackgroundColor="#D3D3D3" CornerRadius="5" Padding="5" Margin="5">
-                                    <Label Text="{Binding Title}" FontAttributes="Bold"/>
-                                    <Label Text="{Binding PlannedStart, StringFormat='{0:t} - {Binding PlannedEnd, StringFormat='{0:t}'}'}" FontSize="10" TextColor="Gray"/>
-                                </Frame>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </StackLayout>
-
-                <!-- Суббота -->
-                <StackLayout Grid.Column="5" BackgroundColor="#2B2B2B" Padding="5" Margin="2">
-                    <StackLayout.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding DayTappedCommand}" CommandParameter="Saturday" />
-                    </StackLayout.GestureRecognizers>
-                    <Label Text="Суббота" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
-                    <CollectionView ItemsSource="{Binding SaturdayTasks}">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Frame BackgroundColor="#D3D3D3" CornerRadius="5" Padding="5" Margin="5">
-                                    <Label Text="{Binding Title}" FontAttributes="Bold"/>
-                                    <Label Text="{Binding PlannedStart, StringFormat='{0:t} - {Binding PlannedEnd, StringFormat='{0:t}'}'}" FontSize="10" TextColor="Gray"/>
-                                </Frame>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </StackLayout>
-
-                <!-- Воскресенье -->
-                <StackLayout Grid.Column="6" BackgroundColor="#2B2B2B" Padding="5" Margin="2">
-                    <StackLayout.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding DayTappedCommand}" CommandParameter="Sunday" />
-                    </StackLayout.GestureRecognizers>
-                    <Label Text="Воскресенье" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
-                    <CollectionView ItemsSource="{Binding SundayTasks}">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Frame BackgroundColor="#D3D3D3" CornerRadius="5" Padding="5" Margin="5">
-                                    <Label Text="{Binding Title}" FontAttributes="Bold"/>
-                                    <Label Text="{Binding PlannedStart, StringFormat='{0:t} - {Binding PlannedEnd, StringFormat='{0:t}'}'}" FontSize="10" TextColor="Gray"/>
-                                </Frame>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </StackLayout>
-
-            </Grid>
-        </StackLayout>
     </Grid>
 </ContentPage>

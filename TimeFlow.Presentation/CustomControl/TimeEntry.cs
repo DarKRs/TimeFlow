@@ -112,7 +112,6 @@ namespace TimeFlow.Presentation.CustomControl
 
         private void SetInvalidState(Entry entry)
         {
-            entry.TextColor = Color.FromRgb(255, 0, 0);
             DisplayAlert("Ошибка", "Введите корректное время в формате чч:мм", "ОК");
             entry.Text = string.Empty;
         }

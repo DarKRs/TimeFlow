@@ -194,7 +194,10 @@ namespace TimeFlow.Presentation.ViewModels
                 }
             }
 
+
+
             IsTaskEditorVisible = false;
+            ClearTaskEditor();
             LoadTasks();
         }
         private async Task CancelEdit()
@@ -204,6 +207,8 @@ namespace TimeFlow.Presentation.ViewModels
         }
         public void ClearTaskEditor()
         {
+            PlannedStartTime = new TimeSpan(9, 0, 0); //Сброс времени
+            EstimatedDuration = new TimeSpan(2, 0, 0);
             TaskTitle = string.Empty;
             TaskDescription = string.Empty;
             IsImportant = false;

@@ -11,7 +11,6 @@
         public TimeSpan EstimatedDuration { get; set; } = TimeSpan.FromHours(2); // значение по умолчанию — 2 часа (полный цикл Pomodoro)
         public bool IsImportant { get; set; }
         public bool IsUrgent { get; set; }
-        public TaskPriority Priority { get; set; }
         public TaskCategory Category
         {
             get
@@ -32,14 +31,6 @@
 
         // Связь с TimeBlock
         public ICollection<TimeBlock> TimeBlocks { get; set; }
-    }
-
-    public enum TaskPriority
-    {
-        Low,
-        Medium,
-        High,
-        Critical
     }
 
     public enum TaskCategory

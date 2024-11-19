@@ -2,6 +2,7 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:TimeFlow.Presentation"
+             xmlns:utils="clr-namespace:TimeFlow.Presentation.Utils"
              x:Class="TimeFlow.Presentation.App">
     <Application.Resources>
         <ResourceDictionary>
@@ -9,6 +10,8 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <utils:CategoryToBackgroundColorConverter x:Key="CategoryToBackgroundColorConverter" />
+            <utils:CategoryToHumanReadableConverter x:Key="CategoryToHumanReadableConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

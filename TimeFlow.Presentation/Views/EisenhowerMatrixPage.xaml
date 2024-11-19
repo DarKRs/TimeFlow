@@ -4,7 +4,7 @@
              x:Class="TimeFlow.Presentation.Views.EisenhowerMatrixPage"
              Title="Матрица Эйзенхауэра">
 
-    <Grid ColumnDefinitions="*,*">
+    <Grid ColumnDefinitions="*,2*">
 
         <!-- Левая часть: Календарь -->
         <Grid Padding="10" Grid.Column="0">
@@ -12,103 +12,73 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Label Text="Календарь" FontAttributes="Bold" FontSize="20" HorizontalOptions="Center" Margin="0,0,0,10"/>
 
-            <import:CustomCalendar x:Name="MyCalendar" />
 
-            <StackLayout x:Name="TaskEditor" IsVisible="{Binding IsTaskEditorVisible}" Grid.Row="1" VerticalOptions="End" Margin="0, 5, 0, 0">
-                <!-- Заголовок задачи -->
-                <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" Margin="0, 5, 0, 10">
-                    <Label Text="Создать задачу" FontAttributes="Bold" FontSize="20" VerticalOptions="Center" />
-                    <Label Text="{Binding DisplayedDateText}" FontAttributes="Italic" HorizontalOptions="EndAndExpand" VerticalOptions="Center" />
+            <StackLayout Grid.Row="0" VerticalOptions="Center" HorizontalOptions="Center" >
+                <import:CustomCalendar x:Name="MyCalendar" DisplayMode="SeparateMonthFixedYear" />
+            </StackLayout>
+
+            <StackLayout x:Name="TaskEditor" IsVisible="{Binding IsTaskEditorVisible}" Grid.Row="1" VerticalOptions="FillAndExpand" Margin="0, 5, 0, 0">
+                <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                    <Label Text="Создать задачу" FontAttributes="Bold" FontSize="18" VerticalOptions="Center" />
+                    <Label Text="{Binding DisplayedDateText}" FontAttributes="Italic" HorizontalOptions="EndAndExpand" VerticalOptions="Center" Margin="0,0,10,0" />
                 </StackLayout>
-
                 <Entry Placeholder="Название задачи" Text="{Binding TaskTitle}" Margin="0, 5" />
                 <Editor Placeholder="Описание задачи" Text="{Binding TaskDescription}" HeightRequest="80" Margin="0, 5" />
-
-                <StackLayout Orientation="Horizontal" Spacing="15" Margin="0, 5" HorizontalOptions="Fill">
-                    <HorizontalStackLayout Spacing="15">
-                        <!-- Важная задача -->
-                        <HorizontalStackLayout Spacing="5">
-                            <CheckBox IsChecked="{Binding IsImportant}" 
-                                      Scale="0.8" 
-                                      WidthRequest="20" 
-                                      HeightRequest="20" 
-                                      VerticalOptions="Center"/>
-                            <Label Text="Важная" VerticalOptions="Center" FontSize="14"/>
-                        </HorizontalStackLayout>
-
-                        <!-- Срочная задача -->
-                        <HorizontalStackLayout Spacing="5">
-                            <CheckBox IsChecked="{Binding IsUrgent}" 
-                                      Scale="0.8" 
-                                      WidthRequest="20" 
-                                      HeightRequest="20" 
-                                      VerticalOptions="Center"/>
-                            <Label Text="Срочная" VerticalOptions="Center" FontSize="14"/>
-                        </HorizontalStackLayout>
-                    </HorizontalStackLayout>
-
-                    <!-- Правый блок с вводом времени -->
-                    <HorizontalStackLayout Spacing="10" HorizontalOptions="EndAndExpand">
-                        <HorizontalStackLayout Spacing="5">
-                            <Label Text="Время начала" VerticalOptions="Center" />
-                            <import:CustomTimePicker SelectedTime="{Binding PlannedStartTime, Mode=TwoWay}" CustomWidth="110" CustomHeight="30" TimeFormat="HH:mm" />
-                        </HorizontalStackLayout>
-
-                        <HorizontalStackLayout Spacing="5">
-                            <Label Text="Время на задачу" VerticalOptions="Center" FontSize="14" />
-                            <import:CustomTimePicker SelectedTime="{Binding EstimatedDuration, Mode=TwoWay}" CustomWidth="110" CustomHeight="30" TimeFormat="HH:mm" />
-                        </HorizontalStackLayout>
-                    </HorizontalStackLayout>
+                <StackLayout Orientation="Horizontal" HorizontalOptions="Fill">
+                    <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" Margin="0, 5, 0, 10">
+                        <Label Text="Время начала" VerticalOptions="Center" FontSize="12" />
+                        <import:CustomTimePicker SelectedTime="{Binding PlannedStartTime, Mode=TwoWay}" CustomWidth="120" CustomHeight="50" TimeFormat="HH:mm" VerticalOptions="Start"/>
+                        <Label Text="Время на задачу" VerticalOptions="Center" FontSize="12" Margin="15,0,0,0"/>
+                        <import:CustomTimePicker SelectedTime="{Binding EstimatedDuration, Mode=TwoWay}" CustomWidth="120" CustomHeight="50" TimeFormat="HH:mm" VerticalOptions="Start"/>
+                    </StackLayout>
                 </StackLayout>
-
-
-                <!-- Кнопки -->
+                <StackLayout Orientation="Horizontal" HorizontalOptions="Fill">
+                    <StackLayout Orientation="Horizontal" Spacing="5">
+                        <CheckBox IsChecked="{Binding IsImportant}" VerticalOptions="Center"/>
+                        <Label Text="Важная" VerticalOptions="Center" FontSize="12" Margin="-20,0,0,0"/>
+                    </StackLayout>
+                    <StackLayout Orientation="Horizontal" Spacing="5" Margin="15,0,0,0">
+                        <CheckBox IsChecked="{Binding IsUrgent}" VerticalOptions="Center"/>
+                        <Label Text="Срочная" VerticalOptions="Center" FontSize="12" Margin="-20,0,0,0"/>
+                    </StackLayout>
+                </StackLayout>
                 <StackLayout Orientation="Horizontal" Spacing="10" Margin="0, 10" HorizontalOptions="Start">
                     <Button Text="Сохранить" Command="{Binding SaveTaskCommand}" WidthRequest="100" />
                     <Button Text="Отмена" Command="{Binding CancelEditCommand}" WidthRequest="100" />
                 </StackLayout>
             </StackLayout>
-
         </Grid>
 
         <!-- Правая часть: Канбан-доска задач на неделю -->
         <ScrollView Orientation="Vertical" Grid.Column="1">
-            <StackLayout Padding="15" Spacing="10">
-                <Label Text="Задачи на Неделю" FontAttributes="Bold" FontSize="22" HorizontalOptions="Center" TextColor="#1A5276" Margin="0,5,0,10"/>
+            <StackLayout>
+                <Label Text="Задачи на Неделю" FontAttributes="Bold" FontSize="22" HorizontalOptions="Center" TextColor="#1A5276" Margin="0,0,0,3"/>
 
-                <!-- Пример строки для Понедельника -->
-                <StackLayout Padding="5">
-                    <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="Start" Margin="0,0,0,5">
-                        <Label Text="Понедельник" FontAttributes="Bold" FontSize="18" TextColor="#2E86C1" VerticalOptions="Center"/>
-                        <Label Text="{Binding MondayDate, StringFormat=' {0:dd MMM yyyy}'}" FontSize="14" TextColor="#555" Margin="10,0,0,0" VerticalOptions="Center"/>
-                    </StackLayout>
-                    <ScrollView Orientation="Horizontal">
-                        <StackLayout Orientation="Horizontal" Spacing="8">
-                            <CollectionView ItemsSource="{Binding MondayTasks}" ItemsLayout="HorizontalList" HeightRequest="130">
-                                <CollectionView.ItemTemplate>
-                                    <DataTemplate>
-                                        <Frame BackgroundColor="White" CornerRadius="8" Padding="8" Margin="6"
-                                       BorderColor="#D0D0D0" HasShadow="False" HeightRequest="120" WidthRequest="190">
-                                            <StackLayout>
-                                                <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="14" TextColor="#111"/>
-                                                <Label Text="{Binding PlannedStart, StringFormat='{0:t}'} - {Binding PlannedEnd, StringFormat='{0:t}'}" 
-                                               FontSize="12" TextColor="#777"/>
-                                                <Label Text="{Binding Description}" FontSize="12" TextColor="#333" Margin="0,5,0,0" 
-                                               LineBreakMode="WordWrap" MaxLines="3"/>
-                                            </StackLayout>
-                                        </Frame>
-                                    </DataTemplate>
-                                </CollectionView.ItemTemplate>
-                            </CollectionView>
-                        </StackLayout>
-                    </ScrollView>
+                <StackLayout>
+                    <Label Text="Понедельник" FontAttributes="Bold" FontSize="20" TextColor="#2E86C1" VerticalOptions="Center"/>
+                    <Label Text="{Binding MondayDate, StringFormat=' {0:dd MMM yyyy}'}" FontSize="14" TextColor="#555" Margin="0,0,0,3" VerticalOptions="Center"/>
+
+                    <CollectionView ItemsSource="{Binding MondayTasks}" ItemsLayout="HorizontalList" HeightRequest="150">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame BackgroundColor="{Binding Category, Converter={StaticResource CategoryToBackgroundColorConverter}}"
+                               CornerRadius="10" Padding="6" Margin="3" HasShadow="True" MinimumWidthRequest="180" MinimumHeightRequest="120">
+                                    <StackLayout Spacing="2">
+                                        <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="16" TextColor="#111"/>
+                                        <Label Text="{Binding PlannedStart, StringFormat='Начало: {0:HH:mm}'}" FontSize="12" TextColor="#777" Margin="0,2,0,0"/>
+                                        <Label Text="{Binding PlannedEnd, StringFormat='Окончание: {0:HH:mm}'}" FontSize="12" TextColor="#777"/>
+                                        <Label Text="{Binding Description}" FontSize="14" TextColor="#333" Margin="0,3,0,0" LineBreakMode="WordWrap" MaxLines="3"/>
+                                        <Label Text="{Binding Category, Converter={StaticResource CategoryToHumanReadableConverter}}" FontSize="12" VerticalOptions="EndAndExpand" FontAttributes="Italic" TextColor="#444"/>
+                                    </StackLayout>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
                 </StackLayout>
 
-                <!-- Повторите для других дней недели -->
             </StackLayout>
         </ScrollView>
-
+        
     </Grid>
 </ContentPage>

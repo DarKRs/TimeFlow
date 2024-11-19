@@ -48,7 +48,7 @@ namespace TimeFlow.Core.Services
             DateTime currentTime = DateTime.Today.AddHours(9); // Начало дня
 
             // Сортировка задач в порядке убывания важности
-            foreach (var task in tasks.OrderBy(t => t.Priority))
+            foreach (var task in tasks.OrderBy(t => t.Category))
             {
                 var block = CreateTimeBlock(task, currentTime);
                 timeBlocks.Add(block);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,13 @@ using TimeFlow.Presentation.Views;
 
 namespace TimeFlow.Presentation.ViewModels
 {
+    public class DayTasks
+    {
+        public string DayName { get; set; }
+        public DateTime Date { get; set; }
+        public ObservableCollection<TaskItem> Tasks { get; set; }
+    }
+
     public class EisenhowerMatrixViewModel : BaseViewModel
     {
         private readonly ITaskService _taskService;
@@ -91,13 +99,7 @@ namespace TimeFlow.Presentation.ViewModels
                         ? $"Дата: {SelectedStartDate:dd MMMM yyyy}"
                         : $"Диапазон: {SelectedStartDate:dd MMMM yyyy} - {SelectedEndDate:dd MMMM yyyy}";
 
-        public ObservableCollection<TaskItem> MondayTasks { get; set; } = new ObservableCollection<TaskItem>();
-        public ObservableCollection<TaskItem> TuesdayTasks { get; set; } = new ObservableCollection<TaskItem>();
-        public ObservableCollection<TaskItem> WednesdayTasks { get; set; } = new ObservableCollection<TaskItem>();
-        public ObservableCollection<TaskItem> ThursdayTasks { get; set; } = new ObservableCollection<TaskItem>();
-        public ObservableCollection<TaskItem> FridayTasks { get; set; } = new ObservableCollection<TaskItem>();
-        public ObservableCollection<TaskItem> SaturdayTasks { get; set; } = new ObservableCollection<TaskItem>();
-        public ObservableCollection<TaskItem> SundayTasks { get; set; } = new ObservableCollection<TaskItem>();
+        public ObservableCollection<DayTasks> WeekTasks { get; set; } = new ObservableCollection<DayTasks>();
 
         public ICommand DayTappedCommand { get; }
         public ICommand SaveTaskCommand { get; }
@@ -119,26 +121,21 @@ namespace TimeFlow.Presentation.ViewModels
             var endOfWeek = startOfWeek.AddDays(7);
             var tasks = await _taskService.GetTasksByDateRangeAsync(startOfWeek, endOfWeek);
 
-            UpdateTaskCollection(MondayTasks, tasks.Where(task => task.ScheduledDate.DayOfWeek == DayOfWeek.Monday));
-            UpdateTaskCollection(TuesdayTasks, tasks.Where(task => task.ScheduledDate.DayOfWeek == DayOfWeek.Tuesday));
-            UpdateTaskCollection(WednesdayTasks, tasks.Where(task => task.ScheduledDate.DayOfWeek == DayOfWeek.Wednesday));
-            UpdateTaskCollection(ThursdayTasks, tasks.Where(task => task.ScheduledDate.DayOfWeek == DayOfWeek.Thursday));
-            UpdateTaskCollection(FridayTasks, tasks.Where(task => task.ScheduledDate.DayOfWeek == DayOfWeek.Friday));
-            UpdateTaskCollection(SaturdayTasks, tasks.Where(task => task.ScheduledDate.DayOfWeek == DayOfWeek.Saturday));
-            UpdateTaskCollection(SundayTasks, tasks.Where(task => task.ScheduledDate.DayOfWeek == DayOfWeek.Sunday));
-        }
-
-        private void UpdateTaskCollection(ObservableCollection<TaskItem> taskCollection, IEnumerable<TaskItem> newTasks)
-        {
-            var newTaskList = newTasks.ToList();
-
-            if (!taskCollection.SequenceEqual(newTaskList))
+            WeekTasks.Clear();
+            var cultureInfo = new System.Globalization.CultureInfo("ru-RU");
+            for (int i = 0; i < 7; i++)
             {
-                taskCollection.Clear();
-                foreach (var task in newTaskList)
+                var currentDay = startOfWeek.AddDays(i);
+                var dayTasks = tasks.Where(task => task.ScheduledDate.Date == currentDay.Date);
+                var dayName = currentDay.ToString("dddd", cultureInfo);
+                dayName = cultureInfo.TextInfo.ToTitleCase(dayName);
+
+                WeekTasks.Add(new DayTasks
                 {
-                    taskCollection.Add(task);
-                }
+                    DayName = dayName,
+                    Date = currentDay,
+                    Tasks = new ObservableCollection<TaskItem>(dayTasks)
+                });
             }
         }
 

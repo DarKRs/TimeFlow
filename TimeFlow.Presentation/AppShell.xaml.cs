@@ -9,8 +9,6 @@ namespace TimeFlow.Presentation
             InitializeComponent();
 
             Routing.RegisterRoute(nameof(EisenhowerMatrixPage), typeof(EisenhowerMatrixPage));
-            Routing.RegisterRoute(nameof(AddTimeBlockPage), typeof(AddTimeBlockPage));
-            Routing.RegisterRoute(nameof(EditTimeBlockPage), typeof(EditTimeBlockPage));
         }
     }
 }

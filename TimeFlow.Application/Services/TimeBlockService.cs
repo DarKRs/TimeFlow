@@ -48,7 +48,7 @@ namespace TimeFlow.Core.Services
             DateTime currentTime = DateTime.Today.AddHours(9); // Начало дня
 
             // Сортировка задач в порядке убывания важности
-            foreach (var task in tasks.OrderBy(t => t.Category))
+            foreach (var task in tasks.OrderBy(t => t.Category).ThenBy(t => t.ScheduledDate).ThenByDescending(t => t.EstimatedDuration))
             {
                 var block = CreateTimeBlock(task, currentTime);
                 timeBlocks.Add(block);
@@ -88,7 +88,7 @@ namespace TimeFlow.Core.Services
             return new TimeBlock
             {
                 StartTime = startTime,
-                EndTime = startTime.AddMinutes(15),
+                EndTime = startTime.AddMinutes(30),
                 Title = "Перерыв",
                 BlockType = TimeBlockType.Break
             };

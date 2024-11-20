@@ -19,9 +19,7 @@ namespace TimeFlow.Presentation.ViewModels
         public ObservableCollection<TimeBlock> TimeBlocks { get; set; }
         public ObservableCollection<TaskItem> Tasks { get; set; }
 
-        public ICommand AddTimeBlockCommand { get; }
         public ICommand DeleteTimeBlockCommand { get; }
-        public ICommand EditTimeBlockCommand { get; }
         public ICommand GenerateTimeBlocksCommand { get; }
 
         public List<string> DayNamesInRussian { get; } = new List<string>
@@ -47,9 +45,7 @@ namespace TimeFlow.Presentation.ViewModels
             TimeBlocks = new ObservableCollection<TimeBlock>();
             Tasks = new ObservableCollection<TaskItem>();
 
-            AddTimeBlockCommand = new Command(async () => await AddTimeBlock());
             DeleteTimeBlockCommand = new Command<TimeBlock>(async (tb) => await DeleteTimeBlock(tb));
-            EditTimeBlockCommand = new Command<TimeBlock>(async (tb) => await EditTimeBlock(tb));
             GenerateTimeBlocksCommand = new Command(async () => await GenerateTimeBlocks());
 
 
@@ -74,28 +70,11 @@ namespace TimeFlow.Presentation.ViewModels
 
         public async Task LoadTasks() => await LoadTasksAsync(Tasks, _taskService);
 
-        private async Task AddTimeBlock()
-        {
-            // Открыть страницу добавления временного блока
-            await Shell.Current.GoToAsync(nameof(AddTimeBlockPage));
-        }
-
         private async Task DeleteTimeBlock(TimeBlock timeBlock)
         {
             await _timeBlockService.DeleteTimeBlockAsync(timeBlock.Id);
             TimeBlocks.Remove(timeBlock);
         }
-
-        private async Task EditTimeBlock(TimeBlock timeBlock)
-        {
-            // Открыть страницу редактирования временного блока
-            var navigationParameter = new Dictionary<string, object>
-            {
-                { "TimeBlock", timeBlock }
-            };
-            await Shell.Current.GoToAsync(nameof(EditTimeBlockPage), navigationParameter);
-        }
-
         private async Task GenerateTimeBlocks()
         {
             var tasks = await _taskService.GetTasksByDateAsync(DateTime.Today);

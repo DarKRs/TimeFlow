@@ -16,7 +16,7 @@ namespace TimeFlow.Presentation.Views
             base.OnAppearing();
             if (BindingContext is PomodoroViewModel viewModel)
             {
-                viewModel.LoadTasks();
+                viewModel.LoadTodayTasks();
             }
         }
     }

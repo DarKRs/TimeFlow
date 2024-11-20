@@ -8,6 +8,7 @@ using System;
 using System.Collections.ObjectModel;
 using TimeFlow.Core.Interfaces;
 using TimeFlow.Infrastructure.Repositories;
+using System.Threading.Tasks;
 #if WINDOWS
 using Windows.UI.Notifications;
 using Windows.Data.Xml.Dom;
@@ -33,7 +34,7 @@ namespace TimeFlow.Presentation.ViewModels
         private PomodoroSessionType _currentSessionType;
         private int _sessionCount = 0;
 
-        public ObservableCollection<TaskItem> Tasks { get; set; }
+        public ObservableCollection<TaskItem> TodayTasks { get; set; } = new ObservableCollection<TaskItem>();
         private TaskItem _selectedTask;
 
         public TaskItem SelectedTask
@@ -132,11 +133,21 @@ namespace TimeFlow.Presentation.ViewModels
             PauseCommand = new Command(PauseTimer, () => CanPause);
             ResetCommand = new Command(ResetTimer, () => CanReset);
 
-            Tasks = new ObservableCollection<TaskItem>();
-            LoadTasks();
+            TodayTasks = new ObservableCollection<TaskItem>();
+            LoadTodayTasks();
         }
 
-        public async Task LoadTasks() => await LoadTasksAsync(Tasks, _taskService);
+        public async void LoadTodayTasks()
+        {
+            var todayTasks = await _taskService.GetTasksByDateAsync(DateTime.Today);
+            var sorted = todayTasks.OrderBy(task => task.Category);
+            TodayTasks.Clear();
+
+            foreach (var task in sorted)
+            {
+                TodayTasks.Add(task);
+            }
+        }
 
         private void OnTimerElapsed(object sender, ElapsedEventArgs e)
         {

@@ -80,12 +80,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="Views\AddTimeBlockPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\EditTimeBlockPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
 	  <MauiXaml Update="Views\EisenhowerMatrixPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

@@ -14,38 +14,38 @@ namespace TimeFlow.Presentation.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
-        private readonly ITaskService _taskService;
+        private readonly ITimeBlockService _timeBlockService;
 
         public string TodayDate => DateTime.Now.ToString("dd MMMM yyyy");
 
-        private ObservableCollection<TaskItem> _todayTasks;
-        public ObservableCollection<TaskItem> TodayTasks
+        private ObservableCollection<TimeBlock> _todayTimeBlocks;
+        public ObservableCollection<TimeBlock> TodayTimeBlocks
         {
-            get => _todayTasks;
-            set => SetProperty(ref _todayTasks, value);
+            get => _todayTimeBlocks;
+            set => SetProperty(ref _todayTimeBlocks, value);
         }
 
         public ICommand NavigateToEisenhowerMatrixCommand { get; }
         public ICommand NavigateToTimeBlockingCommand { get; }
         public ICommand StartWorkCommand { get; }
 
-        public MainViewModel(ITaskService taskService)
+        public MainViewModel(ITimeBlockService taskService)
         {
-            _taskService = taskService;
-            _todayTasks = new ObservableCollection<TaskItem>();
+            _timeBlockService = taskService;
+            _todayTimeBlocks = new ObservableCollection<TimeBlock>();
 
             NavigateToEisenhowerMatrixCommand = new Command(async () => await OnNavigateToEisenhowerMatrix());
             NavigateToTimeBlockingCommand = new Command(async () => await OnNavigateToTimeBlocking());
             StartWorkCommand = new Command(async () => await OnStartWork());
         }
 
-        public async void LoadTasks()
+        public async void LoadTimeBlocks()
         {
-            var tasks = await _taskService.GetTasksByDateAsync(DateTime.Today);
-            _todayTasks.Clear();
-            foreach (var task in tasks)
+            var timeBlocks = await _timeBlockService.GetTimeBlocksForTodayAsync();
+            TodayTimeBlocks.Clear();
+            foreach (var block in timeBlocks)
             {
-                _todayTasks.Add(task);
+                TodayTimeBlocks.Add(block);
             }
         }
 

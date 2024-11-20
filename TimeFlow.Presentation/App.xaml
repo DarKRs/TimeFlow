@@ -12,6 +12,7 @@
             </ResourceDictionary.MergedDictionaries>
             <utils:CategoryToBackgroundColorConverter x:Key="CategoryToBackgroundColorConverter" />
             <utils:CategoryToHumanReadableConverter x:Key="CategoryToHumanReadableConverter" />
+            <utils:BlockTypeToBackgroundColorConverter x:Key="BlockTypeToBackgroundColorConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

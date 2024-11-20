@@ -15,7 +15,7 @@ namespace TimeFlow.Presentation.Views
             base.OnAppearing();
             if (BindingContext is MainViewModel viewModel)
             {
-                viewModel.LoadTasks();
+                viewModel.LoadTimeBlocks();
             }
         }
 

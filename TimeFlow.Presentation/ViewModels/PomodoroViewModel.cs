@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using TimeFlow.Core.Interfaces;
 using TimeFlow.Infrastructure.Repositories;
 using System.Threading.Tasks;
+using Plugin.Maui.Audio;
 #if WINDOWS
 using Windows.UI.Notifications;
 using Windows.Data.Xml.Dom;
@@ -21,6 +22,8 @@ namespace TimeFlow.Presentation.ViewModels
         private readonly IDispatcher _dispatcher;
         private readonly ITaskService _taskService;
         private readonly IPomodoroSessionRepository _pomodoroSessionRepository;
+        private readonly IAudioManager _audioManager; 
+        private IAudioPlayer _audioPlayer;
         //
         private Timer _timer;
         private int _remainingTime; // in seconds
@@ -106,14 +109,15 @@ namespace TimeFlow.Presentation.ViewModels
         public ICommand PauseCommand { get; }
         public ICommand ResetCommand { get; }
 
-        public PomodoroViewModel(ITaskService taskService, IPomodoroSessionRepository pomodoroSessionRepository)
+        public PomodoroViewModel(ITaskService taskService, IPomodoroSessionRepository pomodoroSessionRepository, IAudioManager audioManager)
         {
             _pomodoroSessionRepository = pomodoroSessionRepository;
             _taskService = taskService;
+            _audioManager = audioManager;
 
-           #if DEBUG
+        #if DEBUG
             // Уменьшенные значения для отладки
-                _workDuration = 1; // 1 минута работы
+            _workDuration = 1; // 1 минута работы
                 _shortBreakDuration = 1; // 1 минута короткого перерыва
                 _longBreakDuration = 2; // 2 минуты длинного перерыва
             #else
@@ -135,6 +139,7 @@ namespace TimeFlow.Presentation.ViewModels
 
             TodayTasks = new ObservableCollection<TaskItem>();
             LoadTodayTasks();
+            LoadAudio();
         }
 
         public async void LoadTodayTasks()
@@ -149,9 +154,24 @@ namespace TimeFlow.Presentation.ViewModels
             }
         }
 
+        private async void LoadAudio()
+        {
+            _audioPlayer = _audioManager.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("soft-bell-countdown.wav"));
+        }
+
+        private void PlaySound()
+        {
+            _audioPlayer?.Play();
+        }
+
         private void OnTimerElapsed(object sender, ElapsedEventArgs e)
         {
             RemainingTime--;
+
+            if (RemainingTime == 3)
+            {
+                PlaySound();
+            }
 
             if (RemainingTime <= 0)
             {

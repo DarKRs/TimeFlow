@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Plugin.LocalNotification;
+using Plugin.Maui.Audio;
 using System.Diagnostics;
 using TimeFlow.Core.Interfaces;
 using TimeFlow.Core.Services;
@@ -21,6 +22,7 @@ namespace TimeFlow.Presentation
                 .UseMauiApp<App>()
                 .UseLocalNotification()
                 .UseMauiCommunityToolkit()
+                .AddAudio()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

@@ -20,10 +20,6 @@
             Title="Задачи"
             ContentTemplate="{DataTemplate views:EisenhowerMatrixPage}"
             Route="EisenhowerMatrixPage"/>
-        <ShellContent 
-            Title="Планирование" 
-            ContentTemplate="{DataTemplate views:TimeBlockingPage}" 
-            Route="TimeBlockingPage"/>
     </TabBar>
 
 </Shell>

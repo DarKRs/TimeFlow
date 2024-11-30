@@ -47,7 +47,6 @@ namespace TimeFlow.Presentation
             builder.Services.AddTransient<MainViewModel>();
             builder.Services.AddTransient<PomodoroViewModel>();
             builder.Services.AddTransient<EisenhowerMatrixViewModel>();
-            builder.Services.AddTransient<TimeBlockingViewModel>();
 
 
 
@@ -55,7 +54,6 @@ namespace TimeFlow.Presentation
             builder.Services.AddTransient<MainPage>();
             builder.Services.AddTransient<PomodoroPage>();
             builder.Services.AddTransient<EisenhowerMatrixPage>();
-            builder.Services.AddTransient<TimeBlockingPage>();
 
 
 #if DEBUG

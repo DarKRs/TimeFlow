@@ -41,6 +41,14 @@
                 <Button Text="Pause" Command="{Binding PauseCommand}" IsEnabled="{Binding CanPause}" />
                 <Button Text="Reset" Command="{Binding ResetCommand}" IsEnabled="{Binding CanReset}" />
             </StackLayout>
+
+            <StackLayout Orientation="Horizontal" Spacing="10" VerticalOptions="Start" HorizontalOptions="Center">
+                <Label Text="Автостарт следующей сессии" 
+                       FontSize="16" 
+                       TextColor="White" 
+                       VerticalOptions="Center" />
+                <Switch IsToggled="{Binding AutoStartNextSession}" />
+            </StackLayout>
         </StackLayout>
 
         <!-- Правая часть -->

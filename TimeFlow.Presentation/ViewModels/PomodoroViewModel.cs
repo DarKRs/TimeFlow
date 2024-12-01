@@ -33,6 +33,9 @@ namespace TimeFlow.Presentation.ViewModels
         private int _workDuration;
         private int _shortBreakDuration;
         private int _longBreakDuration;
+        public int WorkDuration { get; set; }
+        public int ShortBreakDuration { get; set; }
+        public int LongBreakDuration { get; set; }
 
         private PomodoroSessionType _currentSessionType;
         private int _sessionCount = 0;
@@ -105,9 +108,34 @@ namespace TimeFlow.Presentation.ViewModels
             }
         }
 
+        private bool _isPanelVisible;
+        public bool IsPanelVisible
+        {
+            get => _isPanelVisible;
+            set => SetProperty(ref _isPanelVisible, value);
+        }
+
+        private bool _isTasksTabVisible = true;
+        public bool IsTasksTabVisible
+        {
+            get => _isTasksTabVisible;
+            set => SetProperty(ref _isTasksTabVisible, value);
+        }
+
+        private bool _isSettingsTabVisible = false;
+        public bool IsSettingsTabVisible
+        {
+            get => _isSettingsTabVisible;
+            set => SetProperty(ref _isSettingsTabVisible, value);
+        }
+
         public ICommand StartCommand { get; }
         public ICommand PauseCommand { get; }
         public ICommand ResetCommand { get; }
+        public ICommand SaveSettingsCommand { get; }
+        public ICommand TogglePanelCommand { get; }
+        public ICommand ShowTasksTabCommand { get; }
+        public ICommand ShowSettingsTabCommand { get; }
 
         public PomodoroViewModel(ITaskService taskService, IPomodoroSessionRepository pomodoroSessionRepository, IAudioManager audioManager)
         {
@@ -136,6 +164,18 @@ namespace TimeFlow.Presentation.ViewModels
             StartCommand = new Command(StartTimer, () => CanStart);
             PauseCommand = new Command(PauseTimer, () => CanPause);
             ResetCommand = new Command(ResetTimer, () => CanReset);
+            TogglePanelCommand = new Command(() => IsPanelVisible = !IsPanelVisible);
+            ShowTasksTabCommand = new Command(() =>
+            {
+                IsTasksTabVisible = true;
+                IsSettingsTabVisible = false;
+            });
+
+            ShowSettingsTabCommand = new Command(() =>
+            {
+                IsTasksTabVisible = false;
+                IsSettingsTabVisible = true;
+            });
 
             TodayTasks = new ObservableCollection<TaskItem>();
             LoadTodayTasks();

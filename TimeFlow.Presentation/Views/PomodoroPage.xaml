@@ -3,45 +3,61 @@
              xmlns:viewModels="clr-namespace:TimeFlow.Presentation.ViewModels"
              x:Class="TimeFlow.Presentation.Views.PomodoroPage"
              Title="Pomodoro Timer">
+    <ContentPage.BackgroundImageSource>
+        <FileImageSource File="background.jpg" />
+    </ContentPage.BackgroundImageSource>
 
-    <ContentPage.BackgroundColor>
-        <Color>#1c1c1e</Color>
-    </ContentPage.BackgroundColor>
-
-    <Grid Padding="40, 20, 40, 0" RowSpacing="20" ColumnSpacing="20">
-        <!-- Определение колонок -->
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*" />
-            <ColumnDefinition Width="2*" />
-        </Grid.ColumnDefinitions>
-
-        <!-- Центральная часть -->
-        <StackLayout Padding="0" Spacing="25" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="0">
+    <Grid>
+        <!-- Основной контент -->
+        <StackLayout Padding="40, 20" Spacing="30" VerticalOptions="CenterAndExpand" HorizontalOptions="Center">
+            <!-- Выбор задачи -->
             <Picker Title="Выберите задачу" 
                     ItemsSource="{Binding TodayTasks}" 
                     ItemDisplayBinding="{Binding Title}" 
                     SelectedItem="{Binding SelectedTask}" 
-                    VerticalOptions="Start" />
+                    VerticalOptions="Start" 
+                    WidthRequest="300"
+                    BackgroundColor="White"
+                    TextColor="Black" />
 
+            <!-- Таймер -->
             <Label Text="{Binding TimeDisplay}" 
-                   FontSize="100" 
+                   FontSize="80" 
                    TextColor="White" 
                    HorizontalOptions="Center" 
                    FontAttributes="Bold" />
 
+            <!-- Прогресс задачи -->
             <ProgressBar Progress="{Binding Progress}" 
-                         HeightRequest="30" 
+                         HeightRequest="20" 
                          WidthRequest="300" 
                          BackgroundColor="#333" 
                          ProgressColor="#ff6347" 
                          HorizontalOptions="Center" />
 
+            <!-- Управление таймером -->
             <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Spacing="20">
-                <Button Text="Start" Command="{Binding StartCommand}" IsEnabled="{Binding CanStart}" />
-                <Button Text="Pause" Command="{Binding PauseCommand}" IsEnabled="{Binding CanPause}" />
-                <Button Text="Reset" Command="{Binding ResetCommand}" IsEnabled="{Binding CanReset}" />
+                <Button Text="Start" Command="{Binding StartCommand}" 
+                        IsEnabled="{Binding CanStart}" 
+                        BackgroundColor="#28a745" 
+                        TextColor="White" 
+                        WidthRequest="100" 
+                        CornerRadius="10" />
+                <Button Text="Pause" Command="{Binding PauseCommand}" 
+                        IsEnabled="{Binding CanPause}" 
+                        BackgroundColor="#ffc107" 
+                        TextColor="White" 
+                        WidthRequest="100" 
+                        CornerRadius="10" />
+                <Button Text="Reset" Command="{Binding ResetCommand}" 
+                        IsEnabled="{Binding CanReset}" 
+                        BackgroundColor="#dc3545" 
+                        TextColor="White" 
+                        WidthRequest="100" 
+                        CornerRadius="10" />
             </StackLayout>
 
+            <!-- Автостарт -->
             <StackLayout Orientation="Horizontal" Spacing="10" VerticalOptions="Start" HorizontalOptions="Center">
                 <Label Text="Автостарт следующей сессии" 
                        FontSize="16" 
@@ -51,48 +67,114 @@
             </StackLayout>
         </StackLayout>
 
-        <!-- Правая часть -->
-        <ScrollView Grid.Column="1" VerticalOptions="FillAndExpand">
-            <StackLayout Spacing="10" Padding="10" VerticalOptions="FillAndExpand">
-                <Label Text="Задачи на сегодня" 
-               FontSize="22" 
-               TextColor="White" 
-               HorizontalOptions="Center" 
-               FontAttributes="Bold" />
-                <CollectionView ItemsSource="{Binding TodayTasks}" ItemsLayout="VerticalList" VerticalOptions="FillAndExpand">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Frame BackgroundColor="{Binding Category, Converter={StaticResource CategoryToBackgroundColorConverter}}"
-                           CornerRadius="10" Padding="10" Margin="5" HasShadow="True" MinimumHeightRequest="100">
-                                <StackLayout Spacing="5">
-                                    <Label Text="{Binding Title}" 
-                                   FontAttributes="Bold" 
-                                   FontSize="18" 
-                                   TextColor="#111" />
-                                    <Label Text="{Binding PlannedStart, StringFormat='Начало: {0:HH:mm}'}" 
-                                   FontSize="14" 
-                                   TextColor="#777" />
-                                    <Label Text="{Binding PlannedEnd, StringFormat='Окончание: {0:HH:mm}'}" 
-                                   FontSize="14" 
-                                   TextColor="#777" />
-                                    <Label Text="{Binding Description}" 
-                                   FontSize="14" 
-                                   TextColor="#333" 
-                                   Margin="0,3,0,0" 
-                                   LineBreakMode="WordWrap" 
-                                   MaxLines="3" />
-                                    <Label Text="{Binding Category, Converter={StaticResource CategoryToHumanReadableConverter}}" 
-                                   FontSize="12" 
-                                   VerticalOptions="EndAndExpand" 
-                                   FontAttributes="Italic" 
-                                   TextColor="#444" />
-                                </StackLayout>
-                            </Frame>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </StackLayout>
-        </ScrollView>
+        <!-- Кнопка для открытия панели настроек -->
+        <Button Text="⚙"
+                Command="{Binding TogglePanelCommand}" 
+                WidthRequest="50" 
+                HeightRequest="50"
+                FontSize="20"
+                BackgroundColor="#444"
+                TextColor="White"
+                CornerRadius="25"
+                HorizontalOptions="End"
+                VerticalOptions="Start"
+                Margin="10" />
 
+        <!-- Панель с вкладками -->
+        <Grid x:Name="TabPanel"
+              BackgroundColor="#2C2C2C"
+              Padding="20"
+              WidthRequest="400"
+              HorizontalOptions="End"
+              VerticalOptions="FillAndExpand"
+              IsVisible="{Binding IsPanelVisible}">
+            <!-- Верхняя часть: кнопки вкладок и крестик -->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid>
+                <StackLayout Orientation="Horizontal" HorizontalOptions="Start" Spacing="10">
+                    <Button Text="Задачи" 
+                            Command="{Binding ShowTasksTabCommand}" 
+                            BackgroundColor="{Binding IsTasksTabVisible, Converter={StaticResource BoolToColorConverter}}" 
+                            TextColor="White" />
+                    <Button Text="Настройки" 
+                            Command="{Binding ShowSettingsTabCommand}" 
+                            BackgroundColor="{Binding IsSettingsTabVisible, Converter={StaticResource BoolToColorConverter}}" 
+                            TextColor="White" />
+                </StackLayout>
+                <Button Text="X"
+                        Command="{Binding TogglePanelCommand}" 
+                        WidthRequest="30" 
+                        HeightRequest="30"
+                        FontSize="16"
+                        BackgroundColor="Transparent"
+                        TextColor="White"
+                        HorizontalOptions="End"
+                        VerticalOptions="Start" />
+            </Grid>
+
+            <!-- Содержимое вкладок -->
+            <Grid Grid.Row="1">
+                <!-- Вкладка задач -->
+                <ScrollView IsVisible="{Binding IsTasksTabVisible}">
+                    <StackLayout Spacing="10" Padding="10" VerticalOptions="FillAndExpand">
+                        <Label Text="Задачи на сегодня" 
+                               FontSize="22" 
+                               TextColor="White" 
+                               HorizontalOptions="Center" 
+                               FontAttributes="Bold" />
+                        <CollectionView ItemsSource="{Binding TodayTasks}" ItemsLayout="VerticalList" VerticalOptions="FillAndExpand">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Frame BackgroundColor="{Binding Category, Converter={StaticResource CategoryToBackgroundColorConverter}}"
+                                           CornerRadius="10" Padding="10" Margin="5" HasShadow="True" MinimumHeightRequest="100">
+                                        <StackLayout Spacing="5">
+                                            <Label Text="{Binding Title}" 
+                                                   FontAttributes="Bold" 
+                                                   FontSize="18" 
+                                                   TextColor="#111" />
+                                            <Label Text="{Binding PlannedStart, StringFormat='Начало: {0:HH:mm}'}" 
+                                                   FontSize="14" 
+                                                   TextColor="#777" />
+                                            <Label Text="{Binding PlannedEnd, StringFormat='Окончание: {0:HH:mm}'}" 
+                                                   FontSize="14" 
+                                                   TextColor="#777" />
+                                            <Label Text="{Binding Description}" 
+                                                   FontSize="14" 
+                                                   TextColor="#333" 
+                                                   Margin="0,3,0,0" 
+                                                   LineBreakMode="WordWrap" 
+                                                   MaxLines="3" />
+                                            <Label Text="{Binding Category, Converter={StaticResource CategoryToHumanReadableConverter}}" 
+                                                   FontSize="12" 
+                                                   VerticalOptions="EndAndExpand" 
+                                                   FontAttributes="Italic" 
+                                                   TextColor="#444" />
+                                        </StackLayout>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </StackLayout>
+                </ScrollView>
+
+                <!-- Вкладка настроек -->
+                <ScrollView IsVisible="{Binding IsSettingsTabVisible}">
+                    <StackLayout Spacing="15" Padding="10">
+                        <Label Text="Настройки" FontSize="22" TextColor="White" FontAttributes="Bold" />
+                        <Label Text="Длительность рабочего интервала (мин)" TextColor="White" />
+                        <Slider Minimum="1" Maximum="60" Value="{Binding WorkDuration}" />
+                        <Label Text="Длительность короткого перерыва (мин)" TextColor="White" />
+                        <Slider Minimum="1" Maximum="30" Value="{Binding ShortBreakDuration}" />
+                        <Label Text="Длительность длинного перерыва (мин)" TextColor="White" />
+                        <Slider Minimum="1" Maximum="60" Value="{Binding LongBreakDuration}" />
+                        <Label Text="Фон" TextColor="White" />
+                        <Picker ItemsSource="{Binding BackgroundOptions}" SelectedItem="{Binding SelectedBackground}" />
+                    </StackLayout>
+                </ScrollView>
+            </Grid>
+        </Grid>
     </Grid>
 </ContentPage>

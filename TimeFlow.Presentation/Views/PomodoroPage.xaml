@@ -2,11 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:TimeFlow.Presentation.ViewModels"
              x:Class="TimeFlow.Presentation.Views.PomodoroPage"
-             Shell.NavBarIsVisible="False">
-    <ContentPage.BackgroundImageSource>
-        <FileImageSource File="background.jpg" />
-    </ContentPage.BackgroundImageSource>
-
+             Shell.NavBarIsVisible="False"
+             BackgroundImageSource="background.jpg">
     <Grid>
         <!-- Основной контент -->
         <StackLayout Padding="40, 20" Spacing="30" VerticalOptions="CenterAndExpand" HorizontalOptions="Center">
@@ -22,7 +19,7 @@
 
             <!-- Таймер -->
             <Label Text="{Binding TimeDisplay}" 
-                   FontSize="80" 
+                   FontSize="120" 
                    TextColor="White" 
                    HorizontalOptions="Center" 
                    FontAttributes="Bold" />
@@ -73,7 +70,7 @@
                 WidthRequest="50" 
                 HeightRequest="50"
                 FontSize="20"
-                BackgroundColor="#444"
+                BackgroundColor="Transparent" 
                 TextColor="White"
                 CornerRadius="25"
                 HorizontalOptions="End"
@@ -82,7 +79,7 @@
 
         <!-- Панель с вкладками -->
         <Grid x:Name="TabPanel"
-              BackgroundColor="#2C2C2C"
+              BackgroundColor="#1e213d"
               Padding="20"
               WidthRequest="400"
               HorizontalOptions="End"

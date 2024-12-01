@@ -16,10 +16,10 @@ namespace TimeFlow.Presentation.Utils
             {
                 return category switch
                 {
-                    TaskCategory.UrgentImportant => Colors.LightCoral, 
-                    TaskCategory.NotUrgentImportant => Colors.LightGreen,
-                    TaskCategory.UrgentNotImportant => Colors.LightGoldenrodYellow,
-                    TaskCategory.NotUrgentNotImportant => Colors.LightGray,
+                    TaskCategory.UrgentImportant => Color.FromArgb("#FF867C"),  // Розовый коралл
+                    TaskCategory.NotUrgentImportant => Color.FromArgb("#80C590"),  // Мягкий зелёный
+                    TaskCategory.UrgentNotImportant => Color.FromArgb("#F4D06F"),  // Приглушённый жёлтый
+                    TaskCategory.NotUrgentNotImportant => Color.FromArgb("#B0BEC5"),  // Серо-голубой
                     _ => Colors.White
                 };
             }
@@ -79,5 +79,40 @@ namespace TimeFlow.Presentation.Utils
         }
     }
 
+    public class BoolToColorConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (bool)value ? Color.FromArgb("#80C590") : Colors.Transparent; // Мягкий зелёный для активной вкладки
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class BoolToTextColorConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (bool)value ? Colors.White : Colors.Gray; // Белый для активной вкладки, серый для неактивной
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class BoolToFontWeightConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (bool)value ? FontAttributes.Bold : FontAttributes.None; // Жирный для активной вкладки
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
 }

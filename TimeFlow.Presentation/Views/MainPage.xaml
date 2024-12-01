@@ -1,79 +1,30 @@
-﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TimeFlow.Presentation.Views.MainPage"
-             Shell.NavBarIsVisible="False"
-             BackgroundImageSource="background.jpg">
-    <Grid Padding="30,0" RowSpacing="20" ColumnSpacing="20">
-            <!-- Определяем две колонки: первая для информации, вторая для задач -->
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*" />
-                <ColumnDefinition Width="2*" />
-            </Grid.ColumnDefinitions>
+﻿<ContentPage
+    x:Class="TimeFlow.Presentation.Views.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    BackgroundImageSource="background.jpg"
+    Shell.NavBarIsVisible="False">
+    <Grid
+        Padding="30,0"
+        ColumnSpacing="20"
+        RowSpacing="20">
+        <!--  Левая колонка: Приветствие и кнопки  -->
+        <VerticalStackLayout Spacing="20">
 
-            <!-- Левая колонка: Приветствие и кнопки -->
-            <VerticalStackLayout Grid.Column="0" Spacing="20">
+            <Label
+                HorizontalOptions="Center"
+                Style="{StaticResource SubHeadline}"
+                Text="{Binding TodayDate, StringFormat='Сегодня: {0:dd MMMM yyyy}'}" />
 
-                <!-- Приветствие и Дата -->
-                <Label Text="Добро пожаловать, [Имя пользователя]!"
-                       Style="{StaticResource Headline}" HorizontalOptions="Center"/>
-                <Label Text="{Binding TodayDate, StringFormat='Сегодня: {0:dd MMMM yyyy}'}"
-                       Style="{StaticResource SubHeadline}" HorizontalOptions="Center"/>
+            <!--  Шаги для работы с приложением  -->
+            <Label Text="Шаги для начала работы" />
 
-                <!-- Шаги для работы с приложением -->
-                <Label Text="Шаги для начала работы"  />
+            <Button Command="{Binding NavigateToEisenhowerMatrixCommand}" Text="1. Запланировать задачи на сегодня" />
 
-                <Button Text="1. Запланировать задачи на сегодня" 
-                        Command="{Binding NavigateToEisenhowerMatrixCommand}"/>
+            <Button Command="{Binding NavigateToTimeBlockingCommand}" Text="2. Планировать день" />
 
-                <Button Text="2. Планировать день" 
-                        Command="{Binding NavigateToTimeBlockingCommand}"/>
+            <Button Command="{Binding StartWorkCommand}" Text="3. Начать работу" />
+        </VerticalStackLayout>
 
-                <Button Text="3. Начать работу" 
-                        Command="{Binding StartWorkCommand}"/>
-            </VerticalStackLayout>
-
-            <!-- Правая колонка: Список задач на сегодня -->
-        <ScrollView Grid.Column="1">
-            <VerticalStackLayout Spacing="10" Padding="10">
-                <Label Text="План на сегодня"
-               FontSize="22"
-               FontAttributes="Bold"
-               HorizontalOptions="Center"
-               TextColor="#FFFFFF" />
-
-                <CollectionView ItemsSource="{Binding TodayTimeBlocks}" VerticalOptions="StartAndExpand">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Frame CornerRadius="10"
-                           Padding="15"
-                           Margin="5"
-                           HasShadow="True"
-                           BackgroundColor="{Binding BlockType, Converter={StaticResource BlockTypeToBackgroundColorConverter}}">
-                                <StackLayout>
-                                    <Label Text="{Binding Title}"
-                                   FontAttributes="Bold"
-                                   FontSize="18"
-                                   TextColor="#111" />
-
-                                    <Label Text="{Binding StartTime, StringFormat='Начало: {0:HH:mm}'}"
-                                   FontSize="14"
-                                   TextColor="#777" />
-
-                                    <Label Text="{Binding EndTime, StringFormat='Конец: {0:HH:mm}'}"
-                                   FontSize="14"
-                                   TextColor="#777" />
-
-                                    <Label Text="{Binding Description}"
-                                   FontSize="14"
-                                   TextColor="#333"
-                                   LineBreakMode="WordWrap"
-                                   MaxLines="2" />
-                                </StackLayout>
-                            </Frame>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </VerticalStackLayout>
-        </ScrollView>
     </Grid>
 </ContentPage>

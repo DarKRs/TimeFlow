@@ -13,6 +13,9 @@
             <utils:CategoryToBackgroundColorConverter x:Key="CategoryToBackgroundColorConverter" />
             <utils:CategoryToHumanReadableConverter x:Key="CategoryToHumanReadableConverter" />
             <utils:BlockTypeToBackgroundColorConverter x:Key="BlockTypeToBackgroundColorConverter" />
+            <utils:BoolToColorConverter x:Key="BoolToColorConverter" />
+            <utils:BoolToTextColorConverter x:Key="BoolToTextColorConverter" />
+            <utils:BoolToFontWeightConverter x:Key="BoolToFontWeightConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

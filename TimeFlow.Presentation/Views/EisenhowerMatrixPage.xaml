@@ -1,79 +1,192 @@
-﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:import="clr-namespace:Custom.MAUI.Components;assembly=Custom.MAUI.Components" 
-             x:Class="TimeFlow.Presentation.Views.EisenhowerMatrixPage"
-             Shell.NavBarIsVisible="False"
-             BackgroundImageSource="background.jpg">
+﻿<ContentPage
+    x:Class="TimeFlow.Presentation.Views.EisenhowerMatrixPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:import="clr-namespace:Custom.MAUI.Components;assembly=Custom.MAUI.Components"
+    BackgroundImageSource="background.jpg"
+    Shell.NavBarIsVisible="False">
 
     <Grid ColumnDefinitions="*,2*">
 
-        <!-- Левая часть: Календарь -->
-        <Grid Padding="10" Grid.Column="0">
+        <!--  Левая часть: Календарь  -->
+        <Grid Grid.Column="0" Padding="10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
 
-            <StackLayout Grid.Row="0" VerticalOptions="Center" HorizontalOptions="Center" >
+            <StackLayout
+                Grid.Row="0"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
                 <import:CustomCalendar x:Name="MyCalendar" DisplayMode="SeparateMonthFixedYear" />
             </StackLayout>
 
-            <StackLayout x:Name="TaskEditor" IsVisible="{Binding IsTaskEditorVisible}" Grid.Row="1" VerticalOptions="FillAndExpand" Margin="0, 5, 0, 0">
-                <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
-                    <Label Text="Создать задачу" FontAttributes="Bold" FontSize="18" VerticalOptions="Center" />
-                    <Label Text="{Binding DisplayedDateText}" FontAttributes="Italic" HorizontalOptions="EndAndExpand" VerticalOptions="Center" Margin="0,0,10,0" />
+            <StackLayout
+                x:Name="TaskEditor"
+                Grid.Row="1"
+                Margin="0,5,0,0"
+                IsVisible="{Binding IsTaskEditorVisible}"
+                VerticalOptions="FillAndExpand">
+                <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="18"
+                        Text="Создать задачу"
+                        VerticalOptions="Center" />
+                    <Label
+                        Margin="0,0,10,0"
+                        FontAttributes="Italic"
+                        HorizontalOptions="EndAndExpand"
+                        Text="{Binding DisplayedDateText}"
+                        VerticalOptions="Center" />
                 </StackLayout>
-                <Entry Placeholder="Название задачи" Text="{Binding TaskTitle}" Margin="0, 5" />
-                <Editor Placeholder="Описание задачи" Text="{Binding TaskDescription}" HeightRequest="80" Margin="0, 5" />
-                <StackLayout Orientation="Horizontal" HorizontalOptions="Fill">
-                    <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" Margin="0, 5, 0, 10">
-                        <Label Text="Время начала" VerticalOptions="Center" FontSize="12" />
-                        <import:CustomTimePicker SelectedTime="{Binding PlannedStartTime, Mode=TwoWay}" CustomWidth="120" CustomHeight="50" TimeFormat="HH:mm" VerticalOptions="Start"/>
-                        <Label Text="Время на задачу" VerticalOptions="Center" FontSize="12" Margin="15,0,0,0"/>
-                        <import:CustomTimePicker SelectedTime="{Binding EstimatedDuration, Mode=TwoWay}" CustomWidth="120" CustomHeight="50" TimeFormat="HH:mm" VerticalOptions="Start"/>
+                <Entry
+                    Margin="0,5"
+                    Placeholder="Название задачи"
+                    Text="{Binding TaskTitle}" />
+                <Editor
+                    Margin="0,5"
+                    HeightRequest="80"
+                    Placeholder="Описание задачи"
+                    Text="{Binding TaskDescription}" />
+                <StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
+                    <StackLayout
+                        Margin="0,5,0,10"
+                        HorizontalOptions="FillAndExpand"
+                        Orientation="Horizontal">
+                        <Label
+                            FontSize="12"
+                            Text="Время начала"
+                            VerticalOptions="Center" />
+                        <import:CustomTimePicker
+                            CustomHeight="50"
+                            CustomWidth="120"
+                            SelectedTime="{Binding PlannedStartTime, Mode=TwoWay}"
+                            TimeFormat="HH:mm"
+                            VerticalOptions="Start" />
+                        <Label
+                            Margin="15,0,0,0"
+                            FontSize="12"
+                            Text="Время на задачу"
+                            VerticalOptions="Center" />
+                        <import:CustomTimePicker
+                            CustomHeight="50"
+                            CustomWidth="120"
+                            SelectedTime="{Binding EstimatedDuration, Mode=TwoWay}"
+                            TimeFormat="HH:mm"
+                            VerticalOptions="Start" />
                     </StackLayout>
                 </StackLayout>
-                <StackLayout Orientation="Horizontal" HorizontalOptions="Fill">
+                <StackLayout HorizontalOptions="Fill" Orientation="Horizontal">
                     <StackLayout Orientation="Horizontal" Spacing="5">
-                        <CheckBox IsChecked="{Binding IsImportant}" VerticalOptions="Center"/>
-                        <Label Text="Важная" VerticalOptions="Center" FontSize="12" Margin="-20,0,0,0"/>
+                        <CheckBox IsChecked="{Binding IsImportant}" VerticalOptions="Center" />
+                        <Label
+                            Margin="-20,0,0,0"
+                            FontSize="12"
+                            Text="Важная"
+                            VerticalOptions="Center" />
                     </StackLayout>
-                    <StackLayout Orientation="Horizontal" Spacing="5" Margin="15,0,0,0">
-                        <CheckBox IsChecked="{Binding IsUrgent}" VerticalOptions="Center"/>
-                        <Label Text="Срочная" VerticalOptions="Center" FontSize="12" Margin="-20,0,0,0"/>
+                    <StackLayout
+                        Margin="15,0,0,0"
+                        Orientation="Horizontal"
+                        Spacing="5">
+                        <CheckBox IsChecked="{Binding IsUrgent}" VerticalOptions="Center" />
+                        <Label
+                            Margin="-20,0,0,0"
+                            FontSize="12"
+                            Text="Срочная"
+                            VerticalOptions="Center" />
                     </StackLayout>
                 </StackLayout>
-                <StackLayout Orientation="Horizontal" Spacing="10" Margin="0, 10" HorizontalOptions="Start">
-                    <Button Text="Сохранить" Command="{Binding SaveTaskCommand}" WidthRequest="100" />
-                    <Button Text="Отмена" Command="{Binding CancelEditCommand}" WidthRequest="100" />
+                <StackLayout
+                    Margin="0,10"
+                    HorizontalOptions="Start"
+                    Orientation="Horizontal"
+                    Spacing="10">
+                    <Button
+                        Command="{Binding SaveTaskCommand}"
+                        Text="Сохранить"
+                        WidthRequest="100" />
+                    <Button
+                        Command="{Binding CancelEditCommand}"
+                        Text="Отмена"
+                        WidthRequest="100" />
                 </StackLayout>
             </StackLayout>
         </Grid>
 
-        <!-- Правая часть: Канбан-доска задач на неделю -->
-        <ScrollView Orientation="Vertical" Grid.Column="1">
+        <!--  Правая часть: Канбан-доска задач на неделю  -->
+        <ScrollView Grid.Column="1" Orientation="Vertical">
             <StackLayout>
-                <Label Text="Задачи на Неделю" FontAttributes="Bold" FontSize="22" HorizontalOptions="Center" TextColor="White" Margin="0,0,0,3"/>
+                <Label
+                    Margin="0,0,0,3"
+                    FontAttributes="Bold"
+                    FontSize="22"
+                    HorizontalOptions="Center"
+                    Text="Задачи на Неделю"
+                    TextColor="White" />
 
                 <CollectionView ItemsSource="{Binding WeekTasks}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <StackLayout>
-                                <Label Text="{Binding DayName}" FontAttributes="Bold" FontSize="20" TextColor="WhiteSmoke" VerticalOptions="Center"/>
-                                <Label Text="{Binding Date, StringFormat=' {0:dd MMM yyyy}'}" FontSize="14" TextColor="#555" Margin="0,0,0,3" VerticalOptions="Center"/>
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="20"
+                                    Text="{Binding DayName}"
+                                    TextColor="WhiteSmoke"
+                                    VerticalOptions="Center" />
+                                <Label
+                                    Margin="0,0,0,3"
+                                    FontSize="14"
+                                    Text="{Binding Date, StringFormat=' {0:dd MMM yyyy}'}"
+                                    TextColor="#555"
+                                    VerticalOptions="Center" />
 
-                                <CollectionView ItemsSource="{Binding Tasks}" ItemsLayout="HorizontalList" HeightRequest="150">
+                                <CollectionView
+                                    HeightRequest="150"
+                                    ItemsLayout="HorizontalList"
+                                    ItemsSource="{Binding Tasks}">
                                     <CollectionView.ItemTemplate>
                                         <DataTemplate>
-                                            <Frame BackgroundColor="{Binding Category, Converter={StaticResource CategoryToBackgroundColorConverter}}"
-                                           CornerRadius="10" Padding="6" Margin="3" HasShadow="True" MinimumWidthRequest="180" MinimumHeightRequest="120">
+                                            <Frame
+                                                Margin="3"
+                                                Padding="6"
+                                                BackgroundColor="{Binding Category, Converter={StaticResource CategoryToBackgroundColorConverter}}"
+                                                CornerRadius="10"
+                                                HasShadow="True"
+                                                MinimumHeightRequest="120"
+                                                MinimumWidthRequest="180">
                                                 <StackLayout Spacing="2">
-                                                    <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="16" TextColor="#111"/>
-                                                    <Label Text="{Binding PlannedStart, StringFormat='Начало: {0:HH:mm}'}" FontSize="12" TextColor="#777" Margin="0,2,0,0"/>
-                                                    <Label Text="{Binding PlannedEnd, StringFormat='Окончание: {0:HH:mm}'}" FontSize="12" TextColor="#777"/>
-                                                    <Label Text="{Binding Description}" FontSize="14" TextColor="#333" Margin="0,3,0,0" LineBreakMode="WordWrap" MaxLines="3"/>
-                                                    <Label Text="{Binding Category, Converter={StaticResource CategoryToHumanReadableConverter}}" FontSize="12" VerticalOptions="EndAndExpand" FontAttributes="Italic" TextColor="#444"/>
+                                                    <Label
+                                                        FontAttributes="Bold"
+                                                        FontSize="16"
+                                                        Text="{Binding Title}"
+                                                        TextColor="#111" />
+                                                    <Label
+                                                        Margin="0,2,0,0"
+                                                        FontSize="12"
+                                                        Text="{Binding PlannedStart, StringFormat='Начало: {0:HH:mm}'}"
+                                                        TextColor="#777" />
+                                                    <Label
+                                                        FontSize="12"
+                                                        Text="{Binding PlannedEnd, StringFormat='Окончание: {0:HH:mm}'}"
+                                                        TextColor="#777" />
+                                                    <Label
+                                                        Margin="0,3,0,0"
+                                                        FontSize="14"
+                                                        LineBreakMode="WordWrap"
+                                                        MaxLines="3"
+                                                        Text="{Binding Description}"
+                                                        TextColor="#333" />
+                                                    <Label
+                                                        FontAttributes="Italic"
+                                                        FontSize="12"
+                                                        Text="{Binding Category, Converter={StaticResource CategoryToHumanReadableConverter}}"
+                                                        TextColor="#444"
+                                                        VerticalOptions="EndAndExpand" />
                                                 </StackLayout>
                                             </Frame>
                                         </DataTemplate>

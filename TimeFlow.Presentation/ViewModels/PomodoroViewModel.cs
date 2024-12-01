@@ -30,19 +30,66 @@ namespace TimeFlow.Presentation.ViewModels
         private bool _isRunning;
         private int _totalTimeForCurrentSession;
 
-        private int _workDuration;
-        private int _shortBreakDuration;
-        private int _longBreakDuration;
-        public int WorkDuration { get; set; }
-        public int ShortBreakDuration { get; set; }
-        public int LongBreakDuration { get; set; }
-
         private PomodoroSessionType _currentSessionType;
         private int _sessionCount = 0;
 
         public ObservableCollection<TaskItem> TodayTasks { get; set; } = new ObservableCollection<TaskItem>();
-        private TaskItem _selectedTask;
 
+        private int _workDuration;
+        public int WorkDuration
+        {
+            get => _workDuration;
+            set
+            {
+                if (SetProperty(ref _workDuration, value))
+                {
+                    OnPropertyChanged(nameof(DisplayWorkDuration));
+                    if (_currentSessionType == PomodoroSessionType.Work)
+                    {
+                        RemainingTime = WorkDuration * 60;
+                        OnPropertyChanged(nameof(TimeDisplay));
+                    }
+                }
+            }
+        }
+
+        private int _shortBreakDuration;
+        public int ShortBreakDuration
+        {
+            get => _shortBreakDuration;
+            set
+            {
+                if (SetProperty(ref _shortBreakDuration, value))
+                {
+                    OnPropertyChanged(nameof(DisplayShortBreakDuration));
+                    if (_currentSessionType == PomodoroSessionType.ShortBreak)
+                    {
+                        RemainingTime = ShortBreakDuration * 60; 
+                        OnPropertyChanged(nameof(TimeDisplay));
+                    }
+                }
+            }
+        }
+
+        private int _longBreakDuration;
+        public int LongBreakDuration
+        {
+            get => _longBreakDuration;
+            set
+            {
+                if (SetProperty(ref _longBreakDuration, value))
+                {
+                    OnPropertyChanged(nameof(DisplayLongBreakDuration));
+                    if (_currentSessionType == PomodoroSessionType.LongBreak)
+                    {
+                        RemainingTime = LongBreakDuration * 60; 
+                        OnPropertyChanged(nameof(TimeDisplay));
+                    }
+                }
+            }
+        }
+
+        private TaskItem _selectedTask;
         public TaskItem SelectedTask
         {
             get => _selectedTask;
@@ -90,7 +137,11 @@ namespace TimeFlow.Presentation.ViewModels
         // Прогресс интервала
         public double Progress => (double)(_totalTimeForCurrentSession - RemainingTime) / _totalTimeForCurrentSession;
 
-        public string TimeDisplay => TimeSpan.FromSeconds(RemainingTime).ToString(@"mm\:ss");
+        public string TimeDisplay => TimeSpan.FromSeconds(RemainingTime).ToString(RemainingTime >= 3600 ? @"hh\:mm\:ss" : @"mm\:ss");
+
+        public string DisplayWorkDuration => $"{WorkDuration} мин";
+        public string DisplayShortBreakDuration => $"{ShortBreakDuration} мин";
+        public string DisplayLongBreakDuration => $"{LongBreakDuration} мин";
 
         public bool IsRunning
         {

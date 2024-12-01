@@ -215,17 +215,53 @@
                             FontSize="22"
                             Text="Настройки"
                             TextColor="White" />
-                        <Label Text="Длительность рабочего интервала (мин)" TextColor="White" />
+
+                        <!--  Длительность рабочего интервала  -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label
+                                Grid.Column="0"
+                                Text="Длительность рабочего интервала"
+                                TextColor="White" />
+                            <Label
+                                Grid.Column="1"
+                                HorizontalOptions="End"
+                                Text="{Binding DisplayWorkDuration}"
+                                TextColor="White" />
+                        </Grid>
                         <Slider
                             Maximum="60"
                             Minimum="1"
                             Value="{Binding WorkDuration}" />
-                        <Label Text="Длительность короткого перерыва (мин)" TextColor="White" />
+
+                        <!--  Длительность короткого перерыва  -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label
+                                Grid.Column="0"
+                                Text="Длительность короткого перерыва"
+                                TextColor="White" />
+                            <Label
+                                Grid.Column="1"
+                                HorizontalOptions="End"
+                                Text="{Binding DisplayShortBreakDuration}"
+                                TextColor="White" />
+                        </Grid>
                         <Slider
                             Maximum="30"
                             Minimum="1"
                             Value="{Binding ShortBreakDuration}" />
-                        <Label Text="Длительность длинного перерыва (мин)" TextColor="White" />
+
+                        <!--  Длительность длинного перерыва  -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label
+                                Grid.Column="0"
+                                Text="Длительность длинного перерыва"
+                                TextColor="White" />
+                            <Label
+                                Grid.Column="1"
+                                HorizontalOptions="End"
+                                Text="{Binding DisplayLongBreakDuration}"
+                                TextColor="White" />
+                        </Grid>
                         <Slider
                             Maximum="60"
                             Minimum="1"

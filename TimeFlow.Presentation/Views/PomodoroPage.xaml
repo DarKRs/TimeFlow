@@ -166,19 +166,29 @@
                                         HasShadow="True"
                                         MinimumHeightRequest="100">
                                         <StackLayout Spacing="5">
-                                            <Label
-                                                FontAttributes="Bold"
-                                                FontSize="18"
-                                                Text="{Binding Title}"
-                                                TextColor="#111" />
-                                            <Label
-                                                FontSize="14"
-                                                Text="{Binding PlannedStart, StringFormat='Начало: {0:HH:mm}'}"
-                                                TextColor="#777" />
-                                            <Label
-                                                FontSize="14"
-                                                Text="{Binding PlannedEnd, StringFormat='Окончание: {0:HH:mm}'}"
-                                                TextColor="#777" />
+                                            <HorizontalStackLayout VerticalOptions="Center">
+                                                <CheckBox
+                                                    CheckedChanged="OnTaskCompletionChanged"
+                                                    IsChecked="{Binding IsCompleted}"
+                                                    VerticalOptions="Center" />
+                                                <Label
+                                                    Margin="5,0,0,0"
+                                                    FontAttributes="Bold"
+                                                    FontSize="18"
+                                                    Text="{Binding Title}"
+                                                    TextColor="#111"
+                                                    VerticalOptions="Center" />
+                                            </HorizontalStackLayout>
+
+                                            <Label FontSize="12" TextColor="#777">
+                                                <Label.Text>
+                                                    <MultiBinding StringFormat="Время: {0:HH:mm} - {1:HH:mm}">
+                                                        <Binding Path="PlannedStart" />
+                                                        <Binding Path="PlannedEnd" />
+                                                    </MultiBinding>
+                                                </Label.Text>
+                                            </Label>
+
                                             <Label
                                                 Margin="0,3,0,0"
                                                 FontSize="14"

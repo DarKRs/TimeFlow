@@ -1,15 +1,11 @@
-﻿using System.Timers;
-using System.Windows.Input;
-using TimeFlow.Domain.Entities;
-using Plugin.LocalNotification;
-using Microsoft.Maui.Dispatching;
-using Timer = System.Timers.Timer;
-using System;
-using System.Collections.ObjectModel;
-using TimeFlow.Core.Interfaces;
-using TimeFlow.Infrastructure.Repositories;
-using System.Threading.Tasks;
+﻿using Plugin.LocalNotification;
 using Plugin.Maui.Audio;
+using System.Collections.ObjectModel;
+using System.Timers;
+using System.Windows.Input;
+using TimeFlow.Core.Interfaces;
+using TimeFlow.Domain.Entities;
+using Timer = System.Timers.Timer;
 #if WINDOWS
 using Windows.UI.Notifications;
 using Windows.Data.Xml.Dom;
@@ -22,7 +18,7 @@ namespace TimeFlow.Presentation.ViewModels
         private readonly IDispatcher _dispatcher;
         private readonly ITaskService _taskService;
         private readonly IPomodoroSessionRepository _pomodoroSessionRepository;
-        private readonly IAudioManager _audioManager; 
+        private readonly IAudioManager _audioManager;
         private IAudioPlayer _audioPlayer;
         //
         private Timer _timer;
@@ -34,7 +30,19 @@ namespace TimeFlow.Presentation.ViewModels
         private int _sessionCount = 0;
 
         public Grid TabPanel { get; set; }
-        public ObservableCollection<TaskItem> TodayTasks { get; set; } = new ObservableCollection<TaskItem>();
+        private ObservableCollection<TaskItem> _todayTasks;
+        public ObservableCollection<TaskItem> TodayTasks
+        {
+            get => _todayTasks;
+            set
+            {
+                if (_todayTasks != value)
+                {
+                    _todayTasks = value;
+                    OnPropertyChanged(nameof(TodayTasks));
+                }
+            }
+        }
 
         private int _workDuration;
         public int WorkDuration
@@ -65,7 +73,7 @@ namespace TimeFlow.Presentation.ViewModels
                     OnPropertyChanged(nameof(DisplayShortBreakDuration));
                     if (_currentSessionType == PomodoroSessionType.ShortBreak)
                     {
-                        RemainingTime = ShortBreakDuration * 60; 
+                        RemainingTime = ShortBreakDuration * 60;
                         OnPropertyChanged(nameof(TimeDisplay));
                     }
                 }
@@ -83,7 +91,7 @@ namespace TimeFlow.Presentation.ViewModels
                     OnPropertyChanged(nameof(DisplayLongBreakDuration));
                     if (_currentSessionType == PomodoroSessionType.LongBreak)
                     {
-                        RemainingTime = LongBreakDuration * 60; 
+                        RemainingTime = LongBreakDuration * 60;
                         OnPropertyChanged(nameof(TimeDisplay));
                     }
                 }
@@ -195,16 +203,16 @@ namespace TimeFlow.Presentation.ViewModels
             _taskService = taskService;
             _audioManager = audioManager;
 
-        #if DEBUG
+#if DEBUG
             // Уменьшенные значения для отладки
             _workDuration = 1; // 1 минута работы
-                _shortBreakDuration = 1; // 1 минута короткого перерыва
-                _longBreakDuration = 2; // 2 минуты длинного перерыва
-            #else
+            _shortBreakDuration = 1; // 1 минута короткого перерыва
+            _longBreakDuration = 2; // 2 минуты длинного перерыва
+#else
                 _workDuration = 25;
                 _shortBreakDuration = 5;
                 _longBreakDuration = 15;
-            #endif
+#endif
 
             _dispatcher = Dispatcher.GetForCurrentThread();
             RemainingTime = _workDuration * 60;
@@ -237,12 +245,17 @@ namespace TimeFlow.Presentation.ViewModels
         public async void LoadTodayTasks()
         {
             var todayTasks = await _taskService.GetTasksByDateAsync(DateTime.Today);
-            var sorted = todayTasks.OrderBy(task => task.Category);
-            TodayTasks.Clear();
+            var sortedTasks = todayTasks.OrderBy(task => task.Category);
 
-            foreach (var task in sorted)
+            TodayTasks = new ObservableCollection<TaskItem>(sortedTasks);
+        }
+
+        public async Task UpdateTaskCompletionStatus(TaskItem task)
+        {
+            if (task != null)
             {
-                TodayTasks.Add(task);
+                await _taskService.UpdateTaskAsync(task); 
+                OnPropertyChanged(nameof(TodayTasks));
             }
         }
 
@@ -371,36 +384,38 @@ namespace TimeFlow.Presentation.ViewModels
             }
         }
 
+
+
         private async void ShowNotification(string title, string message)
         {
-            #if ANDROID || IOS
-                // Уведомления для Android/iOS через Plugin.LocalNotification
-                if (await LocalNotificationCenter.Current.AreNotificationsEnabled() == false)
-                {
-                    await LocalNotificationCenter.Current.RequestNotificationPermission();
-                }
+#if ANDROID || IOS
+            // Уведомления для Android/iOS через Plugin.LocalNotification
+            if (await LocalNotificationCenter.Current.AreNotificationsEnabled() == false)
+            {
+                await LocalNotificationCenter.Current.RequestNotificationPermission();
+            }
 
-                var notification = new NotificationRequest
-                {
-                    NotificationId = 100,
-                    Title = title,
-                    Description = message,
-                    ReturningData = "PomodoroFinished",
-                    Schedule =
+            var notification = new NotificationRequest
+            {
+                NotificationId = 100,
+                Title = title,
+                Description = message,
+                ReturningData = "PomodoroFinished",
+                Schedule =
                     {
                         NotifyTime = DateTime.Now.AddSeconds(5)
                     }
-                };
+            };
             await LocalNotificationCenter.Current.Show(notification);
-            #elif WINDOWS
+#elif WINDOWS
                 // Уведомления для Windows
                 ShowWindowsToastNotification(title, message);
-            #endif
+#endif
         }
 
         private void ShowWindowsToastNotification(string title, string message)
         {
-            #if WINDOWS
+#if WINDOWS
                var toastXml = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText02);
 
                 var stringElements = toastXml.GetElementsByTagName("text");
@@ -409,7 +424,7 @@ namespace TimeFlow.Presentation.ViewModels
 
                 var toast = new ToastNotification(toastXml);
                 ToastNotificationManager.CreateToastNotifier("PomodoroApp").Show(toast);
-            #endif
+#endif
         }
     }
 }

@@ -57,10 +57,7 @@ namespace TimeFlow.Presentation.Views
         {
             if (sender is CheckBox checkBox && checkBox.BindingContext is TaskItem taskItem)
             {
-                // Меняем состояние задачи
                 taskItem.IsCompleted = e.Value;
-
-                // Получаем ViewModel и обновляем задачу
                 if (BindingContext is EisenhowerMatrixViewModel viewModel)
                 {
                     await viewModel.UpdateTaskCompletionStatus(taskItem);

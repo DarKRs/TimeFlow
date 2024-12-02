@@ -152,35 +152,49 @@
                                     <CollectionView.ItemTemplate>
                                         <DataTemplate>
                                             <Frame
-                                                Margin="3"
-                                                Padding="6"
+                                                Margin="6"
+                                                Padding="10"
                                                 BackgroundColor="{Binding Category, Converter={StaticResource CategoryToBackgroundColorConverter}}"
-                                                CornerRadius="10"
+                                                CornerRadius="15"
                                                 HasShadow="True"
-                                                MinimumHeightRequest="120"
-                                                MinimumWidthRequest="180">
-                                                <StackLayout Spacing="2">
+                                                MaximumWidthRequest="240"
+                                                MinimumHeightRequest="130"
+                                                MinimumWidthRequest="200">
+                                                <StackLayout>
+                                                    <StackLayout Orientation="Horizontal" VerticalOptions="Center">
+                                                        <CheckBox
+                                                            CheckedChanged="OnTaskCompletionChanged"
+                                                            IsChecked="{Binding IsCompleted}"
+                                                            VerticalOptions="Center" />
+                                                        <Label
+                                                            Margin="-10,0,0,0"
+                                                            FontAttributes="Bold"
+                                                            FontSize="20"
+                                                            Text="{Binding Title}"
+                                                            TextColor="#111"
+                                                            VerticalOptions="Center" />
+                                                    </StackLayout>
+
+                                                    <!--  Время начала и окончания  -->
+                                                    <Label FontSize="12" TextColor="#777">
+                                                        <Label.Text>
+                                                            <MultiBinding StringFormat="Время: {0:HH:mm} - {1:HH:mm}">
+                                                                <Binding Path="PlannedStart" />
+                                                                <Binding Path="PlannedEnd" />
+                                                            </MultiBinding>
+                                                        </Label.Text>
+                                                    </Label>
+
+                                                    <!--  Описание задачи  -->
                                                     <Label
-                                                        FontAttributes="Bold"
-                                                        FontSize="16"
-                                                        Text="{Binding Title}"
-                                                        TextColor="#111" />
-                                                    <Label
-                                                        Margin="0,2,0,0"
-                                                        FontSize="12"
-                                                        Text="{Binding PlannedStart, StringFormat='Начало: {0:HH:mm}'}"
-                                                        TextColor="#777" />
-                                                    <Label
-                                                        FontSize="12"
-                                                        Text="{Binding PlannedEnd, StringFormat='Окончание: {0:HH:mm}'}"
-                                                        TextColor="#777" />
-                                                    <Label
-                                                        Margin="0,3,0,0"
+                                                        Margin="0,5,0,0"
                                                         FontSize="14"
                                                         LineBreakMode="WordWrap"
                                                         MaxLines="3"
                                                         Text="{Binding Description}"
                                                         TextColor="#333" />
+
+                                                    <!--  Категория задачи  -->
                                                     <Label
                                                         FontAttributes="Italic"
                                                         FontSize="12"

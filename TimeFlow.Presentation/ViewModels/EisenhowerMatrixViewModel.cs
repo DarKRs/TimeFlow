@@ -139,6 +139,15 @@ namespace TimeFlow.Presentation.ViewModels
             }
         }
 
+        public async Task UpdateTaskCompletionStatus(TaskItem task)
+        {
+            if (task != null)
+            {
+                await _taskService.UpdateTaskAsync(task);
+                OnPropertyChanged(nameof(WeekTasks)); 
+            }
+        }
+
         private async Task OnDayTapped(string day)
         {
             if (Enum.TryParse<DayOfWeek>(day, out var dayOfWeek))

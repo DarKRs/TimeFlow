@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TimeFlow.Domain.Entities;
 using TimeFlow.Presentation.ViewModels;
 
 namespace TimeFlow.Presentation.Views
@@ -52,6 +53,20 @@ namespace TimeFlow.Presentation.Views
             }
         }
 
+        private async void OnTaskCompletionChanged(object sender, CheckedChangedEventArgs e)
+        {
+            if (sender is CheckBox checkBox && checkBox.BindingContext is TaskItem taskItem)
+            {
+                // Меняем состояние задачи
+                taskItem.IsCompleted = e.Value;
+
+                // Получаем ViewModel и обновляем задачу
+                if (BindingContext is EisenhowerMatrixViewModel viewModel)
+                {
+                    await viewModel.UpdateTaskCompletionStatus(taskItem);
+                }
+            }
+        }
 
         protected override void OnAppearing()
         {

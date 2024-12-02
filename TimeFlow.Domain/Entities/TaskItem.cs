@@ -11,6 +11,7 @@
         public TimeSpan EstimatedDuration { get; set; } = TimeSpan.FromHours(2); // значение по умолчанию — 2 часа (полный цикл Pomodoro)
         public bool IsImportant { get; set; }
         public bool IsUrgent { get; set; }
+        public bool IsCompleted { get; set; }
         public TaskCategory Category
         {
             get

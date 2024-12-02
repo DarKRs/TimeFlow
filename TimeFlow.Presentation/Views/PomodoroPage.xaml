@@ -69,20 +69,6 @@
                     TextColor="White"
                     WidthRequest="100" />
             </StackLayout>
-
-            <!--  Автостарт  -->
-            <StackLayout
-                HorizontalOptions="Center"
-                Orientation="Horizontal"
-                Spacing="10"
-                VerticalOptions="Start">
-                <Label
-                    FontSize="16"
-                    Text="Автостарт следующей сессии"
-                    TextColor="White"
-                    VerticalOptions="Center" />
-                <Switch IsToggled="{Binding AutoStartNextSession}" />
-            </StackLayout>
         </StackLayout>
 
         <!--  Кнопка для открытия панели настроек  -->
@@ -112,9 +98,15 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
+            <Grid.TranslationX>
+                <OnPlatform x:TypeArguments="x:Double">
+                    <On Platform="Android,iOS,Windows" Value="420" />
+                    <!--  Панель изначально скрыта справа  -->
+                </OnPlatform>
+            </Grid.TranslationX>
             <Grid>
                 <StackLayout
-                    HorizontalOptions="Start"
+                    HorizontalOptions="StartAndExpand"
                     Orientation="Horizontal"
                     Spacing="10">
                     <StackLayout WidthRequest="140">
@@ -135,15 +127,16 @@
                             TextColor="{Binding IsSettingsTabVisible, Converter={StaticResource BoolToTextColorConverter}}" />
                         <BoxView BackgroundColor="{Binding IsSettingsTabVisible, Converter={StaticResource BoolToColorConverter}}" HeightRequest="2" />
                     </StackLayout>
+                    <Button
+                        BackgroundColor="#c5d0e6"
+                        Command="{Binding TogglePanelCommand}"
+                        FontSize="16"
+                        HorizontalOptions="EndAndExpand"
+                        Text="X"
+                        TextColor="White"
+                        VerticalOptions="Center" />
+
                 </StackLayout>
-                <Button
-                    BackgroundColor="Transparent"
-                    Command="{Binding TogglePanelCommand}"
-                    FontSize="16"
-                    HorizontalOptions="End"
-                    Text="X"
-                    TextColor="White"
-                    VerticalOptions="Start" />
             </Grid>
 
             <Grid Grid.Row="1">
@@ -229,7 +222,7 @@
                                 TextColor="White" />
                         </Grid>
                         <Slider
-                            Maximum="60"
+                            Maximum="120"
                             Minimum="1"
                             Value="{Binding WorkDuration}" />
 
@@ -266,6 +259,19 @@
                             Maximum="60"
                             Minimum="1"
                             Value="{Binding LongBreakDuration}" />
+
+                        <StackLayout
+                            HorizontalOptions="Center"
+                            Orientation="Horizontal"
+                            Spacing="10"
+                            VerticalOptions="Start">
+                            <Label
+                                FontSize="16"
+                                Text="Автостарт следующей сессии"
+                                TextColor="White"
+                                VerticalOptions="Center" />
+                            <Switch IsToggled="{Binding AutoStartNextSession}" />
+                        </StackLayout>
                     </StackLayout>
                 </ScrollView>
             </Grid>

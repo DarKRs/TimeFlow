@@ -9,6 +9,8 @@ namespace TimeFlow.Presentation.Views
         {
             InitializeComponent();
             BindingContext = pomodoroViewModel;
+
+            pomodoroViewModel.TabPanel = TabPanel;
         }
 
         protected override void OnAppearing()

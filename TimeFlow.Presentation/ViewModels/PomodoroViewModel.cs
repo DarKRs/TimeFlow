@@ -33,6 +33,7 @@ namespace TimeFlow.Presentation.ViewModels
         private PomodoroSessionType _currentSessionType;
         private int _sessionCount = 0;
 
+        public Grid TabPanel { get; set; }
         public ObservableCollection<TaskItem> TodayTasks { get; set; } = new ObservableCollection<TaskItem>();
 
         private int _workDuration;
@@ -215,7 +216,7 @@ namespace TimeFlow.Presentation.ViewModels
             StartCommand = new Command(StartTimer, () => CanStart);
             PauseCommand = new Command(PauseTimer, () => CanPause);
             ResetCommand = new Command(ResetTimer, () => CanReset);
-            TogglePanelCommand = new Command(() => IsPanelVisible = !IsPanelVisible);
+            TogglePanelCommand = new Command(TogglePanelAsync);
             ShowTasksTabCommand = new Command(() =>
             {
                 IsTasksTabVisible = true;
@@ -354,6 +355,21 @@ namespace TimeFlow.Presentation.ViewModels
         public bool CanPause => IsRunning;
         public bool CanReset => true;
 
+
+        private async void TogglePanelAsync()
+        {
+            if (!IsPanelVisible)
+            {
+                TabPanel.TranslationX = 420; // Установка стартового положения перед первым показом
+                IsPanelVisible = true;
+                await TabPanel.TranslateTo(0, 0, 350, Easing.SinInOut);
+            }
+            else
+            {
+                await TabPanel.TranslateTo(420, 0, 350, Easing.SinInOut);
+                IsPanelVisible = false;
+            }
+        }
 
         private async void ShowNotification(string title, string message)
         {

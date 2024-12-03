@@ -8,6 +8,7 @@ using TimeFlow.Core.Interfaces;
 using TimeFlow.Core.Services;
 using TimeFlow.Infrastructure.Data;
 using TimeFlow.Infrastructure.Repositories;
+using TimeFlow.Presentation.Services;
 using TimeFlow.Presentation.ViewModels;
 using TimeFlow.Presentation.Views;
 
@@ -43,13 +44,16 @@ namespace TimeFlow.Presentation
             builder.Services.AddScoped<ITaskService,TaskService>();
             builder.Services.AddScoped<ITimeBlockService, TimeBlockService>();
 
+#if ANDROID || IOS
+            builder.Services.AddSingleton<INotifyService, AndroidNotificationService>();
+#elif WINDOWS
+            builder.Services.AddSingleton<INotifyService, WindowsNotificationService>();
+#endif
+
             // Регистрация ViewModel и страниц
             builder.Services.AddTransient<MainViewModel>();
             builder.Services.AddTransient<PomodoroViewModel>();
             builder.Services.AddTransient<EisenhowerMatrixViewModel>();
-
-
-
 
             builder.Services.AddTransient<MainPage>();
             builder.Services.AddTransient<PomodoroPage>();

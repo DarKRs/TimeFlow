@@ -14,7 +14,6 @@ namespace TimeFlow.Presentation.ViewModels
         public MainViewModel()
         {
             NavigateToEisenhowerMatrixCommand = new Command(async () => await OnNavigateToEisenhowerMatrix());
-            NavigateToTimeBlockingCommand = new Command(async () => await OnNavigateToTimeBlocking());
             StartWorkCommand = new Command(async () => await OnStartWork());
         }
 
@@ -23,10 +22,6 @@ namespace TimeFlow.Presentation.ViewModels
             await Shell.Current.GoToAsync("//EisenhowerMatrixPage");
         }
 
-        private async Task OnNavigateToTimeBlocking()
-        {
-            await Shell.Current.GoToAsync("//TimeBlockingPage");
-        }
 
         private async Task OnStartWork()
         {

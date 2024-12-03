@@ -1,11 +1,4 @@
 ﻿using Custom.MAUI.Components;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TimeFlow.Domain.Entities;
 using TimeFlow.Presentation.ViewModels;
 
@@ -29,8 +22,8 @@ namespace TimeFlow.Presentation.Views
             {
                 viewModel.ClearTaskEditor();
                 viewModel.SelectedStartDate = selectedDate.Date;
-                viewModel.SelectedEndDate = selectedDate.Date; 
-                viewModel.IsTaskEditorVisible = true; 
+                viewModel.SelectedEndDate = selectedDate.Date;
+                viewModel.IsTaskEditorVisible = true;
             }
         }
 
@@ -42,6 +35,7 @@ namespace TimeFlow.Presentation.Views
                 viewModel.IsTaskEditorVisible = false;
             }
         }
+
         private void OnDateRangeSelected(object sender, DateRangeTappedEventArgs dateRange)
         {
             if (BindingContext is EisenhowerMatrixViewModel viewModel)
@@ -49,7 +43,7 @@ namespace TimeFlow.Presentation.Views
                 viewModel.ClearTaskEditor();
                 viewModel.SelectedStartDate = dateRange.StartDate;
                 viewModel.SelectedEndDate = dateRange.EndDate;
-                viewModel.IsTaskEditorVisible = true; 
+                viewModel.IsTaskEditorVisible = true;
             }
         }
 
@@ -70,7 +64,7 @@ namespace TimeFlow.Presentation.Views
             base.OnAppearing();
             if (BindingContext is EisenhowerMatrixViewModel viewModel)
             {
-                viewModel.LoadTasks();
+                viewModel.LoadTasksAsync();
             }
         }
     }

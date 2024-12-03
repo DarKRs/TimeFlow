@@ -2,20 +2,16 @@
 using System.Windows.Input;
 using TimeFlow.Core.Interfaces;
 using TimeFlow.Domain.Entities;
+using TimeFlow.Presentation.AdditionalModels;
 using TimeFlow.Presentation.Utils;
 
 namespace TimeFlow.Presentation.ViewModels
 {
-    public class DayTasks
-    {
-        public string DayName { get; set; }
-        public DateTime Date { get; set; }
-        public ObservableCollection<TaskItem> Tasks { get; set; }
-    }
-
     public class EisenhowerMatrixViewModel : BaseViewModel
     {
         private readonly ITaskService _taskService;
+        private readonly IDispatcher _dispatcher;
+
         private bool _isTaskEditorVisible;
         private string _taskTitle;
         private string _taskDescription;
@@ -61,8 +57,10 @@ namespace TimeFlow.Presentation.ViewModels
             get => _selectedStartDate;
             set
             {
-                SetProperty(ref _selectedStartDate, value);
-                OnPropertyChanged(nameof(DisplayedDateText));
+                if (SetProperty(ref _selectedStartDate, value))
+                {
+                    OnPropertyChanged(nameof(DisplayedDateText));
+                }
             }
         }
 
@@ -71,8 +69,10 @@ namespace TimeFlow.Presentation.ViewModels
             get => _selectedEndDate;
             set
             {
-                SetProperty(ref _selectedEndDate, value);
-                OnPropertyChanged(nameof(DisplayedDateText));
+                if (SetProperty(ref _selectedEndDate, value))
+                {
+                    OnPropertyChanged(nameof(DisplayedDateText));
+                }
             }
         }
 
@@ -89,47 +89,49 @@ namespace TimeFlow.Presentation.ViewModels
         }
 
         public string DisplayedDateText => SelectedStartDate == SelectedEndDate
-                        ? $"Дата: {SelectedStartDate:dd MMMM yyyy}"
-                        : $"Диапазон: {SelectedStartDate:dd MMMM yyyy} - {SelectedEndDate:dd MMMM yyyy}";
+            ? $"Дата: {SelectedStartDate:dd MMMM yyyy}"
+            : $"Диапазон: {SelectedStartDate:dd MMMM yyyy} - {SelectedEndDate:dd MMMM yyyy}";
 
         public ObservableCollection<DayTasks> WeekTasks { get; set; } = new ObservableCollection<DayTasks>();
 
-        public ICommand DayTappedCommand { get; }
         public ICommand SaveTaskCommand { get; }
         public ICommand CancelEditCommand { get; }
 
         public EisenhowerMatrixViewModel(ITaskService taskService)
         {
             _taskService = taskService;
+            _dispatcher = Dispatcher.GetForCurrentThread();
 
-            LoadTasks();
-            DayTappedCommand = new Command<string>(async (day) => await OnDayTapped(day));
-            SaveTaskCommand = new Command(async () => await SaveTask());
-            CancelEditCommand = new Command(async () => await CancelEdit());
+            LoadTasksAsync();
+            SaveTaskCommand = new Command(async () => await SaveTaskAsync());
+            CancelEditCommand = new Command(CancelEdit);
         }
 
-        public async void LoadTasks()
+        public async void LoadTasksAsync()
         {
             var startOfWeek = DateTime.Today.StartOfWeek(DayOfWeek.Monday);
-            var endOfWeek = startOfWeek.AddDays(7);
+            var endOfWeek = startOfWeek.AddDays(6); // 7 дней, включая начало недели
             var tasks = await _taskService.GetTasksByDateRangeAsync(startOfWeek, endOfWeek);
 
-            WeekTasks.Clear();
             var cultureInfo = new System.Globalization.CultureInfo("ru-RU");
-            for (int i = 0; i < 7; i++)
-            {
-                var currentDay = startOfWeek.AddDays(i);
-                var dayTasks = tasks.Where(task => task.ScheduledDate.Date == currentDay.Date);
-                var dayName = currentDay.ToString("dddd", cultureInfo);
-                dayName = cultureInfo.TextInfo.ToTitleCase(dayName);
 
-                WeekTasks.Add(new DayTasks
+            _dispatcher.Dispatch(() =>
+            {
+                WeekTasks.Clear();
+                for (int i = 0; i < 7; i++)
                 {
-                    DayName = dayName,
-                    Date = currentDay,
-                    Tasks = new ObservableCollection<TaskItem>(dayTasks)
-                });
-            }
+                    var currentDay = startOfWeek.AddDays(i);
+                    var dayTasks = tasks.Where(task => task.ScheduledDate.Date == currentDay.Date);
+                    var dayName = cultureInfo.TextInfo.ToTitleCase(currentDay.ToString("dddd", cultureInfo));
+
+                    WeekTasks.Add(new DayTasks
+                    {
+                        DayName = dayName,
+                        Date = currentDay,
+                        Tasks = new ObservableCollection<TaskItem>(dayTasks)
+                    });
+                }
+            });
         }
 
         public async Task UpdateTaskCompletionStatus(TaskItem task)
@@ -137,81 +139,60 @@ namespace TimeFlow.Presentation.ViewModels
             if (task != null)
             {
                 await _taskService.UpdateTaskAsync(task);
-                OnPropertyChanged(nameof(WeekTasks));
             }
         }
 
-        private async Task OnDayTapped(string day)
-        {
-            if (Enum.TryParse<DayOfWeek>(day, out var dayOfWeek))
-            {
-                // Определяем дату выбранного дня недели в текущей неделе
-                var selectedDate = DateTime.Today.StartOfWeek(DayOfWeek.Monday).AddDays((int)dayOfWeek - 1);
-
-                // await Shell.Current.GoToAsync($"{nameof(AddTaskPage)}?ScheduledDate={selectedDate:yyyy-MM-dd}");
-            }
-        }
-
-        private async Task SaveTask()
+        private async Task SaveTaskAsync()
         {
             var startDate = SelectedStartDate;
             var endDate = SelectedEndDate;
 
-            if (startDate == endDate)
+            var tasksToAdd = new List<TaskItem>();
+
+            var currentDate = startDate;
+            while (currentDate <= endDate)
             {
                 var newTask = new TaskItem
                 {
                     Title = TaskTitle,
                     Description = TaskDescription,
-                    ScheduledDate = startDate,
-                    PlannedStart = startDate.Add(PlannedStartTime),
-                    PlannedEnd = startDate.Add(PlannedStartTime).Add(EstimatedDuration),
+                    ScheduledDate = currentDate,
+                    PlannedStart = currentDate.Add(PlannedStartTime),
+                    PlannedEnd = currentDate.Add(PlannedStartTime).Add(EstimatedDuration),
                     EstimatedDuration = EstimatedDuration,
                     IsImportant = IsImportant,
                     IsUrgent = IsUrgent
                 };
-                await _taskService.AddTaskAsync(newTask);
+                tasksToAdd.Add(newTask);
+                currentDate = currentDate.AddDays(1);
             }
-            else // Если выбран диапазон
+
+            foreach (var task in tasksToAdd)
             {
-                var currentDate = startDate;
-                while (currentDate <= endDate)
-                {
-                    var newTask = new TaskItem
-                    {
-                        Title = TaskTitle,
-                        Description = TaskDescription,
-                        ScheduledDate = currentDate,
-                        PlannedStart = startDate.Add(PlannedStartTime),
-                        PlannedEnd = startDate.Add(PlannedStartTime).Add(EstimatedDuration),
-                        EstimatedDuration = EstimatedDuration,
-                        IsImportant = IsImportant,
-                        IsUrgent = IsUrgent
-                    };
-                    await _taskService.AddTaskAsync(newTask);
-                    currentDate = currentDate.AddDays(1);
-                }
+                await _taskService.AddTaskAsync(task);
             }
 
             IsTaskEditorVisible = false;
             ClearTaskEditor();
-            LoadTasks();
+            LoadTasksAsync();
         }
-        private async Task CancelEdit()
+
+        private void CancelEdit()
         {
             IsTaskEditorVisible = false;
             ClearTaskEditor();
         }
+
         public void ClearTaskEditor()
         {
-            PlannedStartTime = new TimeSpan(9, 0, 0); //Сброс времени
+            PlannedStartTime = new TimeSpan(9, 0, 0); // Сброс времени
             EstimatedDuration = new TimeSpan(2, 0, 0);
             TaskTitle = string.Empty;
             TaskDescription = string.Empty;
             IsImportant = false;
             IsUrgent = false;
+            SelectedStartDate = DateTime.Today;
+            SelectedEndDate = DateTime.Today;
         }
-
-
     }
 }

@@ -21,9 +21,7 @@
 
             <Button Command="{Binding NavigateToEisenhowerMatrixCommand}" Text="1. Запланировать задачи на сегодня" />
 
-            <Button Command="{Binding NavigateToTimeBlockingCommand}" Text="2. Планировать день" />
-
-            <Button Command="{Binding StartWorkCommand}" Text="3. Начать работу" />
+            <Button Command="{Binding StartWorkCommand}" Text="2. Начать работу" />
         </VerticalStackLayout>
 
     </Grid>

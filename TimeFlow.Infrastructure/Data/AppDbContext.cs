@@ -7,7 +7,6 @@ namespace TimeFlow.Infrastructure.Data
     {
         public DbSet<TaskItem> Tasks { get; set; }
         public DbSet<PomodoroSession> PomodoroSessions { get; set; }
-        public DbSet<TimeBlock> TimeBlocks { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)

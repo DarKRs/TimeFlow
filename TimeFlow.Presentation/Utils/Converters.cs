@@ -56,29 +56,6 @@ namespace TimeFlow.Presentation.Utils
         }
     }
 
-    public class BlockTypeToBackgroundColorConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is TimeBlockType blockType)
-            {
-                return blockType switch
-                {
-                    TimeBlockType.Work => Color.FromArgb("#E8F5E9"), // Зеленоватый
-                    TimeBlockType.Break => Color.FromArgb("#FFF3E0"), // Оранжеватый
-                    TimeBlockType.Other => Color.FromArgb("#E3F2FD"), // Голубоватый
-                    _ => Color.FromArgb("#EEEEEE") // Светло-серый
-                };
-            }
-            return Color.FromArgb("#EEEEEE");
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     public class BoolToColorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

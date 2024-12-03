@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
 using TimeFlow.Core.Interfaces;
 using TimeFlow.Domain.Entities;
 using TimeFlow.Presentation.Utils;
-using TimeFlow.Presentation.Views;
 
 namespace TimeFlow.Presentation.ViewModels
 {
@@ -144,7 +137,7 @@ namespace TimeFlow.Presentation.ViewModels
             if (task != null)
             {
                 await _taskService.UpdateTaskAsync(task);
-                OnPropertyChanged(nameof(WeekTasks)); 
+                OnPropertyChanged(nameof(WeekTasks));
             }
         }
 
@@ -155,7 +148,7 @@ namespace TimeFlow.Presentation.ViewModels
                 // Определяем дату выбранного дня недели в текущей неделе
                 var selectedDate = DateTime.Today.StartOfWeek(DayOfWeek.Monday).AddDays((int)dayOfWeek - 1);
 
-               // await Shell.Current.GoToAsync($"{nameof(AddTaskPage)}?ScheduledDate={selectedDate:yyyy-MM-dd}");
+                // await Shell.Current.GoToAsync($"{nameof(AddTaskPage)}?ScheduledDate={selectedDate:yyyy-MM-dd}");
             }
         }
 
@@ -196,11 +189,9 @@ namespace TimeFlow.Presentation.ViewModels
                         IsUrgent = IsUrgent
                     };
                     await _taskService.AddTaskAsync(newTask);
-                    currentDate = currentDate.AddDays(1); 
+                    currentDate = currentDate.AddDays(1);
                 }
             }
-
-
 
             IsTaskEditorVisible = false;
             ClearTaskEditor();
@@ -208,8 +199,8 @@ namespace TimeFlow.Presentation.ViewModels
         }
         private async Task CancelEdit()
         {
-            IsTaskEditorVisible = false; 
-            ClearTaskEditor(); 
+            IsTaskEditorVisible = false;
+            ClearTaskEditor();
         }
         public void ClearTaskEditor()
         {

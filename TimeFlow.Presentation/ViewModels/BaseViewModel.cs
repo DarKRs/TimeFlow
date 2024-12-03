@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using TimeFlow.Core.Interfaces;
 using TimeFlow.Domain.Entities;
 
@@ -28,16 +23,6 @@ namespace TimeFlow.Presentation.ViewModels
             storage = value;
             OnPropertyChanged(propertyName);
             return true;
-        }
-
-        protected async Task LoadTasksAsync(ObservableCollection<TaskItem> taskCollection, ITaskService taskService)
-        {
-            var loadedTasks = await taskService.GetAllTasksAsync();
-            taskCollection.Clear();
-            foreach (var task in loadedTasks)
-            {
-                taskCollection.Add(task);
-            }
         }
     }
 }

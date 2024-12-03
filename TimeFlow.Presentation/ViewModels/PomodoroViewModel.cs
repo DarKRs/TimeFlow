@@ -1,5 +1,4 @@
-﻿using Plugin.LocalNotification;
-using Plugin.Maui.Audio;
+﻿using Plugin.Maui.Audio;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using TimeFlow.Core.Interfaces;
@@ -100,18 +99,9 @@ namespace TimeFlow.Presentation.ViewModels
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(TimeDisplay));
                     OnPropertyChanged(nameof(Progress));
-                    OnPropertyChanged(nameof(CurrentSessionTypeDisplay));
                 }
             }
         }
-
-        public string CurrentSessionTypeDisplay => _currentSessionType switch
-        {
-            PomodoroSessionType.Work => "Рабочий интервал",
-            PomodoroSessionType.ShortBreak => "Короткий перерыв",
-            PomodoroSessionType.LongBreak => "Длинный перерыв",
-            _ => "Неизвестный статус"
-        };
 
         private bool _autoStartNextSession = true;
         public bool AutoStartNextSession
@@ -232,7 +222,7 @@ namespace TimeFlow.Presentation.ViewModels
             }
         }
 
-        private async void LoadAudio()
+        private async Task LoadAudio()
         {
             _audioPlayer = _audioManager.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("soft-bell-countdown.wav"));
         }
@@ -261,9 +251,10 @@ namespace TimeFlow.Presentation.ViewModels
 
         private async void OnSessionCompleted()
         {
+            int duration = _currentSessionType == PomodoroSessionType.Work ? _workDuration * 60 : (_currentSessionType == PomodoroSessionType.ShortBreak ? _shortBreakDuration * 60 : _longBreakDuration * 60);
             var session = new PomodoroSession
             {
-                StartTime = DateTime.Now.AddSeconds(-(_currentSessionType == PomodoroSessionType.Work ? _workDuration * 60 : GetCurrentBreakDuration() * 60)),
+                StartTime = DateTime.Now.AddSeconds(-duration),
                 EndTime = DateTime.Now,
                 SessionType = _currentSessionType,
                 TaskItemId = SelectedTask?.Id
@@ -298,11 +289,6 @@ namespace TimeFlow.Presentation.ViewModels
             {
                 StartTimer();
             }
-        }
-
-        private int GetCurrentBreakDuration()
-        {
-            return _currentSessionType == PomodoroSessionType.ShortBreak ? _shortBreakDuration : _longBreakDuration;
         }
 
         public void StartTimer()

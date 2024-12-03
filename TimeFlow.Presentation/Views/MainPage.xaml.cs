@@ -9,16 +9,6 @@ namespace TimeFlow.Presentation.Views
             InitializeComponent();
             BindingContext = viewModel;
         }
-
-        protected override void OnAppearing()
-        {
-            base.OnAppearing();
-            if (BindingContext is MainViewModel viewModel)
-            {
-                viewModel.LoadTimeBlocks();
-            }
-        }
-
     }
 
 }

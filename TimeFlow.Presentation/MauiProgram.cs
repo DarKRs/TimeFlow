@@ -40,9 +40,7 @@ namespace TimeFlow.Presentation
 
             builder.Services.AddScoped<ITaskRepository, TaskRepository>();
             builder.Services.AddScoped<IPomodoroSessionRepository, PomodoroSessionRepository>();
-            builder.Services.AddScoped<ITimeBlockRepository, TimeBlockRepository>();
-            builder.Services.AddScoped<ITaskService,TaskService>();
-            builder.Services.AddScoped<ITimeBlockService, TimeBlockService>();
+            builder.Services.AddScoped<ITaskService, TaskService>();
 
 #if ANDROID || IOS
             builder.Services.AddSingleton<INotifyService, AndroidNotificationService>();

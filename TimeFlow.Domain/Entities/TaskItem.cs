@@ -30,8 +30,6 @@
         // Связь с PomodoroSession
         public ICollection<PomodoroSession> PomodoroSessions { get; set; }
 
-        // Связь с TimeBlock
-        public ICollection<TimeBlock> TimeBlocks { get; set; }
     }
 
     public enum TaskCategory

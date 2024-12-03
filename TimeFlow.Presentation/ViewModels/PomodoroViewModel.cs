@@ -1,15 +1,9 @@
 ﻿using Plugin.LocalNotification;
 using Plugin.Maui.Audio;
 using System.Collections.ObjectModel;
-using System.Timers;
 using System.Windows.Input;
 using TimeFlow.Core.Interfaces;
 using TimeFlow.Domain.Entities;
-using Timer = System.Timers.Timer;
-#if WINDOWS
-using Windows.UI.Notifications;
-using Windows.Data.Xml.Dom;
-#endif
 
 namespace TimeFlow.Presentation.ViewModels
 {
@@ -19,9 +13,10 @@ namespace TimeFlow.Presentation.ViewModels
         private readonly ITaskService _taskService;
         private readonly IPomodoroSessionRepository _pomodoroSessionRepository;
         private readonly IAudioManager _audioManager;
+        private readonly INotifyService _notificationService;
         private IAudioPlayer _audioPlayer;
-        //
-        private Timer _timer;
+
+        private IDispatcherTimer _timer;
         private int _remainingTime; // in seconds
         private bool _isRunning;
         private int _totalTimeForCurrentSession;
@@ -29,19 +24,11 @@ namespace TimeFlow.Presentation.ViewModels
         private PomodoroSessionType _currentSessionType;
         private int _sessionCount = 0;
 
-        public Grid TabPanel { get; set; }
         private ObservableCollection<TaskItem> _todayTasks;
         public ObservableCollection<TaskItem> TodayTasks
         {
             get => _todayTasks;
-            set
-            {
-                if (_todayTasks != value)
-                {
-                    _todayTasks = value;
-                    OnPropertyChanged(nameof(TodayTasks));
-                }
-            }
+            set => SetProperty(ref _todayTasks, value);
         }
 
         private int _workDuration;
@@ -53,10 +40,9 @@ namespace TimeFlow.Presentation.ViewModels
                 if (SetProperty(ref _workDuration, value))
                 {
                     OnPropertyChanged(nameof(DisplayWorkDuration));
-                    if (_currentSessionType == PomodoroSessionType.Work)
+                    if (_currentSessionType == PomodoroSessionType.Work && !IsRunning)
                     {
                         RemainingTime = WorkDuration * 60;
-                        OnPropertyChanged(nameof(TimeDisplay));
                     }
                 }
             }
@@ -71,10 +57,9 @@ namespace TimeFlow.Presentation.ViewModels
                 if (SetProperty(ref _shortBreakDuration, value))
                 {
                     OnPropertyChanged(nameof(DisplayShortBreakDuration));
-                    if (_currentSessionType == PomodoroSessionType.ShortBreak)
+                    if (_currentSessionType == PomodoroSessionType.ShortBreak && !IsRunning)
                     {
                         RemainingTime = ShortBreakDuration * 60;
-                        OnPropertyChanged(nameof(TimeDisplay));
                     }
                 }
             }
@@ -89,10 +74,9 @@ namespace TimeFlow.Presentation.ViewModels
                 if (SetProperty(ref _longBreakDuration, value))
                 {
                     OnPropertyChanged(nameof(DisplayLongBreakDuration));
-                    if (_currentSessionType == PomodoroSessionType.LongBreak)
+                    if (_currentSessionType == PomodoroSessionType.LongBreak && !IsRunning)
                     {
                         RemainingTime = LongBreakDuration * 60;
-                        OnPropertyChanged(nameof(TimeDisplay));
                     }
                 }
             }
@@ -112,7 +96,7 @@ namespace TimeFlow.Presentation.ViewModels
             {
                 if (_remainingTime != value)
                 {
-                    _remainingTime = value;
+                    _remainingTime = value < 0 ? 0 : value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(TimeDisplay));
                     OnPropertyChanged(nameof(Progress));
@@ -121,29 +105,21 @@ namespace TimeFlow.Presentation.ViewModels
             }
         }
 
-        public string CurrentSessionTypeDisplay
+        public string CurrentSessionTypeDisplay => _currentSessionType switch
         {
-            get
-            {
-                return _currentSessionType switch
-                {
-                    PomodoroSessionType.Work => "Рабочий интервал",
-                    PomodoroSessionType.ShortBreak => "Короткий перерыв",
-                    PomodoroSessionType.LongBreak => "Длинный перерыв",
-                    _ => "Неизвестный статус"
-                };
-            }
-        }
+            PomodoroSessionType.Work => "Рабочий интервал",
+            PomodoroSessionType.ShortBreak => "Короткий перерыв",
+            PomodoroSessionType.LongBreak => "Длинный перерыв",
+            _ => "Неизвестный статус"
+        };
 
         private bool _autoStartNextSession = true;
-
         public bool AutoStartNextSession
         {
             get => _autoStartNextSession;
             set => SetProperty(ref _autoStartNextSession, value);
         }
 
-        // Прогресс интервала
         public double Progress => (double)(_totalTimeForCurrentSession - RemainingTime) / _totalTimeForCurrentSession;
 
         public string TimeDisplay => TimeSpan.FromSeconds(RemainingTime).ToString(RemainingTime >= 3600 ? @"hh\:mm\:ss" : @"mm\:ss");
@@ -157,13 +133,9 @@ namespace TimeFlow.Presentation.ViewModels
             get => _isRunning;
             set
             {
-                if (_isRunning != value)
+                if (SetProperty(ref _isRunning, value))
                 {
-                    _isRunning = value;
-                    OnPropertyChanged();
-                    OnPropertyChanged(nameof(CanStart));
-                    OnPropertyChanged(nameof(CanPause));
-                    OnPropertyChanged(nameof(CanReset));
+                    UpdateCommandStates();
                 }
             }
         }
@@ -192,39 +164,41 @@ namespace TimeFlow.Presentation.ViewModels
         public ICommand StartCommand { get; }
         public ICommand PauseCommand { get; }
         public ICommand ResetCommand { get; }
-        public ICommand SaveSettingsCommand { get; }
         public ICommand TogglePanelCommand { get; }
         public ICommand ShowTasksTabCommand { get; }
         public ICommand ShowSettingsTabCommand { get; }
 
-        public PomodoroViewModel(ITaskService taskService, IPomodoroSessionRepository pomodoroSessionRepository, IAudioManager audioManager)
+        public PomodoroViewModel(ITaskService taskService, IPomodoroSessionRepository pomodoroSessionRepository, IAudioManager audioManager, INotifyService notificationService)
         {
             _pomodoroSessionRepository = pomodoroSessionRepository;
             _taskService = taskService;
             _audioManager = audioManager;
+            _notificationService = notificationService;
 
 #if DEBUG
-            // Уменьшенные значения для отладки
             _workDuration = 1; // 1 минута работы
             _shortBreakDuration = 1; // 1 минута короткого перерыва
             _longBreakDuration = 2; // 2 минуты длинного перерыва
 #else
-                _workDuration = 25;
-                _shortBreakDuration = 5;
-                _longBreakDuration = 15;
+            _workDuration = 25;
+            _shortBreakDuration = 5;
+            _longBreakDuration = 15;
 #endif
 
             _dispatcher = Dispatcher.GetForCurrentThread();
+
             RemainingTime = _workDuration * 60;
             _currentSessionType = PomodoroSessionType.Work;
 
-            _timer = new Timer(1000);
-            _timer.Elapsed += OnTimerElapsed;
+            _timer = _dispatcher.CreateTimer();
+            _timer.Interval = TimeSpan.FromSeconds(1);
+            _timer.Tick += OnTimerTick;
 
             StartCommand = new Command(StartTimer, () => CanStart);
             PauseCommand = new Command(PauseTimer, () => CanPause);
             ResetCommand = new Command(ResetTimer, () => CanReset);
-            TogglePanelCommand = new Command(TogglePanelAsync);
+            TogglePanelCommand = new Command(() => IsPanelVisible = !IsPanelVisible);
+
             ShowTasksTabCommand = new Command(() =>
             {
                 IsTasksTabVisible = true;
@@ -245,7 +219,7 @@ namespace TimeFlow.Presentation.ViewModels
         public async void LoadTodayTasks()
         {
             var todayTasks = await _taskService.GetTasksByDateAsync(DateTime.Today);
-            var sortedTasks = todayTasks.OrderBy(task => task.Category);
+            var sortedTasks = todayTasks.OrderBy(task => task.Category).ToList();
 
             TodayTasks = new ObservableCollection<TaskItem>(sortedTasks);
         }
@@ -254,8 +228,7 @@ namespace TimeFlow.Presentation.ViewModels
         {
             if (task != null)
             {
-                await _taskService.UpdateTaskAsync(task); 
-                OnPropertyChanged(nameof(TodayTasks));
+                await _taskService.UpdateTaskAsync(task);
             }
         }
 
@@ -269,7 +242,7 @@ namespace TimeFlow.Presentation.ViewModels
             _audioPlayer?.Play();
         }
 
-        private void OnTimerElapsed(object sender, ElapsedEventArgs e)
+        private void OnTimerTick(object sender, EventArgs e)
         {
             RemainingTime--;
 
@@ -282,11 +255,7 @@ namespace TimeFlow.Presentation.ViewModels
             {
                 _timer.Stop();
                 IsRunning = false;
-
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    OnSessionCompleted();
-                });
+                OnSessionCompleted();
             }
         }
 
@@ -309,20 +278,20 @@ namespace TimeFlow.Presentation.ViewModels
                 {
                     _currentSessionType = PomodoroSessionType.LongBreak;
                     RemainingTime = _longBreakDuration * 60;
-                    ShowNotification("Длинный перерыв", "Время для длительного отдыха!");
+                    await _notificationService.ShowNotificationAsync("Длинный перерыв", "Время для длительного отдыха!");
                 }
                 else
                 {
                     _currentSessionType = PomodoroSessionType.ShortBreak;
                     RemainingTime = _shortBreakDuration * 60;
-                    ShowNotification("Короткий перерыв", "Время для короткого перерыва!");
+                    await _notificationService.ShowNotificationAsync("Короткий перерыв", "Время для короткого перерыва!");
                 }
             }
             else
             {
                 _currentSessionType = PomodoroSessionType.Work;
                 RemainingTime = _workDuration * 60;
-                ShowNotification("Рабочая сессия", "Время вернуться к работе!");
+                await _notificationService.ShowNotificationAsync("Рабочая сессия", "Время вернуться к работе!");
             }
 
             if (AutoStartNextSession)
@@ -368,63 +337,12 @@ namespace TimeFlow.Presentation.ViewModels
         public bool CanPause => IsRunning;
         public bool CanReset => true;
 
-
-        private async void TogglePanelAsync()
+        private void UpdateCommandStates()
         {
-            if (!IsPanelVisible)
-            {
-                TabPanel.TranslationX = 420; // Установка стартового положения перед первым показом
-                IsPanelVisible = true;
-                await TabPanel.TranslateTo(0, 0, 350, Easing.SinInOut);
-            }
-            else
-            {
-                await TabPanel.TranslateTo(420, 0, 350, Easing.SinInOut);
-                IsPanelVisible = false;
-            }
+            ((Command)StartCommand).ChangeCanExecute();
+            ((Command)PauseCommand).ChangeCanExecute();
+            ((Command)ResetCommand).ChangeCanExecute();
         }
 
-
-
-        private async void ShowNotification(string title, string message)
-        {
-#if ANDROID || IOS
-            // Уведомления для Android/iOS через Plugin.LocalNotification
-            if (await LocalNotificationCenter.Current.AreNotificationsEnabled() == false)
-            {
-                await LocalNotificationCenter.Current.RequestNotificationPermission();
-            }
-
-            var notification = new NotificationRequest
-            {
-                NotificationId = 100,
-                Title = title,
-                Description = message,
-                ReturningData = "PomodoroFinished",
-                Schedule =
-                    {
-                        NotifyTime = DateTime.Now.AddSeconds(5)
-                    }
-            };
-            await LocalNotificationCenter.Current.Show(notification);
-#elif WINDOWS
-                // Уведомления для Windows
-                ShowWindowsToastNotification(title, message);
-#endif
-        }
-
-        private void ShowWindowsToastNotification(string title, string message)
-        {
-#if WINDOWS
-               var toastXml = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText02);
-
-                var stringElements = toastXml.GetElementsByTagName("text");
-                stringElements[0].AppendChild(toastXml.CreateTextNode(title));
-                stringElements[1].AppendChild(toastXml.CreateTextNode(message));
-
-                var toast = new ToastNotification(toastXml);
-                ToastNotificationManager.CreateToastNotifier("PomodoroApp").Show(toast);
-#endif
-        }
     }
 }

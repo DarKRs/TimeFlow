@@ -142,7 +142,7 @@
                                     Margin="0,0,0,3"
                                     FontSize="14"
                                     Text="{Binding Date, StringFormat=' {0:dd MMM yyyy}'}"
-                                    TextColor="#555"
+                                    TextColor="#CDCDCD"
                                     VerticalOptions="Center" />
 
                                 <CollectionView

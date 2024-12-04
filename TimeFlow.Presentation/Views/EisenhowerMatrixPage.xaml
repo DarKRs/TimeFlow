@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:import="clr-namespace:Custom.MAUI.Components;assembly=Custom.MAUI.Components"
+    x:Name="EisenhowerMatrix"
     BackgroundImageSource="background.jpg"
     Shell.NavBarIsVisible="False">
 
@@ -155,19 +156,35 @@
                                                 Margin="6"
                                                 Padding="10"
                                                 BackgroundColor="{Binding Category, Converter={StaticResource CategoryToBackgroundColorConverter}}"
-                                                CornerRadius="15"
+                                                CornerRadius="8"
                                                 HasShadow="True"
                                                 MaximumWidthRequest="240"
                                                 MinimumHeightRequest="130"
                                                 MinimumWidthRequest="200">
-                                                <StackLayout>
-                                                    <StackLayout Orientation="Horizontal" VerticalOptions="Center">
+                                                <Grid>
+                                                    <!--  Определяем строки и столбцы  -->
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto" />
+                                                        <RowDefinition Height="Auto" />
+                                                        <RowDefinition Height="*" />
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <!--  Чекбокс и заголовок задачи  -->
+                                                    <StackLayout
+                                                        Grid.Row="0"
+                                                        Grid.Column="0"
+                                                        Orientation="Horizontal"
+                                                        Margin="-5,-12,0,0">
                                                         <CheckBox
                                                             CheckedChanged="OnTaskCompletionChanged"
                                                             IsChecked="{Binding IsCompleted}"
                                                             VerticalOptions="Center" />
                                                         <Label
-                                                            Margin="-10,0,0,0"
+                                                            Margin="-14,0,0,0"
                                                             FontAttributes="Bold"
                                                             FontSize="20"
                                                             Text="{Binding Title}"
@@ -175,8 +192,25 @@
                                                             VerticalOptions="Center" />
                                                     </StackLayout>
 
+                                                    <!--  Кнопка удаления задачи  -->
+                                                    <Button
+                                                        Grid.Row="0"
+                                                        Grid.Column="1"
+                                                        Margin="0,-15,0,5"
+                                                        BackgroundColor="Transparent"
+                                                        Command="{Binding BindingContext.DeleteTaskCommand, Source={x:Reference EisenhowerMatrix}}"
+                                                        CommandParameter="{Binding}"
+                                                        HorizontalOptions="End"
+                                                        Text="X"
+                                                        TextColor="Red"
+                                                        VerticalOptions="Start" />
+
                                                     <!--  Время начала и окончания  -->
-                                                    <Label FontSize="12" TextColor="#777">
+                                                    <Label
+                                                        Grid.Row="1"
+                                                        Grid.ColumnSpan="2"
+                                                        FontSize="12"
+                                                        TextColor="#777">
                                                         <Label.Text>
                                                             <MultiBinding StringFormat="Время: {0:HH:mm} - {1:HH:mm}">
                                                                 <Binding Path="PlannedStart" />
@@ -187,6 +221,8 @@
 
                                                     <!--  Описание задачи  -->
                                                     <Label
+                                                        Grid.Row="2"
+                                                        Grid.ColumnSpan="2"
                                                         Margin="0,5,0,0"
                                                         FontSize="14"
                                                         LineBreakMode="WordWrap"
@@ -196,12 +232,14 @@
 
                                                     <!--  Категория задачи  -->
                                                     <Label
+                                                        Grid.Row="3"
+                                                        Grid.ColumnSpan="2"
                                                         FontAttributes="Italic"
                                                         FontSize="12"
                                                         Text="{Binding Category, Converter={StaticResource CategoryToHumanReadableConverter}}"
                                                         TextColor="#444"
                                                         VerticalOptions="EndAndExpand" />
-                                                </StackLayout>
+                                                </Grid>
                                             </Frame>
                                         </DataTemplate>
                                     </CollectionView.ItemTemplate>

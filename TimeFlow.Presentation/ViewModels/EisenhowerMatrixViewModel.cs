@@ -96,6 +96,7 @@ namespace TimeFlow.Presentation.ViewModels
 
         public ICommand SaveTaskCommand { get; }
         public ICommand CancelEditCommand { get; }
+        public ICommand DeleteTaskCommand { get; }
 
         public EisenhowerMatrixViewModel(ITaskService taskService)
         {
@@ -104,6 +105,8 @@ namespace TimeFlow.Presentation.ViewModels
 
             LoadTasksAsync();
             SaveTaskCommand = new Command(async () => await SaveTaskAsync());
+            DeleteTaskCommand = new Command<TaskItem>(async (task) => await DeleteTaskAsync(task));
+
             CancelEditCommand = new Command(CancelEdit);
         }
 
@@ -139,6 +142,15 @@ namespace TimeFlow.Presentation.ViewModels
             if (task != null)
             {
                 await _taskService.UpdateTaskAsync(task);
+            }
+        }
+
+        private async Task DeleteTaskAsync(TaskItem task)
+        {
+            if (task != null)
+            {
+                await _taskService.DeleteTaskAsync(task.Id);
+                LoadTasksAsync();
             }
         }
 

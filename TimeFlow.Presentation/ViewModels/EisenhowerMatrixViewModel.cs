@@ -88,15 +88,31 @@ namespace TimeFlow.Presentation.ViewModels
             set => SetProperty(ref _estimatedDuration, value);
         }
 
+        private TaskItem _selectedTask;
+        public TaskItem SelectedTask
+        {
+            get => _selectedTask;
+            set
+            {
+                if (SetProperty(ref _selectedTask, value))
+                {
+                    OnPropertyChanged(nameof(TaskEditorTitle));
+                }
+            }
+        }
+
         public string DisplayedDateText => SelectedStartDate == SelectedEndDate
             ? $"Дата: {SelectedStartDate:dd MMMM yyyy}"
             : $"Диапазон: {SelectedStartDate:dd MMMM yyyy} - {SelectedEndDate:dd MMMM yyyy}";
+
+        public string TaskEditorTitle => SelectedTask != null ? "Редактировать задачу" : "Создать задачу";
 
         public ObservableCollection<DayTasks> WeekTasks { get; set; } = new ObservableCollection<DayTasks>();
 
         public ICommand SaveTaskCommand { get; }
         public ICommand CancelEditCommand { get; }
         public ICommand DeleteTaskCommand { get; }
+        public ICommand EditTaskCommand { get; }
 
         public EisenhowerMatrixViewModel(ITaskService taskService)
         {
@@ -106,6 +122,7 @@ namespace TimeFlow.Presentation.ViewModels
             LoadTasksAsync();
             SaveTaskCommand = new Command(async () => await SaveTaskAsync());
             DeleteTaskCommand = new Command<TaskItem>(async (task) => await DeleteTaskAsync(task));
+            EditTaskCommand = new Command<TaskItem>(EditTask);
 
             CancelEditCommand = new Command(CancelEdit);
         }
@@ -154,34 +171,69 @@ namespace TimeFlow.Presentation.ViewModels
             }
         }
 
+        private void EditTask(TaskItem task)
+        {
+            if (task != null)
+            {
+                SelectedTask = task;
+
+                TaskTitle = task.Title;
+                TaskDescription = task.Description;
+                IsImportant = task.IsImportant;
+                IsUrgent = task.IsUrgent;
+                PlannedStartTime = task.PlannedStart.TimeOfDay;
+                EstimatedDuration = task.EstimatedDuration;
+                SelectedStartDate = task.ScheduledDate;
+                SelectedEndDate = task.ScheduledDate;
+
+                IsTaskEditorVisible = true;
+            }
+        }
+
         private async Task SaveTaskAsync()
         {
-            var startDate = SelectedStartDate;
-            var endDate = SelectedEndDate;
-
-            var tasksToAdd = new List<TaskItem>();
-
-            var currentDate = startDate;
-            while (currentDate <= endDate)
+            if (SelectedTask != null)
             {
-                var newTask = new TaskItem
-                {
-                    Title = TaskTitle,
-                    Description = TaskDescription,
-                    ScheduledDate = currentDate,
-                    PlannedStart = currentDate.Add(PlannedStartTime),
-                    PlannedEnd = currentDate.Add(PlannedStartTime).Add(EstimatedDuration),
-                    EstimatedDuration = EstimatedDuration,
-                    IsImportant = IsImportant,
-                    IsUrgent = IsUrgent
-                };
-                tasksToAdd.Add(newTask);
-                currentDate = currentDate.AddDays(1);
+                SelectedTask.Title = TaskTitle;
+                SelectedTask.Description = TaskDescription;
+                SelectedTask.IsImportant = IsImportant;
+                SelectedTask.IsUrgent = IsUrgent;
+                SelectedTask.PlannedStart = SelectedStartDate.Add(PlannedStartTime);
+                SelectedTask.PlannedEnd = SelectedStartDate.Add(PlannedStartTime).Add(EstimatedDuration);
+                SelectedTask.EstimatedDuration = EstimatedDuration;
+                SelectedTask.ScheduledDate = SelectedStartDate;
+
+                await _taskService.UpdateTaskAsync(SelectedTask);
             }
-
-            foreach (var task in tasksToAdd)
+            else
             {
-                await _taskService.AddTaskAsync(task);
+                var startDate = SelectedStartDate;
+                var endDate = SelectedEndDate;
+
+                var tasksToAdd = new List<TaskItem>();
+
+                var currentDate = startDate;
+                while (currentDate <= endDate)
+                {
+                    var newTask = new TaskItem
+                    {
+                        Title = TaskTitle,
+                        Description = TaskDescription,
+                        ScheduledDate = currentDate,
+                        PlannedStart = currentDate.Add(PlannedStartTime),
+                        PlannedEnd = currentDate.Add(PlannedStartTime).Add(EstimatedDuration),
+                        EstimatedDuration = EstimatedDuration,
+                        IsImportant = IsImportant,
+                        IsUrgent = IsUrgent
+                    };
+                    tasksToAdd.Add(newTask);
+                    currentDate = currentDate.AddDays(1);
+                }
+
+                foreach (var task in tasksToAdd)
+                {
+                    await _taskService.AddTaskAsync(task);
+                }
             }
 
             IsTaskEditorVisible = false;
@@ -197,6 +249,7 @@ namespace TimeFlow.Presentation.ViewModels
 
         public void ClearTaskEditor()
         {
+            SelectedTask = null; 
             PlannedStartTime = new TimeSpan(9, 0, 0); // Сброс времени
             EstimatedDuration = new TimeSpan(2, 0, 0);
             TaskTitle = string.Empty;

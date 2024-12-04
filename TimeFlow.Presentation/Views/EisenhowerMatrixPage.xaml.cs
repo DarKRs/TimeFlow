@@ -67,5 +67,6 @@ namespace TimeFlow.Presentation.Views
                 viewModel.LoadTasksAsync();
             }
         }
+
     }
 }

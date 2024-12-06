@@ -260,7 +260,7 @@ namespace TimeFlow.Presentation.ViewModels
                 TaskItemId = SelectedTask?.Id
             };
 
-            await _pomodoroSessionRepository.AddSessionAsync(session);
+            await _pomodoroSessionRepository.AddAsync(session);
 
             if (_currentSessionType == PomodoroSessionType.Work)
             {

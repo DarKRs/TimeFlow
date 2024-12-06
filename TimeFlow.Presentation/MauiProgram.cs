@@ -38,6 +38,8 @@ namespace TimeFlow.Presentation
                 options.UseSqlite($"Data Source={dbPath}");
             });
 
+            builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+
             builder.Services.AddScoped<ITaskRepository, TaskRepository>();
             builder.Services.AddScoped<IPomodoroSessionRepository, PomodoroSessionRepository>();
             builder.Services.AddScoped<ITaskService, TaskService>();

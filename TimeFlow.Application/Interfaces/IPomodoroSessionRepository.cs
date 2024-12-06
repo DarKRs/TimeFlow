@@ -7,12 +7,8 @@ using TimeFlow.Domain.Entities;
 
 namespace TimeFlow.Core.Interfaces
 {
-    public interface IPomodoroSessionRepository
+    public interface IPomodoroSessionRepository : IBaseRepository<PomodoroSession>
     {
-        Task<IEnumerable<PomodoroSession>> GetAllSessionsAsync();
-        Task<PomodoroSession> GetSessionByIdAsync(int id);
-        Task AddSessionAsync(PomodoroSession session);
-        Task UpdateSessionAsync(PomodoroSession session);
-        Task DeleteSessionAsync(int id);
+        //Для специфичного функционала
     }
 }

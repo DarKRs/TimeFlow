@@ -14,42 +14,49 @@ namespace TimeFlow.Core.Services
 
         public async Task<IEnumerable<TaskItem>> GetAllTasksAsync()
         {
-            return await _taskRepository.GetTasksAsync().ConfigureAwait(false);
+            return await _taskRepository.GetAllAsync().ConfigureAwait(false);
         }
 
         public async Task<IEnumerable<TaskItem>> GetTasksByCategoryAsync(TaskCategory category)
         {
-            return await _taskRepository.GetTasksAsync(task => task.Category == category);
+            return await _taskRepository.FindAsync(task => task.Category == category);
         }
 
         public async Task<TaskItem> GetTaskByIdAsync(int id)
         {
-            return await _taskRepository.GetTaskByIdAsync(id);
+            return await _taskRepository.GetByIdAsync(id);
         }
 
         public async Task AddTaskAsync(TaskItem task)
         {
-            await _taskRepository.AddTaskAsync(task);
+            await _taskRepository.AddAsync(task);
+            await _taskRepository.SaveChangesAsync();
         }
 
         public async Task UpdateTaskAsync(TaskItem task)
         {
-            await _taskRepository.UpdateTaskAsync(task);
+            _taskRepository.Update(task);
+            await _taskRepository.SaveChangesAsync();
         }
 
         public async Task DeleteTaskAsync(int id)
         {
-            await _taskRepository.DeleteTaskAsync(id);
+            var taskitem = await _taskRepository.GetByIdAsync(id);
+            if (taskitem == null)
+                throw new KeyNotFoundException($"Не найдена задача с id - {id}");
+
+            _taskRepository.Remove(taskitem);
+            await _taskRepository.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<TaskItem>> GetTasksByDateAsync(DateTime date)
         {
-            return await _taskRepository.GetTasksAsync(task => task.ScheduledDate.Date == date.Date);
+            return await _taskRepository.FindAsync(task => task.ScheduledDate.Date == date.Date);
         }
 
         public async Task<IEnumerable<TaskItem>> GetTasksByDateRangeAsync(DateTime startDate, DateTime endDate)
         {
-            return await _taskRepository.GetTasksAsync(task => task.ScheduledDate >= startDate && task.ScheduledDate <= endDate);
+            return await _taskRepository.FindAsync(task => task.ScheduledDate >= startDate && task.ScheduledDate <= endDate);
         }
     }
 }

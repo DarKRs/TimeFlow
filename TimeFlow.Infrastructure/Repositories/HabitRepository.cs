@@ -19,7 +19,6 @@ namespace TimeFlow.Infrastructure.Repositories
             return await _dbSet
                 .Include(h => h.Stages)
                 .Include(h => h.Periodicity)
-                    .ThenInclude(p => p.DaysOfWeek)
                 .Include(h => h.CompletionRecords)
                 .FirstOrDefaultAsync(h => h.Id == id);
         }
@@ -29,7 +28,6 @@ namespace TimeFlow.Infrastructure.Repositories
             return await _dbSet
                 .Include(h => h.Stages)
                 .Include(h => h.Periodicity)
-                    .ThenInclude(p => p.DaysOfWeek)
                 .Include(h => h.CompletionRecords)
                 .ToListAsync();
         }

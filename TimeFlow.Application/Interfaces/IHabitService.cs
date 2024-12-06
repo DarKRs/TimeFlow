@@ -15,6 +15,6 @@ namespace TimeFlow.Core.Interfaces
         Task UpdateHabitAsync(Habit habit);
         Task DeleteHabitAsync(int id);
 
-        Task AddCompletionRecordAsync(int habitId, CompletionRecord record);
+        Task AddCompletionRecordAsync(int habitId, HabitRecord record);
     }
 }

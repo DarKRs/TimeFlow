@@ -5,42 +5,74 @@
     BackgroundImageSource="background.jpg"
     Shell.NavBarIsVisible="False">
 
-    <StackLayout Padding="20">
-        <Label
-            FontSize="24"
-            HorizontalOptions="Center"
-            Text="Отслеживание Привычек"
-            TextColor="Black" />
+    <Grid Padding="20" RowSpacing="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-        <CollectionView ItemsSource="{Binding Habits}">
+        <Grid Grid.Row="0" ColumnDefinitions="Auto, *">
+            <Label
+                Margin="0,-30,0,0"
+                FontAttributes="Bold"
+                FontSize="24"
+                HorizontalOptions="Start"
+                Text="{Binding CurrentMonthYear}"
+                TextColor="White"
+                VerticalOptions="Center" />
+
+            <!--  Панель с датами  -->
+            <ScrollView
+                Grid.Column="1"
+                HorizontalOptions="EndAndExpand"
+                Orientation="Horizontal">
+                <StackLayout Orientation="Horizontal" Spacing="15">
+                    <CollectionView
+                        HorizontalScrollBarVisibility="Never"
+                        ItemsLayout="HorizontalList"
+                        ItemsSource="{Binding CurrentMonthDates}"
+                        VerticalScrollBarVisibility="Never">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <StackLayout
+                                    HorizontalOptions="Center"
+                                    Orientation="Vertical"
+                                    WidthRequest="45">
+                                    <Label
+                                        FontSize="16"
+                                        HorizontalOptions="Center"
+                                        Text="{Binding ., Converter={StaticResource DateToDayConverter}}"
+                                        TextColor="White" />
+                                    <Label
+                                        FontSize="12"
+                                        HorizontalOptions="Center"
+                                        Text="{Binding ., StringFormat='{0:ddd}'}"
+                                        TextColor="Gray" />
+                                </StackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </StackLayout>
+            </ScrollView>
+        </Grid>
+
+        <!--  Секция привычек  -->
+        <CollectionView Grid.Row="2" ItemsSource="{Binding Habits}">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Frame
                         Margin="5"
                         Padding="10"
-                        BorderColor="Gray">
-                        <StackLayout>
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="18"
-                                Text="{Binding Name}" />
-                            <Picker Title="Выберите статус" SelectedItem="{Binding Status}">
-                                <Picker.ItemsSource>
-                                    <x:Array Type="{x:Type x:String}">
-                                        <x:String>Не выполнена</x:String>
-                                        <x:String>Частично выполнена</x:String>
-                                        <x:String>Выполнена</x:String>
-                                    </x:Array>
-                                </Picker.ItemsSource>
-                            </Picker>
-                            <Button
-                                Command="{Binding Path=BindingContext.UpdateHabitStatusCommand, Source={x:Reference HabitTrackerPage}}"
-                                CommandParameter="{Binding}"
-                                Text="Обновить" />
-                        </StackLayout>
+                        BorderColor="Gray"
+                        CornerRadius="10">
+                        <Label
+                            FontSize="18"
+                            Text="{Binding Name}"
+                            TextColor="Black" />
                     </Frame>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-    </StackLayout>
+    </Grid>
 </ContentPage>

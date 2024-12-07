@@ -107,5 +107,19 @@ namespace TimeFlow.Core.Services
             habit.LastCompletionDate = record.Date;
         }
 
+        public async Task<IEnumerable<Habit>> GetHabitsForMonth(int year, int month)
+        {
+            var allHabits = await _habitRepository.GetAllAsync();
+
+            foreach (var habit in allHabits)
+            {
+                habit.CompletionRecords = habit.CompletionRecords
+                    .Where(r => r.Date.Year == year && r.Date.Month == month)
+                    .ToList();
+            }
+
+            return allHabits;
+        }
+
     }
 }

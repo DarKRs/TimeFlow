@@ -6,6 +6,7 @@ using Plugin.Maui.Audio;
 using System.Diagnostics;
 using TimeFlow.Core.Interfaces;
 using TimeFlow.Core.Services;
+using TimeFlow.Domain.Entities;
 using TimeFlow.Infrastructure.Data;
 using TimeFlow.Infrastructure.Repositories;
 using TimeFlow.Presentation.Services;
@@ -42,7 +43,10 @@ namespace TimeFlow.Presentation
 
             builder.Services.AddScoped<ITaskRepository, TaskRepository>();
             builder.Services.AddScoped<IPomodoroSessionRepository, PomodoroSessionRepository>();
+            builder.Services.AddScoped<IHabitRepository, HabitRepository>();
+
             builder.Services.AddScoped<ITaskService, TaskService>();
+            builder.Services.AddScoped<IHabitService, HabitService>();
 
 #if ANDROID || IOS
             builder.Services.AddSingleton<INotifyService, AndroidNotificationService>();

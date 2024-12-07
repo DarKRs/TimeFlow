@@ -29,6 +29,48 @@ namespace TimeFlow.Domain.Entities
 
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public bool IsActive { get; set; } = true;
+
+        public double GetCompletionPercentage(DateTime startDate, DateTime endDate)
+        {
+            var records = CompletionRecords.Where(r => r.Date.Date >= startDate.Date && r.Date.Date <= endDate.Date).ToList();
+            if (records.Count == 0) return 0;
+
+            double countDone = records.Count(r => r.Status == CompletionStatus.Done);
+            return countDone / records.Count;
+        }
+
+        public int GetLongestStreak(DateTime startDate, DateTime endDate, int allowedMissedDays = 1)
+        {
+            // Простой расчёт серии: итерация по дням, проверка выполенения
+            var days = Enumerable.Range(0, (endDate - startDate).Days + 1).Select(d => startDate.AddDays(d));
+            int currentStreak = 0;
+            int longestStreak = 0;
+            int missedDaysInARow = 0;
+
+            foreach (var day in days)
+            {
+                var record = CompletionRecords.FirstOrDefault(r => r.Date.Date == day.Date);
+                bool done = record != null && record.Status == CompletionStatus.Done;
+
+                if (done)
+                {
+                    currentStreak++;
+                    if (currentStreak > longestStreak) longestStreak = currentStreak;
+                    missedDaysInARow = 0;
+                }
+                else
+                {
+                    missedDaysInARow++;
+                    if (missedDaysInARow > allowedMissedDays)
+                    {
+                        currentStreak = 0;
+                        missedDaysInARow = 0;
+                    }
+                }
+            }
+
+            return longestStreak;
+        }
     }
 
     public class HabitStage

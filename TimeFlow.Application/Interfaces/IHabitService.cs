@@ -16,5 +16,7 @@ namespace TimeFlow.Core.Interfaces
         Task DeleteHabitAsync(int id);
 
         Task AddCompletionRecordAsync(int habitId, HabitRecord record);
+
+        Task<IEnumerable<Habit>> GetHabitsForMonth(int year, int month);
     }
 }

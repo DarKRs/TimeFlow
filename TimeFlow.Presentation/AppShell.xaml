@@ -4,8 +4,8 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:TimeFlow.Presentation.Views"
-    Shell.FlyoutBehavior="Disabled"
-    Title="TimeFlow.Presentation">
+    Title="TimeFlow.Presentation"
+    Shell.FlyoutBehavior="Disabled">
 
     <TabBar>
         <ShellContent
@@ -16,10 +16,14 @@
             Title="Pomodoro"
             ContentTemplate="{DataTemplate views:PomodoroPage}"
             Route="PomodoroPage" />
-        <ShellContent 
+        <ShellContent
             Title="Задачи"
             ContentTemplate="{DataTemplate views:EisenhowerMatrixPage}"
-            Route="EisenhowerMatrixPage"/>
+            Route="EisenhowerMatrixPage" />
+        <ShellContent
+            Title="Привычки"
+            ContentTemplate="{DataTemplate views:HabitTrackerPage}"
+            Route="HabitTrackerPage" />
     </TabBar>
 
 </Shell>

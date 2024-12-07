@@ -1,0 +1,46 @@
+﻿<ContentPage
+    x:Class="TimeFlow.Presentation.Views.HabitTrackerPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    BackgroundImageSource="background.jpg"
+    Shell.NavBarIsVisible="False">
+
+    <StackLayout Padding="20">
+        <Label
+            FontSize="24"
+            HorizontalOptions="Center"
+            Text="Отслеживание Привычек"
+            TextColor="Black" />
+
+        <CollectionView ItemsSource="{Binding Habits}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame
+                        Margin="5"
+                        Padding="10"
+                        BorderColor="Gray">
+                        <StackLayout>
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="18"
+                                Text="{Binding Name}" />
+                            <Picker Title="Выберите статус" SelectedItem="{Binding Status}">
+                                <Picker.ItemsSource>
+                                    <x:Array Type="{x:Type x:String}">
+                                        <x:String>Не выполнена</x:String>
+                                        <x:String>Частично выполнена</x:String>
+                                        <x:String>Выполнена</x:String>
+                                    </x:Array>
+                                </Picker.ItemsSource>
+                            </Picker>
+                            <Button
+                                Command="{Binding Path=BindingContext.UpdateHabitStatusCommand, Source={x:Reference HabitTrackerPage}}"
+                                CommandParameter="{Binding}"
+                                Text="Обновить" />
+                        </StackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
+</ContentPage>

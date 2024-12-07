@@ -58,10 +58,12 @@ namespace TimeFlow.Presentation
             builder.Services.AddTransient<MainViewModel>();
             builder.Services.AddTransient<PomodoroViewModel>();
             builder.Services.AddTransient<EisenhowerMatrixViewModel>();
+            builder.Services.AddTransient<HabitTrackerViewModel>();
 
             builder.Services.AddTransient<MainPage>();
             builder.Services.AddTransient<PomodoroPage>();
             builder.Services.AddTransient<EisenhowerMatrixPage>();
+            builder.Services.AddTransient<HabitTrackerPage>();
 
 
 #if DEBUG

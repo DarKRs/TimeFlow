@@ -93,6 +93,9 @@
 	  <MauiXaml Update="Views\EisenhowerMatrixPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\HabitTrackerPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\PomodoroPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

@@ -74,12 +74,12 @@ namespace TimeFlow.Presentation.ViewModels
         {
             if (Habits.Any())
             {
-                OldestDate = Habits.Min(h => h.CreatedDate).AddMonths(-1); 
-                NewestDate = DateTime.Today.AddMonths(1); 
+                OldestDate = Habits.Min(h => h.CreatedDate); 
+                NewestDate = DateTime.Today; 
             }
             else
             {
-                OldestDate = DateTime.Today;
+                OldestDate = DateTime.Today.AddMonths(-1);
                 NewestDate = DateTime.Today;
             }
         }

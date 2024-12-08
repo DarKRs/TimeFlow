@@ -29,11 +29,12 @@ namespace TimeFlow.Presentation.ViewModels
         {
             get
             {
-                var maxDate = DateTime.Today; // Текущая дата как крайняя правая
-                var minDate = maxDate.AddDays(-31); // 31 день назад
-                return Enumerable.Range(0, (maxDate - minDate).Days + 1)
-                    .Select(offset => minDate.AddDays(offset))
-                    .ToList();
+                var lastDayOfCurrentMonth = _currentMonth.AddMonths(1).AddDays(-1);
+                var startDate = lastDayOfCurrentMonth.AddDays(-30); // За 31 день
+
+                return Enumerable.Range(0, 31)
+                                 .Select(dayOffset => startDate.AddDays(dayOffset))
+                                 .ToList();
             }
         }
 
@@ -56,7 +57,8 @@ namespace TimeFlow.Presentation.ViewModels
         {
             _currentMonth = _currentMonth.AddMonths(offset);
             OnPropertyChanged(nameof(CurrentMonthYear));
-            LoadHabits();
+            OnPropertyChanged(nameof(CurrentMonthDates));
+            UpdateCommandStates();
         }
 
         private bool CanNavigateToPreviousMonth => _currentMonth > OldestDate;

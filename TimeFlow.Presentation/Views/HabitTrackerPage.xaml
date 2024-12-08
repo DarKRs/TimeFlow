@@ -39,6 +39,7 @@
                                 <StackLayout
                                     HorizontalOptions="Center"
                                     Orientation="Vertical"
+                                    ToolTipProperties.Text="{Binding ., Converter={StaticResource FullDateConverter}}"
                                     WidthRequest="45">
                                     <!--  День месяца  -->
                                     <Label

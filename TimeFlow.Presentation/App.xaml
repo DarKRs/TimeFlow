@@ -17,6 +17,7 @@
             <utils:BoolToTextColorConverter x:Key="BoolToTextColorConverter" />
             <utils:BoolToFontWeightConverter x:Key="BoolToFontWeightConverter" />
             <utils:DateToDayConverter x:Key="DateToDayConverter" />
+            <utils:FullDateConverter x:Key="FullDateConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

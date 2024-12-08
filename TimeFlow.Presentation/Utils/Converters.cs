@@ -109,4 +109,21 @@ namespace TimeFlow.Presentation.Utils
         }
     }
 
+    public class FullDateConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is DateTime date)
+            {
+                return date.ToString("dddd, dd MMMM yyyy", CultureInfo.GetCultureInfo("ru-RU"));
+            }
+            return null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 }

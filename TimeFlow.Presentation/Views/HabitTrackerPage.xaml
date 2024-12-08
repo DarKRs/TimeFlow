@@ -5,10 +5,11 @@
     BackgroundImageSource="background.jpg"
     Shell.NavBarIsVisible="False">
 
-    <Grid Padding="20" RowSpacing="10">
+    <Grid Padding="10" RowSpacing="2">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="2" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -85,8 +86,16 @@
             </StackLayout>
         </Grid>
 
+        <BoxView
+            Grid.Row="2"
+            BackgroundColor="Gray"
+            HeightRequest="1" />
+
         <!--  Секция привычек  -->
-        <CollectionView Grid.Row="2" ItemsSource="{Binding Habits}">
+        <CollectionView
+            Grid.Row="3"
+            Margin="0,5"
+            ItemsSource="{Binding Habits}">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Frame

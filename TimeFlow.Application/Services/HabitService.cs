@@ -121,5 +121,16 @@ namespace TimeFlow.Core.Services
             return allHabits;
         }
 
+        public async Task UpdateHabitRecordAsync(HabitRecord record)
+        {
+            var habit = await _habitRepository.GetHabitWithDetailsAsync(record.HabitId);
+            var existingRecord = habit.CompletionRecords.FirstOrDefault(r => r.Id == record.Id);
+            if (existingRecord != null)
+            {
+                existingRecord.Status = record.Status;
+                _habitRepository.Update(habit);
+                await _habitRepository.SaveChangesAsync();
+            }
+        }
     }
 }

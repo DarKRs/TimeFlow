@@ -30,6 +30,8 @@ namespace TimeFlow.Domain.Entities
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public bool IsActive { get; set; } = true;
 
+        public bool IsCompletedToday => CompletionRecords.Any(r => r.Date.Date == DateTime.UtcNow.Date && r.Status == CompletionStatus.Done);
+
         public double GetCompletionPercentage(DateTime startDate, DateTime endDate)
         {
             var records = CompletionRecords.Where(r => r.Date.Date >= startDate.Date && r.Date.Date <= endDate.Date).ToList();

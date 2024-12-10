@@ -25,40 +25,67 @@
                 VerticalOptions="Center" />
 
             <!--  Панель с датами  -->
-            <ScrollView
-                Grid.Column="1"
-                HorizontalOptions="EndAndExpand"
-                Orientation="Horizontal">
-                <StackLayout Orientation="Horizontal" Spacing="15">
-                    <CollectionView
-                        HorizontalScrollBarVisibility="Never"
-                        ItemsLayout="HorizontalList"
-                        ItemsSource="{Binding CurrentMonthDates}"
-                        VerticalScrollBarVisibility="Never">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <StackLayout
-                                    HorizontalOptions="Center"
-                                    Orientation="Vertical"
-                                    ToolTipProperties.Text="{Binding ., Converter={StaticResource FullDateConverter}}"
-                                    WidthRequest="45">
-                                    <!--  День месяца  -->
-                                    <Label
-                                        FontSize="16"
+            <ScrollView Grid.Column="1" Orientation="Horizontal">
+                <VerticalStackLayout>
+                    <StackLayout
+                        HorizontalOptions="EndAndExpand"
+                        Orientation="Horizontal"
+                        Spacing="15">
+                        <CollectionView
+                            HorizontalScrollBarVisibility="Never"
+                            ItemsLayout="HorizontalList"
+                            ItemsSource="{Binding CurrentMonthDates}"
+                            VerticalScrollBarVisibility="Never">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <StackLayout
                                         HorizontalOptions="Center"
-                                        Text="{Binding ., Converter={StaticResource DateToDayConverter}}"
-                                        TextColor="White" />
-                                    <!--  День недели  -->
-                                    <Label
-                                        FontSize="12"
-                                        HorizontalOptions="Center"
-                                        Text="{Binding ., StringFormat='{0:ddd}'}"
-                                        TextColor="Gray" />
-                                </StackLayout>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </StackLayout>
+                                        Orientation="Vertical"
+                                        ToolTipProperties.Text="{Binding ., Converter={StaticResource FullDateConverter}}"
+                                        WidthRequest="45">
+                                        <!--  День месяца  -->
+                                        <Label
+                                            FontSize="16"
+                                            HorizontalOptions="Center"
+                                            Text="{Binding ., Converter={StaticResource DateToDayConverter}}"
+                                            TextColor="White" />
+                                        <!--  День недели  -->
+                                        <Label
+                                            FontSize="12"
+                                            HorizontalOptions="Center"
+                                            Text="{Binding ., StringFormat='{0:ddd}'}"
+                                            TextColor="Gray" />
+                                    </StackLayout>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </StackLayout>
+                    <StackLayout Orientation="Horizontal">
+                        <CollectionView ItemsSource="{Binding Habits}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <StackLayout Orientation="Horizontal">
+                                        <Label FontAttributes="Bold" Text="{Binding Name}" />
+                                        <Grid HorizontalOptions="EndAndExpand">
+                                            <CollectionView ItemsLayout="HorizontalList" ItemsSource="{Binding CompletionRecords}">
+                                                <CollectionView.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <BoxView
+                                                            Margin="2"
+                                                            BackgroundColor="{Binding Status, Converter={StaticResource StatusToColorConverter}}"
+                                                            HeightRequest="20"
+                                                            HorizontalOptions="Center"
+                                                            WidthRequest="45" />
+                                                    </DataTemplate>
+                                                </CollectionView.ItemTemplate>
+                                            </CollectionView>
+                                        </Grid>
+                                    </StackLayout>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </StackLayout>
+                </VerticalStackLayout>
             </ScrollView>
 
             <!--  Кнопки "←" и "→" для перехода между месяцами  -->
@@ -92,24 +119,6 @@
             HeightRequest="1" />
 
         <!--  Секция привычек  -->
-        <CollectionView
-            Grid.Row="3"
-            Margin="0,5"
-            ItemsSource="{Binding Habits}">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Frame
-                        Margin="5"
-                        Padding="10"
-                        BorderColor="Gray"
-                        CornerRadius="10">
-                        <Label
-                            FontSize="18"
-                            Text="{Binding Name}"
-                            TextColor="Black" />
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+
     </Grid>
 </ContentPage>

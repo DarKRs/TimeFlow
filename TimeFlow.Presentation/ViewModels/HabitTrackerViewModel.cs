@@ -29,7 +29,7 @@ namespace TimeFlow.Presentation.ViewModels
         {
             get
             {
-                var lastDayOfCurrentMonth = _currentMonth.AddMonths(1).AddDays(-1);
+                var lastDayOfCurrentMonth = _currentMonth;
                 var startDate = lastDayOfCurrentMonth.AddDays(-30); // За 31 день
 
                 return Enumerable.Range(0, 31)
@@ -40,6 +40,8 @@ namespace TimeFlow.Presentation.ViewModels
 
         public ICommand PreviousMonthCommand { get; }
         public ICommand NextMonthCommand { get; }
+        public ICommand ToggleHabitStatusCommand { get; }
+
 
         public HabitTrackerViewModel(IHabitService habitService)
         {
@@ -48,8 +50,9 @@ namespace TimeFlow.Presentation.ViewModels
 
             PreviousMonthCommand = new Command(() => ChangeMonth(-1), () => CanNavigateToPreviousMonth);
             NextMonthCommand = new Command(() => ChangeMonth(1), () => CanNavigateToNextMonth);
+            ToggleHabitStatusCommand = new Command<HabitRecord>(async (record) => await ToggleHabitStatus(record));
 
-            LoadHabits();
+            LoadHabitsForMonth(DateTime.Now.Year, DateTime.Now.Month);
             UpdateDateLimits();
         }
 
@@ -82,6 +85,59 @@ namespace TimeFlow.Presentation.ViewModels
                 OldestDate = DateTime.Today.AddMonths(-1);
                 NewestDate = DateTime.Today;
             }
+        }
+
+        private async void LoadHabitsForMonth(int year, int month)
+        {
+            var habits = await _habitService.GetHabitsForMonth(year, month);
+            Habits.Clear();
+
+            Habits.Add(new Habit
+            {
+                Id = 1,
+                Name = "Пить воду",
+                Description = "Выпивать 8 стаканов воды в день",
+                CompletionRecords = Enumerable.Range(1, 31).Select(i => new HabitRecord
+                {
+                    Date = new DateTime(year, month, i),
+                    Status = i % 2 == 0 ? CompletionStatus.Done : CompletionStatus.NotDone
+                }).ToList()
+            });
+
+            Habits.Add(new Habit
+            {
+                Id = 2,
+                Name = "Читать книги",
+                Description = "Читать 10 страниц каждый день",
+                CompletionRecords = Enumerable.Range(1, 31).Select(i => new HabitRecord
+                {
+                    Date = new DateTime(year, month, i),
+                    Status = i % 3 == 0 ? CompletionStatus.PartiallyDone : CompletionStatus.Done
+                }).ToList()
+            });
+
+            Habits.Add(new Habit
+            {
+                Id = 3,
+                Name = "Физическая активность",
+                Description = "15 минут утренней зарядки",
+                CompletionRecords = Enumerable.Range(1, 31).Select(i => new HabitRecord
+                {
+                    Date = new DateTime(year, month, i),
+                    Status = i % 5 == 0 ? CompletionStatus.NotDone : CompletionStatus.Done
+                }).ToList()
+            });
+
+            foreach (var habit in habits)
+            {
+                Habits.Add(habit);
+            }
+        }
+
+        private async Task ToggleHabitStatus(HabitRecord record)
+        {
+            record.Status = record.Status == CompletionStatus.Done ? CompletionStatus.NotDone : CompletionStatus.Done;
+            await _habitService.UpdateHabitRecordAsync(record);
         }
 
         private async void LoadHabits()

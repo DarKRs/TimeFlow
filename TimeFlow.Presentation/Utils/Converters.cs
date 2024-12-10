@@ -126,4 +126,26 @@ namespace TimeFlow.Presentation.Utils
         }
     }
 
+    public class StatusToColorConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is CompletionStatus status)
+            {
+                return status switch
+                {
+                    CompletionStatus.Done => Colors.Green,
+                    CompletionStatus.PartiallyDone => Colors.Orange,
+                    CompletionStatus.NotDone => Colors.Red,
+                    _ => Colors.Gray
+                };
+            }
+            return Colors.Gray;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

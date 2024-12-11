@@ -5,120 +5,104 @@
     BackgroundImageSource="background.jpg"
     Shell.NavBarIsVisible="False">
 
-    <Grid Padding="10" RowSpacing="2">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="2" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <!--  Заголовок "Месяц/Год"  -->
 
-        <!--  Заголовок "Месяц/Год"  -->
-        <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto">
+
+
+    <!--  Панель с датами  -->
+    <ScrollView Grid.Column="1" Orientation="Horizontal">
+        <VerticalStackLayout>
             <Label
-                Margin="0,-30,0,0"
                 FontAttributes="Bold"
                 FontSize="24"
                 HorizontalOptions="Start"
                 Text="{Binding CurrentMonthYear}"
                 TextColor="White"
                 VerticalOptions="Center" />
-
-            <!--  Панель с датами  -->
-            <ScrollView Grid.Column="1" Orientation="Horizontal">
-                <VerticalStackLayout>
-                    <StackLayout
-                        HorizontalOptions="EndAndExpand"
-                        Orientation="Horizontal"
-                        Spacing="15">
-                        <CollectionView
-                            HorizontalScrollBarVisibility="Never"
-                            ItemsLayout="HorizontalList"
-                            ItemsSource="{Binding CurrentMonthDates}"
-                            VerticalScrollBarVisibility="Never">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate>
-                                    <StackLayout
-                                        HorizontalOptions="Center"
-                                        Orientation="Vertical"
-                                        ToolTipProperties.Text="{Binding ., Converter={StaticResource FullDateConverter}}"
-                                        WidthRequest="45">
-                                        <!--  День месяца  -->
-                                        <Label
-                                            FontSize="16"
-                                            HorizontalOptions="Center"
-                                            Text="{Binding ., Converter={StaticResource DateToDayConverter}}"
-                                            TextColor="White" />
-                                        <!--  День недели  -->
-                                        <Label
-                                            FontSize="12"
-                                            HorizontalOptions="Center"
-                                            Text="{Binding ., StringFormat='{0:ddd}'}"
-                                            TextColor="Gray" />
-                                    </StackLayout>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-                    </StackLayout>
-                    <StackLayout Orientation="Horizontal">
-                        <CollectionView ItemsSource="{Binding Habits}">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate>
-                                    <StackLayout Orientation="Horizontal">
-                                        <Label FontAttributes="Bold" Text="{Binding Name}" />
-                                        <Grid HorizontalOptions="EndAndExpand">
-                                            <CollectionView ItemsLayout="HorizontalList" ItemsSource="{Binding CompletionRecords}">
-                                                <CollectionView.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <BoxView
-                                                            Margin="2"
-                                                            BackgroundColor="{Binding Status, Converter={StaticResource StatusToColorConverter}}"
-                                                            HeightRequest="20"
-                                                            HorizontalOptions="Center"
-                                                            WidthRequest="45" />
-                                                    </DataTemplate>
-                                                </CollectionView.ItemTemplate>
-                                            </CollectionView>
-                                        </Grid>
-                                    </StackLayout>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-                    </StackLayout>
-                </VerticalStackLayout>
-            </ScrollView>
-
-            <!--  Кнопки "←" и "→" для перехода между месяцами  -->
             <StackLayout
-                Grid.Column="2"
-                HorizontalOptions="End"
+                HorizontalOptions="EndAndExpand"
                 Orientation="Horizontal"
-                VerticalOptions="Center">
-                <Button
-                    Margin="0,-10,0,0"
-                    BackgroundColor="Transparent"
-                    Command="{Binding PreviousMonthCommand}"
-                    FontSize="20"
-                    Text="←"
-                    TextColor="White"
-                    VerticalOptions="Center" />
-                <Button
-                    Margin="0,-10,0,0"
-                    BackgroundColor="Transparent"
-                    Command="{Binding NextMonthCommand}"
-                    FontSize="20"
-                    Text="→"
-                    TextColor="White"
-                    VerticalOptions="Center" />
+                Spacing="15">
+                <CollectionView
+                    HorizontalScrollBarVisibility="Never"
+                    ItemsLayout="HorizontalList"
+                    ItemsSource="{Binding CurrentMonthDates}"
+                    VerticalScrollBarVisibility="Never">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <StackLayout
+                                HorizontalOptions="Center"
+                                Orientation="Vertical"
+                                ToolTipProperties.Text="{Binding ., Converter={StaticResource FullDateConverter}}"
+                                WidthRequest="45">
+                                <!--  День месяца  -->
+                                <Label
+                                    FontSize="16"
+                                    HorizontalOptions="Center"
+                                    Text="{Binding ., Converter={StaticResource DateToDayConverter}}"
+                                    TextColor="White" />
+                                <!--  День недели  -->
+                                <Label
+                                    FontSize="12"
+                                    HorizontalOptions="Center"
+                                    Text="{Binding ., StringFormat='{0:ddd}'}"
+                                    TextColor="Gray" />
+                            </StackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+                <StackLayout
+                    HorizontalOptions="End"
+                    Orientation="Horizontal"
+                    VerticalOptions="Center">
+                    <Button
+                        Margin="0,-10,0,0"
+                        BackgroundColor="Transparent"
+                        Command="{Binding PreviousMonthCommand}"
+                        FontSize="20"
+                        Text="←"
+                        TextColor="White"
+                        VerticalOptions="Center" />
+                    <Button
+                        Margin="0,-10,0,0"
+                        BackgroundColor="Transparent"
+                        Command="{Binding NextMonthCommand}"
+                        FontSize="20"
+                        Text="→"
+                        TextColor="White"
+                        VerticalOptions="Center" />
+                </StackLayout>
             </StackLayout>
-        </Grid>
+            <BoxView
+                Grid.Row="2"
+                BackgroundColor="Gray"
+                HeightRequest="1" />
+            <StackLayout Orientation="Horizontal">
+                <CollectionView ItemsSource="{Binding Habits}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <StackLayout Orientation="Horizontal">
+                                <Label FontAttributes="Bold" Text="{Binding Name}" />
+                                <Grid HorizontalOptions="EndAndExpand">
+                                    <CollectionView ItemsLayout="HorizontalList" ItemsSource="{Binding CompletionRecords}">
+                                        <CollectionView.ItemTemplate>
+                                            <DataTemplate>
+                                                <BoxView
+                                                    Margin="2"
+                                                    BackgroundColor="{Binding Status, Converter={StaticResource StatusToColorConverter}}"
+                                                    HeightRequest="20"
+                                                    HorizontalOptions="Center"
+                                                    WidthRequest="45" />
+                                            </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+                                    </CollectionView>
+                                </Grid>
+                            </StackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </StackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
 
-        <BoxView
-            Grid.Row="2"
-            BackgroundColor="Gray"
-            HeightRequest="1" />
-
-        <!--  Секция привычек  -->
-
-    </Grid>
 </ContentPage>

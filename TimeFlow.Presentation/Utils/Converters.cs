@@ -134,9 +134,9 @@ namespace TimeFlow.Presentation.Utils
             {
                 return status switch
                 {
-                    CompletionStatus.Done => Colors.Green,
-                    CompletionStatus.PartiallyDone => Colors.Orange,
-                    CompletionStatus.NotDone => Colors.Red,
+                    CompletionStatus.Done => Color.FromArgb("#44944A"),
+                    CompletionStatus.PartiallyDone => Color.FromArgb("#FFB02E"),
+                    CompletionStatus.NotDone => Colors.Transparent,
                     _ => Colors.Gray
                 };
             }

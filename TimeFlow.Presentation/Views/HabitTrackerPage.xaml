@@ -38,9 +38,7 @@
             Grid.Row="0"
             Grid.Column="1"
             HorizontalOptions="EndAndExpand"
-            Orientation="Horizontal"
-            Spacing="15"
-            VerticalOptions="End">
+            Orientation="Horizontal">
             <CollectionView
                 HorizontalScrollBarVisibility="Never"
                 ItemsLayout="HorizontalList"
@@ -51,7 +49,7 @@
                         <StackLayout
                             HorizontalOptions="Center"
                             Orientation="Vertical"
-                            WidthRequest="45">
+                            WidthRequest="50">
                             <Label
                                 FontSize="16"
                                 HorizontalOptions="Center"
@@ -109,7 +107,7 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <!--  В одной строке: слева название привычки, справа её трекеры  -->
-                    <Grid Padding="5,0,5,0" VerticalOptions="CenterAndExpand">
+                    <Grid VerticalOptions="CenterAndExpand">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
@@ -127,9 +125,7 @@
                         <StackLayout
                             Grid.Column="1"
                             HorizontalOptions="EndAndExpand"
-                            Orientation="Horizontal"
-                            Spacing="15"
-                            VerticalOptions="End">
+                            Orientation="Horizontal">
                             <CollectionView
                                 Grid.Column="1"
                                 HorizontalScrollBarVisibility="Never"
@@ -141,7 +137,10 @@
                                         <Ellipse
                                             Fill="{Binding Status, Converter={StaticResource StatusToColorConverter}}"
                                             HeightRequest="40"
-                                            WidthRequest="45" />
+                                            HorizontalOptions="Center"
+                                            Stroke="Gray"
+                                            StrokeThickness="2"
+                                            WidthRequest="50" />
                                     </DataTemplate>
                                 </CollectionView.ItemTemplate>
                             </CollectionView>

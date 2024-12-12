@@ -29,12 +29,21 @@ namespace TimeFlow.Presentation.ViewModels
         {
             get
             {
-                var lastDayOfCurrentMonth = _currentMonth;
-                var startDate = lastDayOfCurrentMonth.AddDays(-30); // За 31 день
+                var year = _currentMonth.Year;
+                var month = _currentMonth.Month;
+                var firstDayOfMonth = new DateTime(year, month, 1);
+                var daysInMonth = DateTime.DaysInMonth(year, month);
 
-                return Enumerable.Range(0, 31)
-                                 .Select(dayOffset => startDate.AddDays(dayOffset))
+                // Формируем список дат текущего месяца
+                var allDates = Enumerable.Range(0, daysInMonth)
+                                         .Select(d => firstDayOfMonth.AddDays(d))
                                  .ToList();
+
+                // Если это текущий месяц, обрезаем будущие дни
+                if (year == DateTime.Today.Year && month == DateTime.Today.Month)
+                    allDates = allDates.Where(d => d <= DateTime.Today).ToList();
+
+                return allDates;
             }
         }
 
@@ -61,6 +70,9 @@ namespace TimeFlow.Presentation.ViewModels
             _currentMonth = _currentMonth.AddMonths(offset);
             OnPropertyChanged(nameof(CurrentMonthYear));
             OnPropertyChanged(nameof(CurrentMonthDates));
+            LoadHabitsForMonth(_currentMonth.Year, _currentMonth.Month);
+            UpdateDateLimits();
+            OnPropertyChanged(nameof(Habits)); 
             UpdateCommandStates();
         }
 
@@ -89,64 +101,36 @@ namespace TimeFlow.Presentation.ViewModels
 
         private async void LoadHabitsForMonth(int year, int month)
         {
-            var habits = await _habitService.GetAllHabitsAsync();
-            Habits.Clear();
-
-
-
-            Habits.Add(new Habit
-            {
-                Id = 1,
-                Name = "Пить воду",
-                Description = "Выпивать 8 стаканов воды в день",
-                CompletionRecords = Enumerable.Range(1, 31).Select(i => new HabitRecord
-                {
-                    Date = new DateTime(year, month, i),
-                    Status = i % 2 == 0 ? CompletionStatus.Done : CompletionStatus.NotDone
-                }).ToList()
-            });
-
-            Habits.Add(new Habit
-            {
-                Id = 2,
-                Name = "Читать книги",
-                Description = "Читать 10 страниц каждый день",
-                CompletionRecords = Enumerable.Range(1, 21).Select(i => new HabitRecord
-                {
-                    Date = new DateTime(year, month, i),
-                    Status = i % 3 == 0 ? CompletionStatus.PartiallyDone : CompletionStatus.Done
-                }).ToList()
-            });
-
-            Habits.Add(new Habit
-            {
-                Id = 3,
-                Name = "Физическая активность",
-                Description = "15 минут утренней зарядки",
-                CompletionRecords = Enumerable.Range(1, 15).Select(i => new HabitRecord
-                {
-                    Date = new DateTime(year, month, i),
-                    Status = i % 5 == 0 ? CompletionStatus.NotDone : CompletionStatus.Done
-                }).ToList()
-            });
-
+            var loadedHabits = await _habitService.GetAllHabitsAsync();
             var dates = CurrentMonthDates;
-            foreach (var habit in habits)
+
+            var newHabits = new ObservableCollection<Habit>();
+
+            foreach (var habit in loadedHabits)
             {
-                // Убедимся, что для каждой даты есть запись
+                if (habit.CompletionRecords == null)
+                    habit.CompletionRecords = new ObservableCollection<HabitRecord>();
+
+                // Преобразуем в словарь для быстрого доступа
                 var recordsByDate = habit.CompletionRecords
                     .ToDictionary(r => r.Date.Date, r => r);
 
+                var displayedRecords = new ObservableCollection<HabitRecord>();
+
                 foreach (var date in dates)
                 {
-                    if (!recordsByDate.ContainsKey(date.Date))
+                    if (recordsByDate.TryGetValue(date.Date, out var existingRecord))
+                    {
+                        displayedRecords.Add(existingRecord);
+                    }
+                    else
                     {
                         // Создаём новую запись
                         var status = date.Date < habit.CreatedDate.Date
                             ? CompletionStatus.NotApplicable 
                             : CompletionStatus.NotDone;
 
-                        habit.CompletionRecords.Add(new HabitRecord
+                        displayedRecords.Add(new HabitRecord
                         {
                             Date = date.Date,
                             Status = status,
@@ -154,23 +138,34 @@ namespace TimeFlow.Presentation.ViewModels
                         });
                     }
                 }
-                Habits.Add(habit);
+
+                habit.CompletionRecords = displayedRecords;
+                newHabits.Add(habit);
             }
+
+            Habits = newHabits;
+            OnPropertyChanged(nameof(Habits));
         }
 
         private async Task ToggleHabitStatus(HabitRecord record)
         {
-            record.Status = record.Status == CompletionStatus.Done ? CompletionStatus.NotDone : CompletionStatus.Done;
+            switch (record.Status)
+            {
+                case CompletionStatus.NotDone:
+                    record.Status = CompletionStatus.PartiallyDone;
+                    break;
+                case CompletionStatus.PartiallyDone:
+                    record.Status = CompletionStatus.Done;
+                    break;
+                case CompletionStatus.Done:
+                    record.Status = CompletionStatus.NotDone;
+                    break;
+            }
+
             await _habitService.UpdateHabitRecordAsync(record);
         }
 
-        private async void LoadHabits()
-        {
-            var habits = await _habitService.GetHabitsForMonth(_currentMonth.Year, _currentMonth.Month);
-            Habits.Clear();
-            foreach (var habit in habits)
-            {
-                Habits.Add(habit);
+            OnPropertyChanged(nameof(Habits));
             }
 
             //Тестовые привычки

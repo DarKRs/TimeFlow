@@ -18,7 +18,7 @@ namespace TimeFlow.Domain.Entities
         public HabitPeriodicity Periodicity { get; set; }
 
         // Записи выполнения
-        public ICollection<HabitRecord> CompletionRecords { get; set; }
+        public ICollection<HabitRecord> CompletionRecords { get; set; } = new List<HabitRecord>();
 
         // Цепочка выполнения
         public int CurrentStreak { get; set; } = 0;
@@ -114,6 +114,7 @@ namespace TimeFlow.Domain.Entities
 
     public enum CompletionStatus
     {
+        NotApplicable,
         NotDone,
         PartiallyDone,
         Done

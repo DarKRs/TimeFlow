@@ -89,8 +89,10 @@ namespace TimeFlow.Presentation.ViewModels
 
         private async void LoadHabitsForMonth(int year, int month)
         {
-            var habits = await _habitService.GetHabitsForMonth(year, month);
+            var habits = await _habitService.GetAllHabitsAsync();
             Habits.Clear();
+
+
 
             Habits.Add(new Habit
             {
@@ -109,7 +111,7 @@ namespace TimeFlow.Presentation.ViewModels
                 Id = 2,
                 Name = "Читать книги",
                 Description = "Читать 10 страниц каждый день",
-                CompletionRecords = Enumerable.Range(1, 31).Select(i => new HabitRecord
+                CompletionRecords = Enumerable.Range(1, 21).Select(i => new HabitRecord
                 {
                     Date = new DateTime(year, month, i),
                     Status = i % 3 == 0 ? CompletionStatus.PartiallyDone : CompletionStatus.Done
@@ -121,15 +123,37 @@ namespace TimeFlow.Presentation.ViewModels
                 Id = 3,
                 Name = "Физическая активность",
                 Description = "15 минут утренней зарядки",
-                CompletionRecords = Enumerable.Range(1, 31).Select(i => new HabitRecord
+                CompletionRecords = Enumerable.Range(1, 15).Select(i => new HabitRecord
                 {
                     Date = new DateTime(year, month, i),
                     Status = i % 5 == 0 ? CompletionStatus.NotDone : CompletionStatus.Done
                 }).ToList()
             });
 
+            var dates = CurrentMonthDates;
             foreach (var habit in habits)
             {
+                // Убедимся, что для каждой даты есть запись
+                var recordsByDate = habit.CompletionRecords
+                    .ToDictionary(r => r.Date.Date, r => r);
+
+                foreach (var date in dates)
+                {
+                    if (!recordsByDate.ContainsKey(date.Date))
+                    {
+                        // Создаём новую запись
+                        var status = date.Date < habit.CreatedDate.Date
+                            ? CompletionStatus.NotApplicable 
+                            : CompletionStatus.NotDone;
+
+                        habit.CompletionRecords.Add(new HabitRecord
+                        {
+                            Date = date.Date,
+                            Status = status,
+                            HabitId = habit.Id
+                        });
+                    }
+                }
                 Habits.Add(habit);
             }
         }

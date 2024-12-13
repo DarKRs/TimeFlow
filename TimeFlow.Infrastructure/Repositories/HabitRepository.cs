@@ -25,7 +25,6 @@ namespace TimeFlow.Infrastructure.Repositories
                 .Include(h => h.Stages)
                 .Include(h => h.Periodicity)
                 .Include(h => h.CompletionRecords)
-                .AsNoTracking()
                 .FirstOrDefaultAsync(h => h.Id == id);
         }
 

@@ -1,8 +1,12 @@
-﻿using System.Collections.ObjectModel;
+﻿using CommunityToolkit.Maui.Views;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows.Input;
 using TimeFlow.Core.Interfaces;
 using TimeFlow.Domain.Entities;
+using TimeFlow.Presentation.AdditionalModels.DTO;
+using TimeFlow.Presentation.ViewModels.Popups;
+using TimeFlow.Presentation.Views.Popups;
 
 namespace TimeFlow.Presentation.ViewModels
 {
@@ -20,7 +24,7 @@ namespace TimeFlow.Presentation.ViewModels
             }
         }
 
-        public ObservableCollection<Habit> Habits { get; set; } = new();
+        public ObservableCollection<HabitDTO> Habits { get; set; } = new();
 
         public DateTime OldestDate { get; private set; }
         public DateTime NewestDate { get; private set; }
@@ -59,7 +63,7 @@ namespace TimeFlow.Presentation.ViewModels
 
             PreviousMonthCommand = new Command(() => ChangeMonth(-1), () => CanNavigateToPreviousMonth);
             NextMonthCommand = new Command(() => ChangeMonth(1), () => CanNavigateToNextMonth);
-            ToggleHabitStatusCommand = new Command<HabitRecord>(async (record) => await ToggleHabitStatus(record));
+            ToggleHabitStatusCommand = new Command<HabitRecordDTO>(async (record) => await ToggleHabitStatus(record));
 
             LoadHabitsForMonth(DateTime.Now.Year, DateTime.Now.Month);
             UpdateDateLimits();
@@ -104,7 +108,7 @@ namespace TimeFlow.Presentation.ViewModels
             var loadedHabits = await _habitService.GetAllHabitsAsync();
             var dates = CurrentMonthDates;
 
-            var newHabits = new ObservableCollection<Habit>();
+            var newHabits = new ObservableCollection<HabitDTO>();
 
             foreach (var habit in loadedHabits)
             {
@@ -112,16 +116,23 @@ namespace TimeFlow.Presentation.ViewModels
                     habit.CompletionRecords = new ObservableCollection<HabitRecord>();
 
                 // Преобразуем в словарь для быстрого доступа
-                var recordsByDate = habit.CompletionRecords
-                    .ToDictionary(r => r.Date.Date, r => r);
+                var recordsByDate = habit.CompletionRecords?
+                    .ToDictionary(r => r.Date.Date, r => r)
+                    ?? new Dictionary<DateTime, HabitRecord>();
 
-                var displayedRecords = new ObservableCollection<HabitRecord>();
+                var displayedRecords = new ObservableCollection<HabitRecordDTO>();
 
                 foreach (var date in dates)
                 {
                     if (recordsByDate.TryGetValue(date.Date, out var existingRecord))
                     {
-                        displayedRecords.Add(existingRecord);
+                        displayedRecords.Add(new HabitRecordDTO
+                        {
+                            Id = existingRecord.Id,
+                            HabitId = habit.Id,
+                            Date = existingRecord.Date,
+                            Status = existingRecord.Status
+                        });
                     }
                     else
                     {
@@ -130,8 +141,9 @@ namespace TimeFlow.Presentation.ViewModels
                             ? CompletionStatus.NotApplicable 
                             : CompletionStatus.NotDone;
 
-                        displayedRecords.Add(new HabitRecord
+                        displayedRecords.Add(new HabitRecordDTO
                         {
+                            HabitId = habit.Id,
                             Date = date.Date,
                             Status = status,
                             HabitId = habit.Id
@@ -139,15 +151,26 @@ namespace TimeFlow.Presentation.ViewModels
                     }
                 }
 
-                habit.CompletionRecords = displayedRecords;
-                newHabits.Add(habit);
+                // Мапим Habit -> HabitDTO
+                var habitDTO = new HabitDTO
+                {
+                    Id = habit.Id,
+                    Name = habit.Name,
+                    Description = habit.Description,
+                    CreatedDate = habit.CreatedDate,
+                    IsActive = habit.IsActive,
+                    AllowedMissedDays = habit.AllowedMissedDays,
+                    DisplayedRecords = displayedRecords
+                };
+
+                newHabits.Add(habitDTO);
             }
 
             Habits = newHabits;
             OnPropertyChanged(nameof(Habits));
         }
 
-        private async Task ToggleHabitStatus(HabitRecord record)
+        private async Task ToggleHabitStatus(HabitRecordDTO record)
         {
             switch (record.Status)
             {
@@ -165,52 +188,35 @@ namespace TimeFlow.Presentation.ViewModels
             await _habitService.UpdateHabitRecordAsync(record);
         }
 
-            OnPropertyChanged(nameof(Habits));
+            if (record.Id == 0 && record.Status != CompletionStatus.NotApplicable)
+            {
+                var newRecord = new HabitRecord
+                {
+                    HabitId = record.HabitId,
+                    Date = record.Date,
+                    Status = record.Status
+                };
+
+                var newId = await _habitService.AddHabitRecordAsync(newRecord);
+                record.Id = newId; // присваиваем DTO-шке Id из БД
+            }
+            else
+            {
+                if (record.Id > 0)
+                {
+                    await _habitService.UpdateHabitRecordAsync(new HabitRecord
+                {
+                        Id = record.Id,
+                        HabitId = record.HabitId,
+                        Date = record.Date,
+                        Status = record.Status
+            });
+                }
             }
 
-            //Тестовые привычки
-            Habits.Add(new Habit
-            {
-                Id = 1,
-                Name = "Пить воду",
-                Description = "Выпивать 8 стаканов воды в день",
-                Periodicity = new HabitPeriodicity
-                {
-                    FrequencyType = Frequency.Daily,
-                },
-                CompletionRecords = new List<HabitRecord>
-                {
-                    new HabitRecord { Date = DateTime.Today.AddDays(-2), Status = CompletionStatus.Done },
-                    new HabitRecord { Date = DateTime.Today.AddDays(-1), Status = CompletionStatus.PartiallyDone },
-                    new HabitRecord { Date = DateTime.Today, Status = CompletionStatus.NotDone }
-                },
-                CurrentStreak = 2,
-                LongestStreak = 5,
-                LastCompletionDate = DateTime.Today.AddDays(-1),
-                CreatedDate = DateTime.Today.AddDays(-30)
-            });
 
-            Habits.Add(new Habit
-            {
-                Id = 2,
-                Name = "Чтение книг",
-                Description = "Читать 10 страниц книги каждый день",
-                Periodicity = new HabitPeriodicity
-                {
-                    FrequencyType = Frequency.Daily,
-                },
-                CompletionRecords = new List<HabitRecord>
-                {
-                    new HabitRecord { Date = DateTime.Today.AddDays(-3), Status = CompletionStatus.Done },
-                    new HabitRecord { Date = DateTime.Today.AddDays(-2), Status = CompletionStatus.Done },
-                    new HabitRecord { Date = DateTime.Today.AddDays(-1), Status = CompletionStatus.PartiallyDone },
-                    new HabitRecord { Date = DateTime.Today, Status = CompletionStatus.Done }
-                },
-                CurrentStreak = 3,
-                LongestStreak = 7,
-                LastCompletionDate = DateTime.Today,
-                CreatedDate = DateTime.Today.AddDays(-60)
-            });
+            OnPropertyChanged(nameof(Habits));
+        }
 
             Habits.Add(new Habit
             {

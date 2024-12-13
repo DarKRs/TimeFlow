@@ -131,7 +131,7 @@
                                 Grid.Column="1"
                                 HorizontalScrollBarVisibility="Never"
                                 ItemsLayout="HorizontalList"
-                                ItemsSource="{Binding CompletionRecords}"
+                                ItemsSource="{Binding DisplayedRecords}"
                                 VerticalScrollBarVisibility="Never">
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate>

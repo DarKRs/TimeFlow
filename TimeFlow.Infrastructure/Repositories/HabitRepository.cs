@@ -12,7 +12,12 @@ namespace TimeFlow.Infrastructure.Repositories
 {
     public class HabitRepository : BaseRepository<Habit>, IHabitRepository
     {
-        public HabitRepository(AppDbContext context) : base(context) { }
+
+        protected readonly DbSet<HabitRecord> _records;
+        public HabitRepository(AppDbContext context) : base(context) {
+            _records = context.Set<HabitRecord>();
+        }
+
 
         public async Task<Habit> GetHabitWithDetailsAsync(int id)
         {
@@ -20,6 +25,7 @@ namespace TimeFlow.Infrastructure.Repositories
                 .Include(h => h.Stages)
                 .Include(h => h.Periodicity)
                 .Include(h => h.CompletionRecords)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(h => h.Id == id);
         }
 
@@ -32,5 +38,9 @@ namespace TimeFlow.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task AddHabitRecord(HabitRecord habitRecord)
+        {
+            await _records.AddAsync(habitRecord);
+        }
     }
 }

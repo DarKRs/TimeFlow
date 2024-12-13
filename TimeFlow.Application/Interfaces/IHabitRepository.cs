@@ -6,6 +6,7 @@ namespace TimeFlow.Core.Interfaces
     {
         Task<Habit> GetHabitWithDetailsAsync(int id);
         Task<IEnumerable<Habit>> GetAllHabitsWithDetailsAsync();
+        Task AddHabitRecord(HabitRecord habitRecord);
 
     }
 }

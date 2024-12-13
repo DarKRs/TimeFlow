@@ -11,7 +11,9 @@ using TimeFlow.Infrastructure.Data;
 using TimeFlow.Infrastructure.Repositories;
 using TimeFlow.Presentation.Services;
 using TimeFlow.Presentation.ViewModels;
+using TimeFlow.Presentation.ViewModels.Popups;
 using TimeFlow.Presentation.Views;
+using TimeFlow.Presentation.Views.Popups;
 
 namespace TimeFlow.Presentation
 {
@@ -59,12 +61,14 @@ namespace TimeFlow.Presentation
             builder.Services.AddTransient<PomodoroViewModel>();
             builder.Services.AddTransient<EisenhowerMatrixViewModel>();
             builder.Services.AddTransient<HabitTrackerViewModel>();
+            builder.Services.AddTransient<AddHabitPopupViewModel>();
+
 
             builder.Services.AddTransient<MainPage>();
             builder.Services.AddTransient<PomodoroPage>();
             builder.Services.AddTransient<EisenhowerMatrixPage>();
             builder.Services.AddTransient<HabitTrackerPage>();
-
+            builder.Services.AddTransient<AddHabitPopup>();
 
 #if DEBUG
             builder.Logging.AddDebug();

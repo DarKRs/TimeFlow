@@ -38,12 +38,10 @@ namespace TimeFlow.Presentation.ViewModels
                 var firstDayOfMonth = new DateTime(year, month, 1);
                 var daysInMonth = DateTime.DaysInMonth(year, month);
 
-                // Формируем список дат текущего месяца
                 var allDates = Enumerable.Range(0, daysInMonth)
                                          .Select(d => firstDayOfMonth.AddDays(d))
-                                 .ToList();
+                                         .ToList();
 
-                // Если это текущий месяц, обрезаем будущие дни
                 if (year == DateTime.Today.Year && month == DateTime.Today.Month)
                     allDates = allDates.Where(d => d <= DateTime.Today).ToList();
 
@@ -53,8 +51,8 @@ namespace TimeFlow.Presentation.ViewModels
 
         public ICommand PreviousMonthCommand { get; }
         public ICommand NextMonthCommand { get; }
+        public ICommand ShowAddHabitPopupCommand { get; }
         public ICommand ToggleHabitStatusCommand { get; }
-
 
         public HabitTrackerViewModel(IHabitService habitService)
         {
@@ -64,6 +62,7 @@ namespace TimeFlow.Presentation.ViewModels
             PreviousMonthCommand = new Command(() => ChangeMonth(-1), () => CanNavigateToPreviousMonth);
             NextMonthCommand = new Command(() => ChangeMonth(1), () => CanNavigateToNextMonth);
             ToggleHabitStatusCommand = new Command<HabitRecordDTO>(async (record) => await ToggleHabitStatus(record));
+            ShowAddHabitPopupCommand = new Command(() => ShowAddHabitPopup());
 
             LoadHabitsForMonth(DateTime.Now.Year, DateTime.Now.Month);
             UpdateDateLimits();
@@ -76,7 +75,7 @@ namespace TimeFlow.Presentation.ViewModels
             OnPropertyChanged(nameof(CurrentMonthDates));
             LoadHabitsForMonth(_currentMonth.Year, _currentMonth.Month);
             UpdateDateLimits();
-            OnPropertyChanged(nameof(Habits)); 
+            OnPropertyChanged(nameof(Habits));
             UpdateCommandStates();
         }
 
@@ -93,8 +92,8 @@ namespace TimeFlow.Presentation.ViewModels
         {
             if (Habits.Any())
             {
-                OldestDate = Habits.Min(h => h.CreatedDate); 
-                NewestDate = DateTime.Today; 
+                OldestDate = Habits.Min(h => h.CreatedDate);
+                NewestDate = DateTime.Today;
             }
             else
             {
@@ -112,9 +111,6 @@ namespace TimeFlow.Presentation.ViewModels
 
             foreach (var habit in loadedHabits)
             {
-                if (habit.CompletionRecords == null)
-                    habit.CompletionRecords = new ObservableCollection<HabitRecord>();
-
                 // Преобразуем в словарь для быстрого доступа
                 var recordsByDate = habit.CompletionRecords?
                     .ToDictionary(r => r.Date.Date, r => r)
@@ -136,17 +132,15 @@ namespace TimeFlow.Presentation.ViewModels
                     }
                     else
                     {
-                        // Создаём новую запись
                         var status = date.Date < habit.CreatedDate.Date
-                            ? CompletionStatus.NotApplicable 
+                            ? CompletionStatus.NotApplicable
                             : CompletionStatus.NotDone;
 
                         displayedRecords.Add(new HabitRecordDTO
                         {
                             HabitId = habit.Id,
                             Date = date.Date,
-                            Status = status,
-                            HabitId = habit.Id
+                            Status = status
                         });
                     }
                 }
@@ -172,6 +166,7 @@ namespace TimeFlow.Presentation.ViewModels
 
         private async Task ToggleHabitStatus(HabitRecordDTO record)
         {
+
             switch (record.Status)
             {
                 case CompletionStatus.NotDone:
@@ -185,8 +180,6 @@ namespace TimeFlow.Presentation.ViewModels
                     break;
             }
 
-            await _habitService.UpdateHabitRecordAsync(record);
-        }
 
             if (record.Id == 0 && record.Status != CompletionStatus.NotApplicable)
             {
@@ -205,12 +198,12 @@ namespace TimeFlow.Presentation.ViewModels
                 if (record.Id > 0)
                 {
                     await _habitService.UpdateHabitRecordAsync(new HabitRecord
-                {
+                    {
                         Id = record.Id,
                         HabitId = record.HabitId,
                         Date = record.Date,
                         Status = record.Status
-            });
+                    });
                 }
             }
 
@@ -218,27 +211,12 @@ namespace TimeFlow.Presentation.ViewModels
             OnPropertyChanged(nameof(Habits));
         }
 
-            Habits.Add(new Habit
-            {
-                Id = 3,
-                Name = "Физические упражнения",
-                Description = "15 минут зарядки каждое утро",
-                Periodicity = new HabitPeriodicity
-                {
-                    FrequencyType = Frequency.Daily,
-                },
-                CompletionRecords = new List<HabitRecord>
-                {
-                    new HabitRecord { Date = DateTime.Today.AddDays(-4), Status = CompletionStatus.NotDone },
-                    new HabitRecord { Date = DateTime.Today.AddDays(-3), Status = CompletionStatus.Done },
-                    new HabitRecord { Date = DateTime.Today.AddDays(-2), Status = CompletionStatus.PartiallyDone },
-                    new HabitRecord { Date = DateTime.Today.AddDays(-1), Status = CompletionStatus.Done }
-                },
-                CurrentStreak = 1,
-                LongestStreak = 4,
-                LastCompletionDate = DateTime.Today.AddDays(-1),
-                CreatedDate = DateTime.Today.AddDays(-15)
-            });
+        private void ShowAddHabitPopup()
+        {
+            var popupView = new AddHabitPopup();
+            popupView.BindingContext = new AddHabitPopupViewModel(_habitService);
+            Application.Current.MainPage.ShowPopup(popupView);
         }
     }
+
 }

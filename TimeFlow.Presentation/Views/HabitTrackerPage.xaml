@@ -16,6 +16,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -173,11 +174,19 @@
                                 HeightRequest="1"
                                 WidthRequest="95" />
                         </StackLayout>
-
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+
+        <Button
+            Grid.Row="3"
+            Grid.Column="0"
+            Margin="10"
+            Command="{Binding ShowAddHabitPopupCommand}"
+            HorizontalOptions="Center"
+            Text="Добавить привычку"
+            VerticalOptions="End" />
     </Grid>
 
 

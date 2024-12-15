@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using TimeFlow.Core.Interfaces;
 using TimeFlow.Domain.Entities;
-using TimeFlow.Presentation.Views;
-using TimeFlow.Presentation.Views.Popups;
 
 namespace TimeFlow.Presentation.ViewModels.Popups
 {
@@ -20,6 +13,7 @@ namespace TimeFlow.Presentation.ViewModels.Popups
 
         public ICommand SaveHabitCommand { get; }
         public ICommand ClosePopupCommand { get; }
+        public event Action<Habit> OnHabitAdded;
         public event Action OnPopupClosed;
 
         public AddHabitPopupViewModel(IHabitService habitService)
@@ -29,29 +23,32 @@ namespace TimeFlow.Presentation.ViewModels.Popups
             ClosePopupCommand = new Command(ClosePopup);
         }
 
-private async Task SaveHabitAsync()
-    {
-        if (string.IsNullOrWhiteSpace(HabitName))
+        private async Task SaveHabitAsync()
         {
-            await Application.Current.MainPage.DisplayAlert("Ошибка", "Название привычки не может быть пустым", "ОК");
-            return;
+            if (string.IsNullOrWhiteSpace(HabitName))
+            {
+                await Application.Current.MainPage.DisplayAlert("Ошибка", "Название привычки не может быть пустым", "ОК");
+                return;
+            }
+
+            var newHabit = new Habit
+            {
+                Name = HabitName,
+                Description = HabitDescription,
+                CreatedDate = DateTime.UtcNow
+            };
+
+            await _habitService.CreateHabitAsync(newHabit);
+
+            OnHabitAdded?.Invoke(newHabit);
+
+            ClosePopup();
         }
 
-        var newHabit = new Habit
+        private void ClosePopup()
         {
-            Name = HabitName,
-            Description = HabitDescription,
-            CreatedDate = DateTime.UtcNow
-        };
-
-        await _habitService.CreateHabitAsync(newHabit);
-        ClosePopup();
-    }
-
-    private void ClosePopup()
-    {
             OnPopupClosed?.Invoke();
-    }
+        }
 
     }
 }

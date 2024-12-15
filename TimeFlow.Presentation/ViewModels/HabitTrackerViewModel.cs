@@ -102,7 +102,7 @@ namespace TimeFlow.Presentation.ViewModels
             }
         }
 
-        private async void LoadHabitsForMonth(int year, int month)
+        private async Task LoadHabitsForMonth(int year, int month)
         {
             var loadedHabits = await _habitService.GetAllHabitsAsync();
             var dates = CurrentMonthDates;
@@ -213,7 +213,15 @@ namespace TimeFlow.Presentation.ViewModels
 
         private void ShowAddHabitPopup()
         {
-            var popupView = new AddHabitPopup(new AddHabitPopupViewModel(_habitService));
+            var popupViewModel = new AddHabitPopupViewModel(_habitService);
+            popupViewModel.OnHabitAdded += (newHabit) =>
+            {
+                Application.Current.Dispatcher.Dispatch(async () =>
+                {
+                    await LoadHabitsForMonth(_currentMonth.Year, _currentMonth.Month);
+                });
+            };
+            var popupView = new AddHabitPopup(popupViewModel);
             Application.Current.MainPage.ShowPopup(popupView);
         }
     }

@@ -213,8 +213,7 @@ namespace TimeFlow.Presentation.ViewModels
 
         private void ShowAddHabitPopup()
         {
-            var popupView = new AddHabitPopup();
-            popupView.BindingContext = new AddHabitPopupViewModel(_habitService);
+            var popupView = new AddHabitPopup(new AddHabitPopupViewModel(_habitService));
             Application.Current.MainPage.ShowPopup(popupView);
         }
     }

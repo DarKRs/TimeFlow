@@ -20,6 +20,7 @@ namespace TimeFlow.Presentation.ViewModels.Popups
 
         public ICommand SaveHabitCommand { get; }
         public ICommand ClosePopupCommand { get; }
+        public event Action OnPopupClosed;
 
         public AddHabitPopupViewModel(IHabitService habitService)
         {
@@ -28,28 +29,29 @@ namespace TimeFlow.Presentation.ViewModels.Popups
             ClosePopupCommand = new Command(ClosePopup);
         }
 
-        private async Task SaveHabitAsync()
+private async Task SaveHabitAsync()
+    {
+        if (string.IsNullOrWhiteSpace(HabitName))
         {
-            if (string.IsNullOrWhiteSpace(HabitName))
-            {
-                // Отобразить ошибку
-                return;
-            }
-
-            var newHabit = new Habit
-            {
-                Name = HabitName,
-                Description = HabitDescription,
-                CreatedDate = DateTime.UtcNow
-            };
-
-            await _habitService.CreateHabitAsync(newHabit);
-            ClosePopup();
+            await Application.Current.MainPage.DisplayAlert("Ошибка", "Название привычки не может быть пустым", "ОК");
+            return;
         }
 
-        private void ClosePopup()
+        var newHabit = new Habit
         {
-            (Application.Current.MainPage as IView)?.Handler?.MauiContext ?.Services.GetService<AddHabitPopup>().Close();
-        }
+            Name = HabitName,
+            Description = HabitDescription,
+            CreatedDate = DateTime.UtcNow
+        };
+
+        await _habitService.CreateHabitAsync(newHabit);
+        ClosePopup();
+    }
+
+    private void ClosePopup()
+    {
+            OnPopupClosed?.Invoke();
+    }
+
     }
 }

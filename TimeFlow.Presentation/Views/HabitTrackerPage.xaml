@@ -6,12 +6,7 @@
     BackgroundImageSource="background.jpg"
     Shell.NavBarIsVisible="False">
 
-    <!--  Заголовок "Месяц/Год"  -->
-
-
-
-    <!--  Панель с датами  -->
-    <Grid>
+    <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -28,6 +23,7 @@
         <Label
             Grid.Row="0"
             Grid.Column="0"
+            Margin="15,-25,0,0"
             FontAttributes="Bold"
             FontSize="24"
             HorizontalOptions="Start"
@@ -116,13 +112,26 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <!--  Название привычки  -->
+                        <StackLayout>
                         <Label
                             Grid.Column="0"
+                            FontSize="16"
                             FontAttributes="Bold"
                             Text="{Binding Name}"
                             TextColor="White"
                             VerticalOptions="Center" />
 
+                            <Label
+                            Grid.Column="0"
+                            Margin="10,-5,0,0"
+                            FontSize="12"
+                            LineBreakMode="WordWrap"
+                            MaxLines="2"
+                            Text="{Binding Description}"
+                            TextColor="LightGray"
+                            VerticalOptions="Start" />
+                        </StackLayout>
+                        
                         <!--  Трекеры для текущей привычки  -->
                         <StackLayout
                             Grid.Column="1"

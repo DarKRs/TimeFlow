@@ -9,7 +9,7 @@
         BackgroundColor="#FFFFFF"
         CornerRadius="15"
         HasShadow="True"
-        HeightRequest="400"
+        HeightRequest="200"
         HorizontalOptions="Center"
         VerticalOptions="Center"
         WidthRequest="350">
